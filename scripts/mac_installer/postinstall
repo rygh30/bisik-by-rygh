@@ -1,0 +1,25 @@
+#!/bin/bash
+set -e
+
+# Target directory where the extension was placed
+EXT_DIR="/Library/Application Support/Adobe/CEP/extensions/com.rygh.bisik"
+
+# Fix permissions so all users and Premiere Pro can access and read the extension
+if [ -d "$EXT_DIR" ]; then
+  chmod -R 755 "$EXT_DIR" 2>/dev/null || true
+fi
+
+# Enable PlayerDebugMode for all users across CSXS versions 11 through 17
+for ver in 11 12 13 14 15 16 17; do
+  # System-wide
+  defaults write /Library/Preferences/com.adobe.CSXS.${ver} PlayerDebugMode 1 2>/dev/null || true
+
+  # Current logged in user (if running via installer)
+  CURRENT_USER=$(stat -f "%Su" /dev/console 2>/dev/null || echo "")
+  if [ -n "$CURRENT_USER" ] && [ "$CURRENT_USER" != "root" ]; then
+    sudo -u "$CURRENT_USER" defaults write com.adobe.CSXS.${ver} PlayerDebugMode 1 2>/dev/null || true
+  fi
+done
+
+exit 0
+

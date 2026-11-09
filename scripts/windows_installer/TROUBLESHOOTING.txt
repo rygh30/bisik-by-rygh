@@ -1,0 +1,64 @@
+================================================================================
+                         TROUBLESHOOTING GUIDE
+             Self-Service Resolution Guide for Windows Users
+================================================================================
+
+If you encounter any issues during setup on Windows, follow the quick solutions
+below. Any AI speech models you have already downloaded remain completely safe
+and do NOT need to be re-downloaded.
+
+--------------------------------------------------------------------------------
+ISSUE 1: Blue popup "Windows protected your PC" (Microsoft Defender SmartScreen)
+--------------------------------------------------------------------------------
+REASON:
+Windows displays this generic warning for newly downloaded .bat scripts that have
+not yet accumulated global download telemetry. The scripts are 100% safe,
+offline, and open-source.
+
+SOLUTION:
+1. Click the small underlined text: "More info".
+2. Click the button: "Run anyway".
+
+--------------------------------------------------------------------------------
+ISSUE 2: Red error message in Premiere Pro:
+"Whisper engine executable not found. Verify whisper-cli installation in PATH"
+--------------------------------------------------------------------------------
+REASON:
+The AI speech model is downloaded, but the executable binary "whisper-cli.exe"
+was not found in your system PATH.
+
+QUICK SOLUTION (~22 MB):
+1. Download the official Whisper CLI 64-bit ZIP archive from:
+   https://github.com/ggml-org/whisper.cpp/releases/download/b5454/whisper-bin-x64.zip
+2. Open the ZIP file and navigate into the "Release" folder.
+3. Copy "whisper-cli.exe" and all accompanying ".dll" files.
+4. Paste them into the following folder on your computer:
+   C:\Users\<YourUsername>\whisper-cpp\
+   (Or paste directly into: C:\Users\<YourUsername>\.whisper-models\)
+5. Restart Adobe Premiere Pro.
+
+--------------------------------------------------------------------------------
+ISSUE 3: "FFmpeg not found" error
+--------------------------------------------------------------------------------
+REASON:
+FFmpeg was not detected on your system.
+
+SOLUTION:
+1. Download the official FFmpeg Windows build:
+   Primary High-Speed CDN:
+   https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip
+   Alternative:
+   https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip
+2. Extract the archive and copy "ffmpeg.exe" (located in the "bin" folder) into:
+   C:\Users\<YourUsername>\whisper-cpp\
+3. Restart Adobe Premiere Pro.
+
+--------------------------------------------------------------------------------
+ISSUE 4: Slow download or blue progress box in PowerShell
+--------------------------------------------------------------------------------
+SOLUTION:
+The latest "2_Setup_AI_Engine.bat" uses native Windows "curl.exe" with silent
+background rendering to download at maximum network wire speed. Simply ensure
+you are running the latest version from this bundle.
+================================================================================
+

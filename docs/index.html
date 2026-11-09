@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bisik by rygh — System Architecture & Rebuild Blueprint</title>
+  <style>
+    :root {
+      --bg: #121212;
+      --sidebar-bg: #181818;
+      --card-bg: #1f1f1f;
+      --card-border: #2e2e2e;
+      --accent: #ffc400;
+      --accent-hover: #ffd54f;
+      --accent-dim: rgba(255, 196, 0, 0.15);
+      --text: #f0f0f0;
+      --text-muted: #9e9e9e;
+      --code-bg: #141414;
+      --code-border: #2a2a2a;
+      --tag-green: #2ecc71;
+      --tag-blue: #3498db;
+      --tag-orange: #e67e22;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --mono: "SF Mono", Monaco, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.6;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Navigation */
+    aside {
+      width: 280px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--card-border);
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      overflow-y: auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 20px;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent), #ff8f00);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #121212;
+      font-size: 18px;
+    }
+
+    .brand-text h1 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-text span {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-group {
+      margin-bottom: 24px;
+    }
+
+    .nav-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+      padding-left: 8px;
+    }
+
+    .nav-links {
+      list-style: none;
+    }
+
+    .nav-links a {
+      display: block;
+      padding: 8px 12px;
+      color: var(--text);
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.15s ease;
+    }
+
+    .nav-links a:hover {
+      background: var(--card-bg);
+      color: var(--accent);
+    }
+
+    .nav-links a.active {
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Main Content */
+    main {
+      margin-left: 280px;
+      flex: 1;
+      padding: 40px 56px;
+      max-width: 1080px;
+    }
+
+    header {
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .badge-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 4px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+    }
+
+    .badge.green { color: var(--tag-green); border-color: rgba(46, 204, 113, 0.3); }
+    .badge.blue { color: var(--tag-blue); border-color: rgba(52, 152, 219, 0.3); }
+    .badge.gold { color: var(--accent); border-color: rgba(255, 196, 0, 0.3); }
+
+    h2 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    p.subtitle {
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    section {
+      margin-bottom: 48px;
+    }
+
+    h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 20px 0 10px 0;
+      color: var(--accent);
+    }
+
+    p {
+      margin-bottom: 14px;
+      color: #dedede;
+    }
+
+    ul, ol {
+      margin: 0 0 16px 24px;
+      color: #dedede;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    /* Cards & Grids */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .card h4 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    .card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 0;
+    }
+
+    /* Code Blocks */
+    .code-container {
+      position: relative;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 8px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--code-border);
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .btn-copy {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: all 0.15s ease;
+    }
+
+    .btn-copy:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    pre {
+      padding: 14px 16px;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: #e0e0e0;
+    }
+
+    code {
+      font-family: var(--mono);
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      border-radius: 0;
+    }
+
+    /* Architecture Text Diagram */
+    .diagram-box {
+      background: #0d0d0d;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--accent);
+      white-space: pre;
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border: 1px solid var(--card-border);
+      text-align: left;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.04);
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* Alert Banner */
+    .alert {
+      padding: 14px 16px;
+      border-radius: 6px;
+      border-left: 4px solid var(--accent);
+      background: var(--accent-dim);
+      margin-bottom: 20px;
+      font-size: 13.5px;
+    }
+
+    .alert strong {
+      color: var(--accent);
+    }
+
+    @media (max-width: 860px) {
+      body { flex-direction: column; }
+      aside { width: 100%; position: relative; border-right: none; border-bottom: 1px solid var(--card-border); }
+      main { margin-left: 0; padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside>
+    <div class="brand">
+      <div class="brand-icon">b</div>
+      <div class="brand-text">
+        <h1>bisik</h1>
+        <span>by rygh • v1.1.0</span>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Documentation</div>
+      <ul class="nav-links">
+        <li><a href="#overview" class="active">1. System Overview</a></li>
+        <li><a href="#architecture">2. High-Level Architecture</a></li>
+        <li><a href="#audio-whisper">3. Audio & Whisper Pipeline</a></li>
+        <li><a href="#chunker-qc">4. Chunker & Quality Control</a></li>
+        <li><a href="#ticks-timecode">5. Timecode & Ticks Math</a></li>
+        <li><a href="#mogrt-contract">6. 14 Animation Styles & MOGRT Data Injection</a></li>
+        <li><a href="#rebuild-guide">7. Step-by-Step Rebuild Guide</a></li>
+        <li><a href="#commands">8. Command Cheat Sheet</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+    <header>
+      <div class="badge-bar">
+        <span class="badge gold">Production Ready v1.1.0</span>
+        <span class="badge green">36/36 Automated Tests Passed</span>
+        <span class="badge blue">Adobe CEP 11.0 / Premiere Pro CC</span>
+        <span class="badge">Whisper.cpp Local AI</span>
+      </div>
+      <h2>bisik by rygh — System Architecture & Blueprint</h2>
+      <p class="subtitle">Complete technical specification, fundamental concepts, and step-by-step reproduction guide for cross-platform recreation.</p>
+    </header>
+
+    <!-- 1. Overview -->
+    <section id="overview">
+      <h3>1. System Overview</h3>
+      <p><strong>bisik by rygh</strong> is an automated captioning and kinetic typography extension for Adobe Premiere Pro. Unlike cloud-reliant captioning plugins, it executes local sample-accurate speech recognition with zero subscription fees, private offline audio inference, and direct Motion Graphics Template (MOGRT) timeline injection with dynamic expression-driven styling.</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <h4>🚀 Zero Model Reload Loop</h4>
+          <p>Consolidates multi-clip timelines into a single continuous master WAV with exact silence bridges, transcribing entire sequences in one pass.</p>
+        </div>
+        <div class="card">
+          <h4>📐 Mathematical Precision</h4>
+          <p>Locked to Adobe's universal tick rate (254,016,000,000 ticks/sec) and sequence frame boundaries, eliminating 1-frame gaps.</p>
+        </div>
+        <div class="card">
+          <h4>🎨 Adobe Spectrum Compliant</h4>
+          <p>Automatically synchronizes with Premiere Pro's 4 brightness themes with high-contrast accessible typography.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Architecture -->
+    <section id="architecture">
+      <h3>2. High-Level Architecture</h3>
+      <div class="diagram-box">
++---------------------------------------------------------------------------------------+
+|                                ADOBE PREMIERE PRO HOST                                |
+|                                                                                       |
+|   +------------------------------------+    CSInterface IPC    +------------------+   |
+|   |       CEP HTML5 Webview (CEF)      | <-------------------> |   ExtendScript   |   |
+|   |  - Adobe Spectrum Design UI        |  evalScript(jsxCmd)   |   (ES3 Engine)   |   |
+|   |  - Word Editor & Inline QC         |                       |  - seq.importMGT |   |
+|   |  - 12-Color Wheel & Preset Manager |                       |  - setMgtValue   |   |
+|   +------------------------------------+                       |  - track audit   |   |
+|                     |                                          +------------------+   |
+|                     | (Node.js runtime in CEF)                                        |
+|                     v                                                                 |
+|   +------------------------------------+                                              |
+|   |       Native Node.js Engine        |                                              |
+|   |  - Child Process Spawner           |                                              |
+|   |  - Audio Extraction Orchestrator   |                                              |
+|   |  - Whisper AI Token Parser         |                                              |
+|   |  - Subtitle Chunker & QC Engine    |                                              |
+|   +------------------------------------+                                              |
++---------------------|-----------------------------------------------------------------+
+                      | Process Spawn (stdio streaming)
+                      v
++---------------------------------------------------------------------------------------+
+|                                 OS SUBSYSTEM UTILITIES                                |
+|                                                                                       |
+|       +----------------------------+             +----------------------------+       |
+|       |           FFmpeg           |             |        whisper-cli         |       |
+|       |  - Sample-accurate cut     |             |  - GGML Large-v3 / Base    |       |
+|       |  - 16 kHz Mono PCM WAV     |             |  - Word timestamps (-ml 1) |       |
+|       |  - anullsrc silence bridge |             |  - Hallucination filters   |       |
+|       +----------------------------+             +----------------------------+       |
++---------------------------------------------------------------------------------------+</div>
+
+      <h4>Three-Tier Execution Layer</h4>
+      <ul>
+        <li><strong>Frontend Tier (Chromium / CEF)</strong>: Pure HTML5/CSS3 interface matching Adobe Spectrum design tokens, with live CTI playhead polling (80 ms) suspended during inactivity.</li>
+        <li><strong>Node.js Background Tier</strong>: Activated via <code>--enable-nodejs</code> and <code>--mixed-context</code> in <code>CSXS/manifest.xml</code>. Handles subprocess spawning, cross-platform binary paths, and taskkill process tree disposal.</li>
+        <li><strong>ExtendScript Host Tier (ES3)</strong>: Controls Premiere timeline objects, sequence tracks, MOGRT import, and speed-remap scaling. Features secure RFC 4627 JSON parsing.</li>
+      </ul>
+    </section>
+
+    <!-- 3. Audio & Whisper Pipeline -->
+    <section id="audio-whisper">
+      <h3>3. Audio & Whisper AI Pipeline</h3>
+      <p>To eliminate audio drift and model load thrashing, the pipeline executes in 4 distinct phases:</p>
+
+      <ol>
+        <li><strong>Multi-Clip WAV Extraction</strong>: Converts audio to 16 kHz 16-bit mono PCM via FFmpeg with output seeking (<code>-ss</code> positioned after <code>-i</code>) for sample accuracy.</li>
+        <li><strong>Silence Gap Bridging</strong>: Fills inter-clip timeline gaps with exact duration synthesized silence using <code>anullsrc=r=16000:cl=mono</code>.</li>
+        <li><strong>Audio Consolidation</strong>: Merges all segments using FFmpeg's concat demuxer into a single <code>master_consolidated.wav</code>.</li>
+        <li><strong>Single-Pass Whisper Inference</strong>: Whisper AI loads the 3 GB model once, transcribing the entire master audio file with word-level timestamps.</li>
+      </ol>
+
+      <div class="code-container">
+        <div class="code-header">
+          <span>whisper-cli Execution Flags</span>
+          <button class="btn-copy" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code>whisper-cli \
+  -t 6 \
+  -m ~/.whisper-models/ggml-large-v3.bin \
+  -f master_consolidated.wav \
+  -l id \
+  -oj \
+  -of transcription_master \
+  -sow \
+  -ml 1 \
+  --entropy-thold 2.4 \
+  --logprob-thold -1.0 \
+  --no-fallback \
+  --prompt "Indonesian conversational speech with English technical video editing terms."</code></pre>
+      </div>
+
+      <div class="alert">
+        <strong>Anti-Hallucination Guardrails:</strong> Flags <code>--entropy-thold 2.4</code> and <code>--logprob-thold -1.0</code> terminate decoding when acoustic confidence is low, and <code>--no-fallback</code> stops temperature looping during background music and silence.
+      </div>
+    </section>
+
+    <!-- 4. Chunker & QC -->
+    <section id="chunker-qc">
+      <h3>4. Subtitle Chunker & Quality Control (QC)</h3>
+      <p>The subtitle chunking algorithm enforces strict multi-dimensional broadcast constraints:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Constraint</th>
+            <th>Standard Limit</th>
+            <th>Enforcement Behavior</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>CPL (Characters Per Line)</strong></td>
+            <td>38 chars max</td>
+            <td>Breaks chunk before overflowing; splits dual-line mode symmetrically.</td>
+          </tr>
+          <tr>
+            <td><strong>Max Duration</strong></td>
+            <td>6.0 seconds max</td>
+            <td>Prevents single subtitle blocks from lingering across scene changes.</td>
+          </tr>
+          <tr>
+            <td><strong>Min Duration</strong></td>
+            <td>0.83 seconds min</td>
+            <td>Guarantees human readability (~20 frames at 24 fps) without flashing.</td>
+          </tr>
+          <tr>
+            <td><strong>CPS (Reading Speed)</strong></td>
+            <td>20.0 chars/sec max</td>
+            <td>Flags warning pill in Word Editor when text pace is too fast for viewer.</td>
+          </tr>
+          <tr>
+            <td><strong>Speech Pause Gap</strong></td>
+            <td>&ge; 0.8 seconds</td>
+            <td>Automatically breaks subtitle card on natural pauses.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 5. Ticks & Timecode -->
+    <section id="ticks-timecode">
+      <h3>5. Timecode & Ticks Mathematics</h3>
+      <p>Premiere Pro calculates all timeline positions in universal ticks:</p>
+      <div class="code-container">
+        <div class="code-header"><span>ExtendScript Frame Boundary Quantization</span><button class="btn-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>var ticksPerSecond = 254016000000;
+var ticksPerFrame = parseFloat(seq.timebase) || (ticksPerSecond / 25);
+
+function quantizeTicksToFrame(seconds) {
+    var rawTicks = seconds * ticksPerSecond;
+    var frameIndex = Math.round(rawTicks / ticksPerFrame);
+    return Math.round(frameIndex * ticksPerFrame);
+}
+
+// In loop:
+var startTicks = quantizeTicksToFrame(seg.start).toString();
+var endTicks = quantizeTicksToFrame(seg.end).toString();</code></pre>
+      </div>
+    </section>
+
+    <!-- 6. 14 Animation Styles & MOGRT Contract -->
+    <section id="mogrt-contract">
+      <h3>6. 14 Production Animation Styles & MOGRT Data Injection</h3>
+      <p><strong>bisik by rygh</strong> ships with 14 production MOGRT templates categorized into Modern kinetic social and Documentary editorial styles, driven by an 8-color symmetrical spectrum palette:</p>
+
+      <h4>Animation Styles Breakdown</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Style Title</th>
+            <th>Category</th>
+            <th>MOGRT Asset</th>
+            <th>Kinetic Visual Signature</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Spring Rise</td><td>Modern</td><td><code>bisik_Spring_Rise.mogrt</code></td><td>Smooth vertical slide with spring kinetic overshoot</td></tr>
+          <tr><td>Blur Pop</td><td>Modern</td><td><code>bisik_Blur_Pop.mogrt</code></td><td>Scale pop bounce with directional Gaussian blur dissipation</td></tr>
+          <tr><td>Bento Card</td><td>Modern</td><td><code>bisik_Bento_Card.mogrt</code></td><td>Frosted glass container with rounded card outline</td></tr>
+          <tr><td>Karaoke Pill</td><td>Modern</td><td><code>bisik_Karaoke_Pill.mogrt</code></td><td>Active sliding capsule pill following spoken word timing</td></tr>
+          <tr><td>Cut Accent</td><td>Modern</td><td><code>bisik_Cut_Accent.mogrt</code></td><td>Editorial instantaneous sharp cut with zero easing delay</td></tr>
+          <tr><td>Stomp Impact</td><td>Modern</td><td><code>bisik_Stomp_Impact.mogrt</code></td><td>High-energy snap with heavy impact micro-jolt</td></tr>
+          <tr><td>Cyber Glitch</td><td>Modern</td><td><code>bisik_Cyber_Glitch.mogrt</code></td><td>RGB chromatic displacement burst with digital artifacting</td></tr>
+          <tr><td>Neon Glow</td><td>Modern</td><td><code>bisik_Neon_Glow.mogrt</code></td><td>Atmospheric studio neon pulse with dual drop shadow aura</td></tr>
+          <tr><td>Box Tape Cut</td><td>Documentary</td><td><code>bisik_Box_Tape.mogrt</code></td><td>High-contrast solid tape box with documentary look</td></tr>
+          <tr><td>Vox Marker</td><td>Documentary</td><td><code>bisik_Vox_Highlighter.mogrt</code></td><td>Analog documentary highlighter overlay on key words</td></tr>
+          <tr><td>Cinema Broadcast</td><td>Documentary</td><td><code>bisik_Netflix_Doc.mogrt</code></td><td>Minimal cinematic lower-third subtitle for long-form films</td></tr>
+          <tr><td>Archival Type</td><td>Documentary</td><td><code>bisik_Archival_Type.mogrt</code></td><td>Monospace typewriter with blinking terminal cursor</td></tr>
+          <tr><td>Editorial Serif</td><td>Documentary</td><td><code>bisik_Editorial_Serif.mogrt</code></td><td>High-culture magazine serif typography with elegant tracking</td></tr>
+          <tr><td>Minimal Fade</td><td>Documentary</td><td><code>bisik_Minimal_Fade.mogrt</code></td><td>Clean opacity dissolve with zero kinetic distraction</td></tr>
+        </tbody>
+      </table>
+
+      <h4>Data Injection Contract</h4>
+      <p>Every imported MOGRT receives two primary parameters:</p>
+      <ul>
+        <li><code>CaptionText</code>: The plain subtitle string formatted with linebreaks.</li>
+        <li><code>WordTimingJSON</code>: Structured JSON parsed by After Effects expressions for kinetic animation:</li>
+      </ul>
+
+      <div class="code-container">
+        <div class="code-header"><span>WordTimingJSON Schema</span><button class="btn-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>{
+  "t": "Halo semuanya selamat datang",
+  "f": "SFProDisplay-Bold",
+  "c": [1.0, 0.769, 0.0],
+  "y": 820,
+  "sc": 100,
+  "w": [
+    { "s": 0.0, "e": 0.28, "k": 1 },
+    { "s": 0.28, "e": 0.65, "k": 0 },
+    { "s": 0.65, "e": 1.10, "k": 2 }
+  ]
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- 7. Rebuild Guide -->
+    <section id="rebuild-guide">
+      <h3>7. Step-by-Step Rebuild Guide</h3>
+      <p>To recreate this extension from zero on macOS or Windows:</p>
+
+      <h4>Step 1: Install Subsystem Tools</h4>
+      <div class="code-container">
+        <div class="code-header"><span>macOS Setup</span><button class="btn-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>brew install ffmpeg node whisper-cpp
+mkdir -p ~/.whisper-models
+curl -L -o ~/.whisper-models/ggml-large-v3.bin https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3.bin
+defaults write com.adobe.CSXS.11 PlayerDebugMode 1</code></pre>
+      </div>
+
+      <h4>Step 2: Link Extension into Adobe CEP</h4>
+      <div class="code-container">
+        <div class="code-header"><span>macOS Symlink</span><button class="btn-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>ln -s "/Users/reygha/Projects/bisik-by-rygh" "$HOME/Library/Application Support/Adobe/CEP/extensions/com.rygh.bisik"</code></pre>
+      </div>
+
+      <h4>Step 3: Run Automated Verification Tests</h4>
+      <div class="code-container">
+        <div class="code-header"><span>Terminal</span><button class="btn-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>npm test</code></pre>
+      </div>
+
+      <h4>Step 4: Package into Production ZXP</h4>
+      <div class="code-container">
+        <div class="code-header"><span>Terminal</span><button class="btn-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>bash scripts/package_zxp.sh</code></pre>
+      </div>
+    </section>
+
+    <!-- 8. Command Cheat Sheet -->
+    <section id="commands">
+      <h3>8. Command Cheat Sheet</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Task</th>
+            <th>Command</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Run Test Suite</td>
+            <td><code>npm test</code></td>
+          </tr>
+          <tr>
+            <td>Build Signed ZXP Package</td>
+            <td><code>bash scripts/package_zxp.sh</code></td>
+          </tr>
+          <tr>
+            <td>Inspect ZXP Contents</td>
+            <td><code>unzip -l dist/bisik_by_rygh.zxp</code></td>
+          </tr>
+          <tr>
+            <td>Check Adobe Debug Port</td>
+            <td>Open Chrome to <code>http://localhost:8088</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    function copyCode(btn) {
+      const pre = btn.closest(".code-container").querySelector("pre code");
+      navigator.clipboard.writeText(pre.innerText).then(() => {
+        const originalText = btn.textContent;
+        btn.textContent = "Copied!";
+        btn.style.color = "var(--tag-green)";
+        btn.style.borderColor = "var(--tag-green)";
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.style.color = "";
+          btn.style.borderColor = "";
+        }, 1800);
+      });
+    }
+
+    // Scroll spy for navigation
+    window.addEventListener("scroll", () => {
+      const sections = document.querySelectorAll("section");
+      const navLinks = document.querySelectorAll(".nav-links a");
+      let currentSection = "";
+
+      sections.forEach((sec) => {
+        const top = sec.offsetTop - 120;
+        if (window.scrollY >= top) {
+          currentSection = sec.getAttribute("id");
+        }
+      });
+
+      navLinks.forEach((link) => {
+        link.classList.remove("active");
+        if (link.getAttribute("href") === "#" + currentSection) {
+          link.classList.add("active");
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+

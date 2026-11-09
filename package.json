@@ -1,0 +1,27 @@
+{
+  "name": "bisik",
+  "version": "1.1.0",
+  "description": "bisik by rygh - 14 Kinetic & Documentary Caption Styles for Premiere Pro",
+  "main": "client/main.js",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "package": "bash scripts/package_zxp.sh",
+    "build-pkg": "bash scripts/build_mac_pkg.sh",
+    "package-mac-zip": "bash scripts/package_mac_zip.sh",
+    "package-win-zip": "bash scripts/package_windows_zip.sh",
+    "package-all": "npm run package-mac-zip && npm run package-win-zip",
+    "setup-ai": "node scripts/setup_ai_engine.js",
+    "setup-assets": "bash scripts/generate_assets.sh"
+  },
+  "keywords": [
+    "bisik",
+    "premiere-pro",
+    "cep",
+    "captions",
+    "documentary",
+    "typography",
+    "whisper"
+  ],
+  "author": "rygh",
+  "license": "ISC"
+}

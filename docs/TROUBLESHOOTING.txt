@@ -1,0 +1,83 @@
+================================================================================
+                    bisik by rygh — TROUBLESHOOTING GUIDE
+         Universal Self-Service Troubleshooting for Windows & macOS
+================================================================================
+
+If you encounter any issues during setup or playback in Adobe Premiere Pro,
+follow the appropriate section below for your operating system.
+All downloaded AI speech models remain safe and do not need to be re-downloaded.
+
+================================================================================
+PART 1: WINDOWS TROUBLESHOOTING
+================================================================================
+
+ISSUE W1: Blue popup "Windows protected your PC" (Microsoft Defender SmartScreen)
+SOLUTION:
+1. Click the small underlined text: "More info".
+2. Click the button: "Run anyway".
+
+ISSUE W2: "Whisper engine executable not found. Verify whisper-cli installation in PATH"
+SOLUTION:
+1. Download the official Whisper CLI 64-bit ZIP from:
+   https://github.com/ggml-org/whisper.cpp/releases/download/b5454/whisper-bin-x64.zip
+2. Extract the "Release" folder contents (whisper-cli.exe and .dll files).
+3. Copy them into:
+   C:\Users\<YourUsername>\whisper-cpp\
+   (Or paste directly into: C:\Users\<YourUsername>\.whisper-models\)
+4. Restart Adobe Premiere Pro.
+
+ISSUE W3: "FFmpeg not found" error
+SOLUTION:
+1. Download the official FFmpeg Windows build from:
+   https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip
+2. Extract the archive and copy "ffmpeg.exe" (inside the "bin" folder) into:
+   C:\Users\<YourUsername>\whisper-cpp\
+3. Restart Adobe Premiere Pro.
+
+ISSUE W4: Slow download or blue progress bar in PowerShell
+SOLUTION:
+Run "2_Setup_AI_Engine.bat" which uses native Windows "curl.exe" with silent
+progress rendering to download at full wire speed.
+
+================================================================================
+PART 2: macOS TROUBLESHOOTING
+================================================================================
+
+ISSUE M1: "command not found: brew" or Homebrew skipped
+SOLUTION:
+1. Open Terminal (Cmd + Space, type "Terminal").
+2. Run:
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+3. Run:
+   brew install ffmpeg whisper-cpp
+4. Re-run "2_Setup_AI_Engine.command".
+
+ISSUE M2: "Whisper engine executable not found" on macOS
+SOLUTION:
+1. Open Terminal and configure PATH:
+   - For Apple Silicon Macs (M1/M2/M3/M4):
+     echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+     eval "$(/opt/homebrew/bin/brew shellenv)"
+   - For Intel Macs:
+     echo 'eval "$(/usr/local/bin/brew shellenv)"' >> ~/.zprofile
+     eval "$(/usr/local/bin/brew shellenv)"
+2. Run:
+   brew install ffmpeg whisper-cpp
+3. Restart Adobe Premiere Pro.
+
+ISSUE M3: Manual Speech Model Download
+SOLUTION:
+1. Open Terminal:
+   mkdir -p ~/.whisper-models
+2. Download the Large-v3 model (~3.1 GB):
+   curl -fL --progress-bar "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3.bin" -o ~/.whisper-models/ggml-large-v3.bin
+3. Restart Adobe Premiere Pro.
+
+ISSUE M4: macOS Security Warning "Unidentified Developer" on .pkg installer
+SOLUTION:
+1. Right-click (or Control + click) on "1_Install_Bisik_Extension.pkg".
+2. Select "Open" from the context menu, then click "Open".
+   (On macOS Sequoia 15+: Navigate to System Settings > Privacy & Security,
+    scroll to Security, and click "Open Anyway").
+================================================================================
+

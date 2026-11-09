@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>bisik by rygh</title>
+  <style>
+    :root {
+      /* Adobe Spectrum Standard 4px/8px Grid Spacing & Sizing Scale */
+      --s-1: 4px;  /* Micro spacing / compact gap / border radius */
+      --s-2: 8px;  /* Base spacing / component gap / padding */
+      --s-3: 12px; /* Medium spacing / card padding / margin */
+      --s-4: 24px; /* Compact control & readout height */
+      --s-5: 32px; /* Standard control, input, dropdown & button height */
+
+      /* Adobe Spectrum Typography Scale */
+      --f-xs: 11px; /* Minimum Spectrum readable scale (replaces 8px) */
+      --f-sm: 11px; /* Spectrum Label & Secondary Text (replaces 10px) */
+      --f-md: 12px; /* Standard Premiere Pro Control & Body scale */
+      --f-lg: 14px; /* Spectrum Section Heading */
+      --f-xl: 16px; /* Spectrum Panel Brand Title */
+
+      /* Color System */
+      --bg: #121214;
+      --card: #1A1A1E;
+      --surface: #101012;
+      --border: #2C2C32;
+      --text: #F5F5F7;
+      --muted: #8E8E93;
+      --accent: #0070D2;
+      --gold: #FFC400;
+      --green: #00C828;
+      --danger: #FF1E1E;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: adobe-clean, "Adobe Clean", "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: var(--s-3);
+      background: var(--bg);
+      color: var(--text);
+      font-size: var(--f-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--s-2);
+      min-height: 100vh;
+      height: auto;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    /* Symmetrical Grid Helpers */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--s-2);
+      align-items: end;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--s-2);
+      align-items: end;
+    }
+    .grid-golden {
+      display: grid;
+      grid-template-columns: 1.618fr 1fr;
+      gap: var(--s-2);
+      align-items: end;
+    }
+
+    /* Narrow Docking Mode Responsive Rules (240px - 320px Docking) */
+    @media (max-width: 320px) {
+      body { padding: var(--s-1); gap: var(--s-1); }
+      .grid-3 { grid-template-columns: 1fr; }
+      .grid-golden { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .segmented { grid-template-columns: 1fr; height: auto; }
+      .segmented label { padding: var(--s-1) 2px; }
+      .palette-grid { grid-template-columns: repeat(6, 1fr); height: auto; }
+      .swatch { height: 20px; }
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: var(--s-5);
+      padding: 0 var(--s-1);
+    }
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: var(--s-2);
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: var(--f-lg);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .brand span {
+      font-size: var(--f-sm);
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--s-2);
+    }
+    .cti-readout {
+      height: var(--s-4);
+      display: inline-flex;
+      align-items: center;
+      padding: 0 var(--s-2);
+      font-family: "Source Code Pro", Menlo, Monaco, Consolas, monospace;
+      font-size: var(--f-sm);
+      color: var(--gold);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--s-1);
+    }
+
+    /* Section Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--s-2);
+      padding: var(--s-2);
+      display: flex;
+      flex-direction: column;
+      gap: var(--s-2);
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: var(--s-1);
+    }
+    label {
+      font-size: var(--f-sm);
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin: 0;
+    }
+
+    /* Uniform Golden Ratio Inputs, Dropdowns & Buttons (34px / 28px) */
+    select, input[type="text"], input[type="number"], button {
+      width: 100%;
+      height: var(--s-5);
+      padding: 0 var(--s-2);
+      border-radius: var(--s-1);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: var(--f-md);
+      font-weight: 500;
+      outline: none;
+      transition: border-color 0.12s ease, background 0.12s ease;
+    }
+    select:focus, input:focus {
+      border-color: var(--accent);
+    }
+    /* Adobe Spectrum Accessible Focus-Visible Ring */
+    select:focus-visible,
+    input[type="text"]:focus-visible,
+    input[type="number"]:focus-visible,
+    button:focus-visible,
+    .word-input:focus-visible,
+    .chip-btn:focus-visible,
+    .word-time:focus-visible,
+    .swatch:focus-visible,
+    .toggle-pill input:focus-visible {
+      outline: 2px solid var(--accent, #0070D2) !important;
+      outline-offset: 1px !important;
+    }
+    button {
+      cursor: pointer;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-sm {
+      height: var(--s-4);
+      font-size: var(--f-sm);
+      padding: 0 var(--s-2);
+      width: auto;
+    }
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: #005BB0; }
+    .btn-success {
+      background: var(--green);
+      border-color: var(--green);
+      color: #041407;
+    }
+    .btn-success:hover { background: #00A820; }
+    .btn-success:disabled {
+      background: #222226;
+      border-color: var(--border);
+      color: var(--muted);
+      cursor: not-allowed;
+    }
+    .btn-danger {
+      background: rgba(255, 30, 30, 0.12);
+      border-color: rgba(255, 30, 30, 0.35);
+      color: var(--danger);
+    }
+    .btn-danger:hover { background: rgba(255, 30, 30, 0.22); }
+    .btn-icon {
+      width: 26px;
+      height: 26px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.12s ease;
+    }
+    .btn-icon:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .btn-icon-danger:hover {
+      background: rgba(255, 30, 30, 0.22);
+      color: var(--danger);
+      border-color: rgba(255, 30, 30, 0.4);
+    }
+    .preset-control-group {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .preset-control-group select {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Color Picker Triggers */
+    .color-picker-trigger-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 8px;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .color-picker-trigger-box:hover {
+      border-color: var(--accent);
+      background: #1e1e24;
+    }
+    .color-picker-trigger-box label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0;
+      cursor: pointer;
+    }
+    .color-pill-preview {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .color-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: inset 0 0 2px rgba(0,0,0,0.5);
+      flex-shrink: 0;
+    }
+    .color-hex-text {
+      font-family: 'Source Code Pro', Menlo, monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+    .color-picker-badge {
+      font-size: 9px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--muted);
+    }
+
+    /* Photoshop-style Color Picker Modal */
+    .ps-modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(2px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ps-color-dialog {
+      width: 375px;
+      background: #2b2b2b;
+      border: 1px solid #444;
+      border-radius: 4px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
+      color: #dfdfdf;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+      user-select: none;
+      overflow: hidden;
+    }
+    .ps-dialog-header {
+      background: #232323;
+      padding: 5px 10px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #383838;
+      font-weight: 600;
+      font-size: 11px;
+      color: #e5e5e5;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .ps-dialog-header span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+    .ps-dialog-body {
+      padding: 8px 10px;
+      display: flex;
+      gap: 10px;
+      background: #2b2b2b;
+    }
+    .ps-spectrum-box {
+      width: 190px;
+      height: 175px;
+      position: relative;
+      cursor: crosshair;
+      border: 1px solid #1a1a1a;
+      box-shadow: inset 0 0 1px rgba(0,0,0,0.8);
+      flex-shrink: 0;
+    }
+    .ps-spectrum-box canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .ps-cursor {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border: 1px solid #fff;
+      box-shadow: 0 0 1px #000, inset 0 0 1px #000;
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      top: 0;
+      left: 0;
+    }
+    .ps-hue-box {
+      width: 22px;
+      height: 175px;
+      position: relative;
+      cursor: pointer;
+      border: 1px solid #1a1a1a;
+      flex-shrink: 0;
+    }
+    .ps-hue-box canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .ps-hue-slider {
+      position: absolute;
+      left: -2px;
+      width: 26px;
+      height: 4px;
+      border: 1px solid #fff;
+      box-shadow: 0 0 2px #000;
+      border-radius: 2px;
+      pointer-events: none;
+      transform: translateY(-50%);
+      top: 0;
+    }
+    .ps-controls-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .ps-preview-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 1px solid #1a1a1a;
+      border-radius: 3px;
+      overflow: hidden;
+      background: #1a1a1a;
+    }
+    .ps-preview-new, .ps-preview-current {
+      width: 100%;
+      height: 22px;
+    }
+    .ps-preview-label {
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #888;
+      padding: 1px 0;
+    }
+    .ps-actions {
+      display: flex;
+      gap: 4px;
+    }
+    .ps-btn {
+      flex: 1;
+      height: 22px;
+      font-size: 10px;
+      border-radius: 3px;
+      background: #3a3a3a;
+      border: 1px solid #505050;
+      color: #eee;
+      cursor: pointer;
+    }
+    .ps-btn:hover { background: #4a4a4a; }
+    .ps-btn.btn-primary {
+      background: #0070d2;
+      border-color: #0070d2;
+      color: #fff;
+    }
+    .ps-btn.btn-primary:hover { background: #005bb0; }
+    .ps-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      background: #232323;
+      padding: 5px 6px;
+      border: 1px solid #383838;
+      border-radius: 4px;
+    }
+    .ps-input-row {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .ps-input-row label {
+      width: 14px;
+      color: #aaa;
+      font-size: 10px;
+      font-weight: bold;
+    }
+    .ps-input-row input {
+      flex: 1;
+      height: 17px;
+      padding: 0 3px;
+      background: #181818;
+      border: 1px solid #444;
+      color: #fff;
+      font-size: 10px;
+      font-family: 'Source Code Pro', monospace;
+    }
+    .ps-hex-row {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      margin-top: 1px;
+    }
+    .ps-hex-row label {
+      color: #aaa;
+      font-weight: bold;
+      font-size: 11px;
+    }
+    .ps-hex-row input {
+      flex: 1;
+      height: 18px;
+      padding: 0 4px;
+      background: #181818;
+      border: 1px solid #444;
+      color: #ffd700;
+      font-size: 11px;
+      font-family: 'Source Code Pro', monospace;
+      font-weight: bold;
+    }
+    .ps-divider {
+      height: 1px;
+      background: #383838;
+      margin: 1px 0;
+    }
+
+    /* Symmetrical Segmented Control */
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      height: var(--s-5);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--s-1);
+      padding: 2px;
+      position: relative;
+    }
+    .segmented input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+    .segmented input:focus-visible + label {
+      outline: 2px solid var(--accent, #0070D2);
+      outline-offset: 1px;
+    }
+    .segmented label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--f-sm);
+      color: var(--muted);
+      border-radius: 3px;
+      cursor: pointer;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .segmented input:checked + label {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* Transcript Editor Workspace */
+    .editor-card {
+      min-height: 180px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--s-2);
+      padding: var(--s-2);
+      display: flex;
+      flex-direction: column;
+      gap: var(--s-2);
+    }
+    .editor-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding-bottom: var(--s-1);
+      border-bottom: 1px solid var(--border);
+    }
+    .editor-bar-group {
+      display: flex;
+      align-items: center;
+      gap: var(--s-2);
+      flex-wrap: wrap;
+    }
+    .toggle-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      color: var(--muted);
+      cursor: pointer;
+      text-transform: none;
+      white-space: nowrap;
+      user-select: none;
+      flex-shrink: 0;
+    }
+    .toggle-pill input {
+      width: 12px;
+      height: 12px;
+      margin: 0;
+      flex-shrink: 0;
+    }
+    #qcStatusBadge {
+      white-space: nowrap;
+      font-size: 10px;
+      line-height: 1.2;
+      flex-shrink: 0;
+    }
+
+    .word-grid {
+      min-height: 140px;
+      max-height: 340px;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      gap: var(--s-1);
+    }
+    .word-chip {
+      height: 26px;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--s-1);
+      padding: 0 4px;
+      flex-shrink: 0;
+      max-width: 100%;
+    }
+    .word-chip.active-playhead {
+      border-color: var(--accent);
+      background: rgba(0, 112, 210, 0.24);
+    }
+    .word-chip.is-keyword {
+      border-color: var(--preview-accent, var(--gold));
+      background: rgba(255, 255, 255, 0.05);
+      box-shadow: inset 0 0 0 1px var(--preview-accent, var(--gold));
+    }
+    .word-chip.force-break {
+      border-right: 3px solid var(--green);
+    }
+    .word-time {
+      font-family: "Source Code Pro", Menlo, Monaco, Consolas, monospace;
+      font-size: var(--f-xs);
+      color: var(--muted);
+      cursor: pointer;
+      padding: 2px 4px;
+      background: var(--card);
+      border-radius: 3px;
+    }
+    .word-time:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+    .word-input {
+      height: 20px;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: var(--f-md);
+      padding: 0 4px;
+      margin: 0;
+      min-width: 32px;
+      box-sizing: border-box;
+      outline: none;
+      text-overflow: clip;
+      white-space: nowrap;
+    }
+    .chip-btn {
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+      border-radius: 3px;
+      transition: background 0.1s ease, color 0.1s ease;
+    }
+    .chip-btn:hover {
+      background: var(--card);
+      color: var(--text);
+    }
+    .chip-btn.star-btn:hover, .word-chip.is-keyword .star-btn {
+      color: var(--preview-accent, var(--gold));
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .chip-btn.break-btn:hover, .word-chip.force-break .break-btn {
+      color: var(--green);
+      background: rgba(0, 200, 40, 0.18);
+    }
+    .chip-btn.del-btn:hover {
+      color: var(--danger);
+      background: rgba(255, 30, 30, 0.22);
+    }
+
+    /* 12-Color Wheel Palette Swatch Bar */
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: var(--s-1);
+      height: var(--s-4);
+    }
+    .swatch {
+      width: 100%;
+      height: 100%;
+      border-radius: 4px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.1s ease, border-color 0.1s ease;
+    }
+    .swatch:hover {
+      transform: scale(1.08);
+    }
+    .swatch.active {
+      border-color: #FFFFFF;
+      box-shadow: 0 0 0 1px #000;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      height: var(--s-4);
+      display: flex;
+      align-items: center;
+      padding: 0 var(--s-2);
+      font-family: "Source Code Pro", Menlo, Monaco, Consolas, monospace;
+      font-size: var(--f-sm);
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--s-1);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+    .status-bar.status-success {
+      color: var(--green);
+      border-color: rgba(0, 200, 40, 0.4);
+    }
+    .status-bar.status-error {
+      color: var(--danger);
+      background: rgba(255, 30, 30, 0.08);
+      border-color: rgba(255, 30, 30, 0.45);
+    }
+    .status-bar.status-warning {
+      color: var(--gold);
+      border-color: rgba(255, 196, 0, 0.45);
+    }
+    .status-bar.status-info {
+      color: var(--accent);
+      border-color: rgba(0, 112, 210, 0.45);
+    }
+
+    /* Subtitle QC Readability Warning Indicators */
+    .qc-badge-ok {
+      background: rgba(0, 200, 40, 0.14);
+      color: var(--green);
+      border: 1px solid rgba(0, 200, 40, 0.35);
+    }
+    .qc-badge-warn {
+      background: rgba(255, 196, 0, 0.16);
+      color: var(--gold);
+      border: 1px solid rgba(255, 196, 0, 0.4);
+    }
+    .qc-badge-danger {
+      background: rgba(255, 30, 30, 0.18);
+      color: var(--danger);
+      border: 1px solid rgba(255, 30, 30, 0.4);
+    }
+    .qc-pill {
+      font-size: 9px;
+      font-family: "Source Code Pro", Menlo, Monaco, Consolas, monospace;
+      padding: 1px 4px;
+      border-radius: 2px;
+      font-weight: 600;
+      cursor: help;
+      user-select: none;
+    }
+    .word-chip.has-qc-issue {
+      border-color: rgba(255, 196, 0, 0.65);
+    }
+    .word-chip.has-qc-danger {
+      border-color: rgba(255, 30, 30, 0.75);
+    }
+
+    /* Animation Composer-Style Visual Preset Gallery & Swatches */
+    .preset-filter-bar {
+      display: flex;
+      gap: 4px;
+      background: var(--surface);
+      padding: 3px;
+      border-radius: var(--s-1);
+      border: 1px solid var(--border);
+    }
+    .filter-tab {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 4px 6px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 3px;
+      cursor: pointer;
+      height: 24px;
+    }
+    .filter-tab.active {
+      background: var(--card);
+      color: var(--text);
+    }
+    .style-preview-gallery {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--s-2);
+      max-height: 230px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+    .style-preview-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--s-1);
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.15s ease;
+    }
+    .style-preview-card:hover {
+      border-color: #666;
+    }
+    .style-preview-card.selected {
+      border-color: var(--preview-accent, var(--gold));
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+    .preview-stage {
+      height: 74px;
+      background: #0D0D0E;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 10px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .preview-caption {
+      font-size: 12px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.25;
+      letter-spacing: -0.2px;
+    }
+    .preview-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 8px;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+    }
+    .preview-footer-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .t-badge {
+      font-family: Georgia, serif;
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .style-card-title {
+      color: var(--text);
+      font-weight: 500;
+      font-size: 11px;
+    }
+    .style-fav-star {
+      color: #555;
+      font-size: 12px;
+      cursor: pointer;
+      transition: color 0.15s ease;
+    }
+    .style-fav-star.favorited {
+      color: var(--gold);
+    }
+
+    /* 10 Live CSS Keyframe Animations */
+    @keyframes animSpringRise {
+      0%, 100% { transform: translateY(0px); opacity: 1; }
+      15% { transform: translateY(8px); opacity: 0.2; }
+      45% { transform: translateY(-2px); opacity: 1; }
+    }
+    @keyframes animCutAccent {
+      0%, 45% { color: #ffffff; }
+      50%, 95% { color: var(--preview-accent, var(--gold)); }
+    }
+    @keyframes animBlurPop {
+      0%, 100% { filter: blur(0px); transform: scale(1); }
+      20% { filter: blur(4px); transform: scale(0.86); opacity: 0.4; }
+      55% { filter: blur(0px); transform: scale(1.06); opacity: 1; }
+    }
+    @keyframes animPillPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    @keyframes animMarkerSweep {
+      0%, 20% { background-size: 0% 100%; }
+      55%, 90% { background-size: 100% 100%; }
+      100% { background-size: 0% 100%; }
+    }
+    @keyframes animTypewriterBlink {
+      0%, 49% { border-right-color: var(--preview-accent, var(--gold)); }
+      50%, 100% { border-right-color: transparent; }
+    }
+    @keyframes animMinimalDrift {
+      0%, 100% { opacity: 1; letter-spacing: 0.8px; }
+      30% { opacity: 0.25; letter-spacing: 2px; }
+    }
+
+    .anim-spring .aw {
+      display: inline-block;
+      color: var(--preview-accent, var(--gold));
+      animation: animSpringRise 2.4s infinite ease-out;
+    }
+    .anim-cut .aw {
+      color: var(--preview-accent, var(--gold));
+      animation: animCutAccent 1.8s infinite steps(1);
+    }
+    .anim-boxtape {
+      background: #080808;
+      padding: 4px 8px;
+      border-radius: 3px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55);
+    }
+    .anim-boxtape .aw {
+      color: var(--preview-accent, var(--gold));
+    }
+    .anim-blurpop .aw {
+      display: inline-block;
+      color: var(--preview-accent, var(--gold));
+      animation: animBlurPop 2.4s infinite ease-out;
+    }
+    .anim-pill .aw {
+      display: inline-block;
+      background: var(--preview-accent, var(--gold));
+      color: #111111;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 800;
+      animation: animPillPulse 1.8s infinite ease-in-out;
+    }
+    .anim-marker .aw {
+      color: #111111;
+      padding: 0 4px;
+      background-image: linear-gradient(var(--preview-accent, var(--gold)), var(--preview-accent, var(--gold)));
+      background-repeat: no-repeat;
+      background-position: left center;
+      background-size: 100% 100%;
+      animation: animMarkerSweep 2.6s infinite ease-in-out;
+    }
+    .anim-cinema {
+      font-weight: 600;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+      letter-spacing: 0.2px;
+    }
+    .anim-cinema .aw {
+      color: var(--preview-accent, var(--gold));
+    }
+    .anim-typewriter {
+      font-family: "Source Code Pro", monospace;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(0, 0, 0, 0.65);
+      padding: 3px 6px;
+      border-left: 2px solid var(--preview-accent, var(--gold));
+    }
+    .anim-typewriter .aw {
+      color: var(--preview-accent, var(--gold));
+      padding-right: 3px;
+      border-right: 2px solid var(--preview-accent, var(--gold));
+      animation: animTypewriterBlink 0.9s infinite;
+    }
+    .anim-editorial {
+      font-family: Georgia, serif;
+      font-weight: 500;
+      font-size: 13px;
+    }
+    .anim-editorial .aw {
+      font-style: italic;
+      color: var(--preview-accent, var(--gold));
+      border-bottom: 1px solid var(--preview-accent, var(--gold));
+    }
+    .anim-minimal {
+      font-weight: 500;
+      font-size: 11px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      animation: animMinimalDrift 3.2s infinite ease-in-out;
+    }
+    .anim-minimal .aw {
+      color: var(--preview-accent, var(--gold));
+      font-weight: 700;
+    }
+    .anim-bento {
+      background: rgba(22, 22, 24, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 3px 8px;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+    }
+    .anim-bento .aw {
+      color: var(--preview-accent, var(--gold));
+      font-weight: 700;
+    }
+    @keyframes animStompDown {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.18); }
+      30% { transform: scale(0.96); }
+      45% { transform: scale(1); }
+    }
+    .anim-stomp .aw {
+      display: inline-block;
+      color: var(--preview-accent, var(--gold));
+      font-weight: 800;
+      animation: animStompDown 2.2s infinite ease-out;
+    }
+    @keyframes animCyberFlicker {
+      0%, 100% { transform: skewX(0deg); opacity: 1; }
+      20% { transform: skewX(-4deg); opacity: 0.7; }
+      40% { transform: skewX(3deg); opacity: 0.95; }
+      60% { transform: skewX(0deg); opacity: 1; }
+    }
+    .anim-cyber .aw {
+      display: inline-block;
+      color: var(--preview-accent, var(--gold));
+      text-shadow: 1px 0 #ff0055, -1px 0 #00ffff;
+      animation: animCyberFlicker 2.2s infinite ease-in-out;
+    }
+    @keyframes animNeonPulse {
+      0%, 100% { text-shadow: 0 0 4px var(--preview-accent, var(--gold)), 0 0 14px var(--preview-accent, var(--gold)); }
+      50% { text-shadow: 0 0 8px var(--preview-accent, var(--gold)), 0 0 24px var(--preview-accent, var(--gold)); }
+    }
+    .anim-neon .aw {
+      color: #ffffff;
+      animation: animNeonPulse 2.0s infinite ease-in-out;
+    }
+
+    /* Symmetrical 4x2 Color Swatch Grid */
+    .swatch-grid-symmetrical {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-top: 2px;
+    }
+    .color-swatch {
+      height: 26px;
+      border-radius: var(--s-1);
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 6px;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--muted);
+      transition: all 0.14s ease;
+    }
+    .color-swatch:hover {
+      border-color: #666;
+      color: var(--text);
+    }
+    .color-swatch.active {
+      border-color: var(--text);
+      background: var(--card);
+      color: #ffffff;
+    }
+    .swatch-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hidden helper inputs for state binding -->
+  <select id="modelSelect" style="display:none;"></select>
+
+  <!-- Header (Golden Ratio 21px Title) -->
+  <div class="header">
+    <div class="brand">
+      <h1>bisik</h1>
+      <span>by rygh</span>
+    </div>
+    <div class="header-controls">
+      <div class="cti-readout" id="playheadBadge">00:00.0</div>
+      <button class="btn-sm" id="btnRefresh">Refresh</button>
+    </div>
+  </div>
+
+  <!-- Card 1: Audio Source & Range -->
+  <div class="card">
+    <div class="grid-golden">
+      <div class="field">
+        <label>Audio Track</label>
+        <select id="audioTrackSelect"></select>
+      </div>
+      <div class="field">
+        <label>Language</label>
+        <select id="langSelect">
+          <option value="id">Indonesian</option>
+          <option value="en">English</option>
+          <option value="auto">Auto Detect</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="segmented">
+      <input type="radio" name="rangeMode" id="rangeEntire" value="entire" checked />
+      <label for="rangeEntire">Entire Sequence</label>
+
+      <input type="radio" name="rangeMode" id="rangeInOut" value="inout" />
+      <label for="rangeInOut">In / Out Range</label>
+
+      <input type="radio" name="rangeMode" id="rangeSelected" value="selected" />
+      <label for="rangeSelected">Selected Clips</label>
+    </div>
+
+    <div class="grid-golden">
+      <button class="btn-primary" id="btnTranscribe">Transcribe Audio</button>
+      <div class="grid-3">
+        <button id="btnImportFile" title="Import transcript from SRT or JSON">Import</button>
+        <button id="btnExportSRT" title="Export transcript as SubRip (.srt)">Export SRT</button>
+        <button id="btnExportJSON" title="Export transcript as JSON (.json)">Export JSON</button>
+      </div>
+    </div>
+
+    <!-- Asynchronous Progress Bar & Cancel Control (Non-Blocking) -->
+    <div id="transcribeProgressContainer" style="display:none; flex-direction:column; gap:4px; margin-top:2px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span id="transcribeProgressText" style="font-size:var(--f-sm); color:var(--muted); font-family:'Source Code Pro',Menlo,monospace;">0% Preparing...</span>
+        <button class="btn-sm btn-danger" id="btnCancelTranscribe" style="height:20px; font-size:9px; padding:0 8px;">Cancel</button>
+      </div>
+      <div style="width:100%; height:4px; background:var(--surface); border:1px solid var(--border); border-radius:2px; overflow:hidden;">
+        <div id="transcribeProgressBar" style="width:0%; height:100%; background:var(--accent); transition:width 0.15s ease;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 2: Symmetrical Live Transcript Editor -->
+  <div class="editor-card">
+    <div class="editor-bar">
+      <div class="editor-bar-group">
+        <label style="color:var(--text); font-weight:600;">Transcript</label>
+        <span style="font-size:var(--f-sm); color:var(--muted);" id="wordCountBadge">(0)</span>
+        <span id="qcStatusBadge" style="display:none; font-size:10px; font-family:'Source Code Pro',Menlo,monospace; padding:1px 6px; border-radius:3px; font-weight:600; white-space:nowrap;"></span>
+      </div>
+      <div class="editor-bar-group">
+        <button class="btn-sm" id="btnUndo" title="Undo (Cmd+Z)">↺</button>
+        <button class="btn-sm" id="btnRedo" title="Redo (Cmd+Shift+Z)">↻</button>
+        <button class="btn-sm" id="btnCleanFillers" title="Clean spoken filler words (uh, um, etc.)">Clean</button>
+        <button class="btn-sm" id="btnCapitalize" title="Toggle letter case (Upper, Lower, Title)">Aa</button>
+        <label class="toggle-pill" title="Toggle two-line caption layout">
+          <input type="checkbox" id="chkDualLine" /> Two-Line
+        </label>
+        <label class="toggle-pill" title="Synchronize editor view with Premiere playhead">
+          <input type="checkbox" id="chkAutoScroll" checked /> Sync CTI
+        </label>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <input type="text" id="findInput" placeholder="Find in transcript..." style="height:var(--s-4); font-size:var(--f-sm);" />
+      <input type="text" id="replaceInput" placeholder="Replace with..." style="height:var(--s-4); font-size:var(--f-sm);" />
+      <button class="btn-sm" id="btnReplaceAll" style="width:100%;">Replace All</button>
+    </div>
+
+    <div class="word-grid" id="wordGrid">
+      <div style="color:var(--muted); font-size:var(--f-sm); padding:var(--s-4); text-align:center; width:100%;">
+        Select an audio track and click Transcribe Audio, or import an SRT/JSON file.
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 3: Symmetrical Typography, Visual Style Browser & 4x2 Palette -->
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <label style="color:var(--text); font-size:var(--f-md);">Animation Style & Color</label>
+      <span id="activeStyleBadge" style="font-size:var(--f-sm); color:var(--gold); font-weight:600;">Spring Rise (Position)</span>
+    </div>
+
+    <!-- Category Filter Bar -->
+    <div class="preset-filter-bar" id="styleFilterBar">
+      <button type="button" class="filter-tab active" data-filter="all">All (14)</button>
+      <button type="button" class="filter-tab" data-filter="modern">Modern (8)</button>
+      <button type="button" class="filter-tab" data-filter="documentary">Documentary (6)</button>
+      <button type="button" class="filter-tab" data-filter="fav">★ Saved</button>
+    </div>
+
+    <!-- Visual Live Animation Cards Grid (Animation Composer Style) -->
+    <div class="style-preview-gallery" id="stylePreviewGallery"></div>
+
+    <!-- Hidden MOGRT Style selector (Maintained for programmatic access & test integrity) -->
+    <select id="styleSelect" style="display:none;">
+      <option value="bisik_Spring_Rise.mogrt" selected>Spring Rise (Position)</option>
+      <option value="bisik_Blur_Pop.mogrt">Blur Pop (Scale Blur)</option>
+      <option value="bisik_Bento_Card.mogrt">Bento Card (Frosted)</option>
+      <option value="bisik_Karaoke_Pill.mogrt">Karaoke Pill (Active Pill)</option>
+      <option value="bisik_Cut_Accent.mogrt">Cut Accent (Instant Cut)</option>
+      <option value="bisik_Stomp_Impact.mogrt">Stomp Impact (Overshoot)</option>
+      <option value="bisik_Cyber_Glitch.mogrt">Cyber Glitch (Digital RGB)</option>
+      <option value="bisik_Neon_Glow.mogrt">Neon Glow (Moody Pulse)</option>
+      <option value="bisik_Box_Tape.mogrt">Box Tape Cut (Accent Box)</option>
+      <option value="bisik_Marker_Highlight.mogrt">Marker Highlight (Doc Sweep)</option>
+      <option value="bisik_Cinema_Broadcast.mogrt">Cinema Broadcast (Doc)</option>
+      <option value="bisik_Archival_Type.mogrt">Archival Typewriter (Doc)</option>
+      <option value="bisik_Editorial_Serif.mogrt">Editorial Serif (Film Doc)</option>
+      <option value="bisik_Minimal_Fade.mogrt">Minimal Whisper (Doc Fade)</option>
+    </select>
+
+    <!-- Row 1: Font Family, Target Video Track (Symmetrical 2-Column Grid) -->
+    <div class="grid-2">
+      <div class="field">
+        <label>Font Family</label>
+        <select id="fontSelect">
+          <option value="Montserrat-Black" selected>Montserrat Black (Modern Kinetic)</option>
+          <option value="Arial-Black">Arial Black (Universal Heavy Punch)</option>
+          <option value="Arial-BoldMT">Arial Bold (Universal Clean Sans)</option>
+          <option value="Impact">Impact (High Energy Punch)</option>
+          <option value="TrebuchetMS-Bold">Trebuchet MS Bold (Modern Geometric)</option>
+          <option value="Verdana-Bold">Verdana Bold (High Legibility Sans)</option>
+          <option value="Tahoma-Bold">Tahoma Bold (Compact Clean)</option>
+          <option value="Georgia-Bold">Georgia Bold (Cinematic Editorial Serif)</option>
+          <option value="TimesNewRomanPS-BoldMT">Times New Roman Bold (Classic Serif)</option>
+          <option value="CourierNewPS-BoldMT">Courier New Bold (Archival Monospace)</option>
+          <option value="HelveticaNeue-Bold">Helvetica Neue Bold (Swiss Clean)</option>
+          <option value="Inter-Bold">Inter Bold (Clean Tech)</option>
+          <option value="Poppins-Bold">Poppins Bold (Modern Geometric)</option>
+          <option value="BebasNeue-Regular">Bebas Neue (Tall Condensed)</option>
+          <option value="Roboto-Black">Roboto Black (High Contrast)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Video Track</label>
+        <select id="videoTrackSelect"></select>
+      </div>
+    </div>
+
+    <!-- Row 2: Highlight Mode, Words/Clip, Position Y, Scale % -->
+    <div class="grid-2">
+      <div class="grid-2">
+        <div class="field">
+          <label>Highlight</label>
+          <select id="highlightMode">
+            <option value="active">Active Word</option>
+            <option value="both" selected>Active + Key</option>
+            <option value="keywords">Keywords Only</option>
+            <option value="off">Disabled</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Position Y</label>
+          <select id="posPreset">
+            <option value="880" selected>Bottom (880)</option>
+            <option value="540">Center (540)</option>
+            <option value="200">Top (200)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label>Words per Clip</label>
+          <input type="number" id="wordsPerClip" value="3" min="1" max="10" />
+        </div>
+        <div class="field">
+          <label>Scale (%)</label>
+          <input type="number" id="textScale" value="100" min="40" max="250" step="5" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 3: Dual Color Controls (Font Color & Highlight Color) + Quick Palette -->
+    <div class="field">
+      <div class="grid-2">
+        <!-- Font Color Picker Trigger -->
+        <div class="color-picker-trigger-box" id="btnOpenFontColorPicker" title="Change Base Font Color (Opens Color Picker)">
+          <label>Font Color</label>
+          <div class="color-pill-preview">
+            <span class="color-dot" id="fontColorDot" style="background:#FFFFFF;"></span>
+            <span class="color-hex-text" id="fontColorHexLabel">#FFFFFF</span>
+            <span class="color-picker-badge">Picker</span>
+          </div>
+        </div>
+
+        <!-- Highlight Color Picker Trigger -->
+        <div class="color-picker-trigger-box" id="btnOpenHighlightColorPicker" title="Change Active Word Highlight Color (Opens Color Picker)">
+          <label>Highlight Color</label>
+          <div class="color-pill-preview">
+            <span class="color-dot" id="highlightColorDot" style="background:#FFC400;"></span>
+            <span class="color-hex-text" id="activeHexLabel">#FFC400</span>
+            <span class="color-picker-badge">Picker</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Swatch Palette (Symmetrical 4x2) -->
+      <div style="margin-top:var(--s-2);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <span style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px;">Quick Palette (Click swatch to apply)</span>
+        </div>
+        <div class="swatch-grid-symmetrical" id="colorSwatchContainer"></div>
+      </div>
+    </div>
+
+    <!-- Row 4: Sound FX & Preset Management (Symmetrical 2-Column Grid) -->
+    <div class="grid-2">
+      <div class="grid-2">
+        <div class="field">
+          <label>Sound FX</label>
+          <select id="sfxModeSelect">
+            <option value="none" selected>None</option>
+            <option value="whoosh">Whoosh (Clip Entry)</option>
+            <option value="pop">Pop (Keywords)</option>
+            <option value="both">Whoosh + Pop</option>
+            <option value="tick">Tick (Cadence)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>SFX Track</label>
+          <select id="sfxTrackSelect" disabled></select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Preset</label>
+        <div class="preset-control-group">
+          <select id="presetSelect"></select>
+          <button type="button" class="btn-icon" id="btnSavePreset" title="Save current style settings as new preset" aria-label="Save Preset">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+          </button>
+          <button type="button" class="btn-icon btn-icon-danger" id="btnDeletePreset" title="Delete current preset" aria-label="Delete Preset">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 5: Golden Ratio Action Bar (1.618fr Insert vs 1fr Clear) -->
+    <div class="grid-golden">
+      <button class="btn-success" id="btnRender" disabled>Insert Captions to Timeline</button>
+      <button class="btn-danger" id="btnClearTrack" title="Clear captions and audio SFX from selected tracks">Clear Track</button>
+    </div>
+  </div>
+
+  <!-- Adobe Photoshop-style Color Picker Modal Popup -->
+  <div id="psColorModal" class="ps-modal-backdrop" style="display:none;">
+    <div class="ps-color-dialog">
+      <div class="ps-dialog-header">
+        <span id="psModalTitle">Color Picker (Highlight Color)</span>
+      </div>
+      <div class="ps-dialog-body">
+        <!-- Left: 2D Saturation / Value Gradient Canvas -->
+        <div class="ps-spectrum-box" id="psSpectrumBox">
+          <canvas id="psSatValCanvas" width="190" height="175"></canvas>
+          <div class="ps-cursor" id="psSatValCursor"></div>
+        </div>
+
+        <!-- Middle: Vertical Rainbow Hue Slider Strip -->
+        <div class="ps-hue-box" id="psHueBox">
+          <canvas id="psHueCanvas" width="22" height="175"></canvas>
+          <div class="ps-hue-slider" id="psHueSlider"></div>
+        </div>
+
+        <!-- Right: Preview & Numeric Inputs (Photoshop Layout) -->
+        <div class="ps-controls-col">
+          <!-- Preview Comparison Box (New vs Current) -->
+          <div class="ps-preview-box">
+            <div class="ps-preview-label">new</div>
+            <div class="ps-preview-new" id="psPreviewNew"></div>
+            <div class="ps-preview-current" id="psPreviewCurrent"></div>
+            <div class="ps-preview-label">current</div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="ps-actions">
+            <button type="button" class="btn-primary ps-btn" id="psBtnOk">OK</button>
+            <button type="button" class="ps-btn" id="psBtnCancel">Cancel</button>
+          </div>
+
+          <!-- Color Model Inputs -->
+          <div class="ps-input-group">
+            <div class="ps-input-row">
+              <label>H:</label>
+              <input type="number" id="psInputH" min="0" max="360" value="0" />
+            </div>
+            <div class="ps-input-row">
+              <label>S:</label>
+              <input type="number" id="psInputS" min="0" max="100" value="100" />
+            </div>
+            <div class="ps-input-row">
+              <label>B:</label>
+              <input type="number" id="psInputB" min="0" max="100" value="100" />
+            </div>
+            <div class="ps-divider"></div>
+            <div class="ps-input-row">
+              <label>R:</label>
+              <input type="number" id="psInputR" min="0" max="255" value="255" />
+            </div>
+            <div class="ps-input-row">
+              <label>G:</label>
+              <input type="number" id="psInputG" min="0" max="255" value="0" />
+            </div>
+            <div class="ps-input-row">
+              <label>B:</label>
+              <input type="number" id="psInputBlue" min="0" max="255" value="0" />
+            </div>
+            <div class="ps-divider"></div>
+            <div class="ps-hex-row">
+              <label>#</label>
+              <input type="text" id="psInputHex" maxlength="7" value="FF0000" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="status-bar" id="statusBar">Ready</div>
+
+  <script src="./CSInterface.js"></script>
+  <script src="./main.js"></script>
+</body>
+</html>

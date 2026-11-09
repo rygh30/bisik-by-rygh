@@ -1,0 +1,22 @@
+END USER LICENSE AGREEMENT (EULA)
+
+bisik by rygh — Adobe Premiere Pro Extension (v1.1.0)
+Copyright (c) 2026 rygh. All rights reserved.
+
+IMPORTANT: PLEASE READ THIS AGREEMENT CAREFULLY BEFORE INSTALLING OR USING THIS EXTENSION.
+
+1. LICENSE GRANT
+The Licensor ("rygh") grants you a non-exclusive, commercial and personal license to install and use "bisik by rygh" within Adobe Premiere Pro.
+
+2. COMMERCIAL RIGHTS & USER CONTENT
+You retain 100% full commercial ownership of all video outputs, subtitles, captions, and SRT exports generated with this extension. You may use this software for client projects, social media, broadcast television, and commercial advertisements royalty-free.
+
+3. RESTRICTIONS
+You may not sell, rent, sublicense, or redistribute the extension source code, packaged ZXP, or underlying Motion Graphics Templates (.mogrt) as standalone products or competing assets.
+
+4. 100% LOCAL PRIVACY
+All audio processing (FFmpeg) and artificial intelligence transcription (Whisper AI) run 100% locally on your computer. No audio or transcript data is ever uploaded to any cloud server or third-party service.
+
+5. DISCLAIMER
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DAMAGES ARISING FROM THE USE OF THIS SOFTWARE.
+

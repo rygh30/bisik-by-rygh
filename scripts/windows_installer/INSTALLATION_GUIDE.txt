@@ -1,0 +1,68 @@
+================================================================================
+   INSTALLATION GUIDE - bisik by rygh (Adobe Premiere Pro Extension)
+   Version: 1.1.0 | Platform: Windows 10 & Windows 11 (64-bit)
+================================================================================
+
+Thank you for choosing bisik by rygh!
+This package installs 14 kinetic and documentary caption styles, procedural sound
+effects, and offline AI speech transcription directly into Adobe Premiere Pro.
+
+To complete installation on Windows, follow the 3 steps below.
+
+--------------------------------------------------------------------------------
+STEP 1: INSTALL THE PREMIERE PRO EXTENSION
+--------------------------------------------------------------------------------
+Choose ONE of the two methods below to install the extension:
+
+METHOD A (Fastest - 1-Click Batch Installer):
+  1. Double-click "1_Install_Extension.bat".
+     (If prompted by Windows SmartScreen, click "More info" -> "Run anyway").
+  2. The script will automatically unpack the extension into your Adobe CEP
+     directory and configure the required PlayerDebugMode registry keys.
+  3. Press any key to finish when prompted.
+
+METHOD B (Standard Adobe ZXP Installer):
+  1. Download and open the free ZXP Installer tool: https://zxpinstaller.com/
+  2. Drag and drop "bisik_by_rygh.zxp" onto the ZXP Installer window.
+  3. Follow the prompts until the extension installation is confirmed.
+
+--------------------------------------------------------------------------------
+STEP 2: CONFIGURE THE AI & AUDIO ENGINE (FFmpeg & Whisper)
+--------------------------------------------------------------------------------
+1. Double-click "2_Setup_AI_Engine.bat".
+2. A Command Prompt window will open:
+   - The script will automatically verify, download, and configure portable
+     binaries for FFmpeg and Whisper CLI directly into your user profile.
+   - When prompted for the speech recognition model, Option [5] (Large-v3, ~3.1 GB)
+     is strongly recommended for maximum accuracy and punctuation precision.
+     For lighter systems, Option [2] (Base, ~145 MB) or Option [3] (Small, ~460 MB)
+     can be chosen.
+3. Once the message "AI ENGINE SETUP COMPLETED" appears, press any key to close.
+
+--------------------------------------------------------------------------------
+STEP 3: LAUNCH IN ADOBE PREMIERE PRO
+--------------------------------------------------------------------------------
+1. Launch Adobe Premiere Pro.
+2. In the top application menu bar, navigate to:
+   Window > Extensions > bisik by rygh
+3. The panel is now ready to transcribe audio and generate kinetic captions!
+
+--------------------------------------------------------------------------------
+TROUBLESHOOTING & SUPPORT
+--------------------------------------------------------------------------------
+If you experience any issues, refer to "TROUBLESHOOTING.txt" included in this
+package for immediate solutions to common questions.
+
+================================================================================
+PRIVACY & ARCHITECTURE NOTICE
+================================================================================
+- 100% Local & Offline: All audio extraction (FFmpeg) and artificial 
+  intelligence transcription (Whisper.cpp) execute entirely on your machine.
+  No audio, media clips, or transcripts are ever transmitted to external servers.
+- System Requirements:
+  - Windows 10 (version 1903 or later) or Windows 11 (64-bit).
+  - Adobe Premiere Pro 2022 (v22.0) through 2025 (v25.x) or later.
+  - Recommended minimum 8 GB RAM / system memory.
+
+Copyright (c) 2026 rygh. All rights reserved.
+================================================================================

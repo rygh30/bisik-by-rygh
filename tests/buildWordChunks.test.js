@@ -1,0 +1,95 @@
+const { test, describe } = require("node:test");
+const assert = require("node:assert/strict");
+const { buildWordChunks } = require("../client/main.js");
+
+describe("buildWordChunks", () => {
+  test("chunks words based on wordsMax limit", () => {
+    const words = [
+      { text: "Satu", start: 0.0, end: 0.3 },
+      { text: "Dua", start: 0.3, end: 0.6 },
+      { text: "Tiga", start: 0.6, end: 0.9 },
+      { text: "Empat", start: 0.9, end: 1.2 },
+      { text: "Lima", start: 1.2, end: 1.5 }
+    ];
+    const chunks = buildWordChunks(words, { wordsMax: 2, isDualLine: false });
+    assert.equal(chunks.length, 3);
+    assert.equal(chunks[0].words.length, 2);
+    assert.equal(chunks[1].words.length, 2);
+    assert.equal(chunks[2].words.length, 1);
+  });
+
+  test("honors explicit forceBreak on word", () => {
+    const words = [
+      { text: "Kalimat", start: 0.0, end: 0.4 },
+      { text: "pertama.", start: 0.4, end: 0.8, forceBreak: true },
+      { text: "Kalimat", start: 0.9, end: 1.2 },
+      { text: "kedua.", start: 1.2, end: 1.6 }
+    ];
+    const chunks = buildWordChunks(words, { wordsMax: 5, isDualLine: false });
+    assert.equal(chunks.length, 2);
+    assert.equal(chunks[0].words[1].text, "pertama.");
+    assert.equal(chunks[1].words[0].text, "Kalimat");
+  });
+
+  test("breaks chunk if adding next word exceeds max CPL (38 chars)", () => {
+    const words = [
+      { text: "Ini", start: 0.0, end: 0.3 },
+      { text: "adalah", start: 0.3, end: 0.6 },
+      { text: "sebuah", start: 0.6, end: 0.9 },
+      { text: "kalimat", start: 0.9, end: 1.2 },
+      { text: "yang", start: 1.2, end: 1.4 },
+      { text: "sangat", start: 1.4, end: 1.7 },
+      { text: "panjangsekalisampaimelampauibatas", start: 1.7, end: 2.5 }
+    ];
+    const chunks = buildWordChunks(words, { wordsMax: 10, isDualLine: false, maxCpl: 38 });
+    assert.ok(chunks.length >= 2);
+    chunks.forEach((chunk) => {
+      const lineText = chunk.lines[0].map((w) => w.text).join(" ");
+      assert.ok(lineText.length <= 38, `Line text "${lineText}" exceeds max CPL 38`);
+    });
+  });
+
+  test("breaks chunk if duration exceeds maxDuration (6.0s)", () => {
+    const words = [
+      { text: "Halo", start: 1.0, end: 2.0 },
+      { text: "dunia", start: 2.1, end: 3.5 },
+      { text: "panjang", start: 3.6, end: 7.5 } // 7.5 - 1.0 = 6.5s > 6.0s
+    ];
+    const chunks = buildWordChunks(words, { wordsMax: 5, isDualLine: false, maxDuration: 6.0 });
+    assert.equal(chunks.length, 2);
+    assert.equal(chunks[0].words.length, 2);
+    assert.equal(chunks[1].words.length, 1);
+  });
+
+  test("splits on silence pause gap >= 0.8s", () => {
+    const words = [
+      { text: "Sebelum", start: 0.0, end: 0.5 },
+      { text: "jeda", start: 0.5, end: 1.0 },
+      { text: "setelah", start: 2.0, end: 2.5 } // pause 1.0s >= 0.8s
+    ];
+    const chunks = buildWordChunks(words, { wordsMax: 5, isDualLine: false });
+    assert.equal(chunks.length, 2);
+    assert.equal(chunks[0].words.length, 2);
+    assert.equal(chunks[1].words.length, 1);
+  });
+
+  test("balances dual lines symmetrically by character count", () => {
+    const words = [
+      { text: "Kucing", start: 0.0, end: 0.4 },
+      { text: "hitam", start: 0.4, end: 0.8 },
+      { text: "berlari", start: 0.8, end: 1.2 },
+      { text: "sangat", start: 1.2, end: 1.6 },
+      { text: "kencang", start: 1.6, end: 2.0 }
+    ];
+    const chunks = buildWordChunks(words, { wordsMax: 5, isDualLine: true, maxCpl: 38 });
+    assert.equal(chunks.length, 1);
+    assert.equal(chunks[0].lines.length, 2);
+
+    const line1 = chunks[0].lines[0].map((w) => w.text).join(" ");
+    const line2 = chunks[0].lines[1].map((w) => w.text).join(" ");
+    assert.ok(line1.length <= 38);
+    assert.ok(line2.length <= 38);
+    // Difference between symmetrical line character counts should be minimized
+    assert.ok(Math.abs(line1.length - line2.length) <= 12);
+  });
+});

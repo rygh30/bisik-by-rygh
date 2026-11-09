@@ -1,0 +1,66 @@
+================================================================================
+                         TROUBLESHOOTING GUIDE
+              Self-Service Resolution Guide for macOS Users
+================================================================================
+
+If you encounter any issues during setup on macOS, follow the quick solutions
+below. Any AI speech models you have already downloaded remain completely safe
+and do NOT need to be re-downloaded.
+
+--------------------------------------------------------------------------------
+ISSUE 1: Error "command not found: brew" or Homebrew installation skipped
+--------------------------------------------------------------------------------
+REASON:
+Homebrew is the standard package manager for macOS, required to install
+FFmpeg and Whisper CLI.
+
+SOLUTION:
+1. Open Terminal on your Mac (press Cmd + Space, type "Terminal", press Enter).
+2. Copy and paste the official Homebrew installation command:
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+3. Follow the prompts in Terminal (enter your Mac password when prompted).
+4. Once Homebrew is installed, run:
+   brew install ffmpeg whisper-cpp
+5. Re-run "2_Setup_AI_Engine.command" to download your speech model.
+
+--------------------------------------------------------------------------------
+ISSUE 2: Red error message in Premiere Pro:
+"Whisper engine executable not found. Verify whisper-cli installation in PATH"
+--------------------------------------------------------------------------------
+REASON:
+Homebrew or whisper-cli is installed, but your shell profile has not exported
+the Homebrew bin directory into your system PATH.
+
+QUICK SOLUTION:
+1. Open Terminal and run the appropriate command for your Mac:
+   - For Apple Silicon Macs (M1/M2/M3/M4):
+     echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+     eval "$(/opt/homebrew/bin/brew shellenv)"
+   - For Intel Macs:
+     echo 'eval "$(/usr/local/bin/brew shellenv)"' >> ~/.zprofile
+     eval "$(/usr/local/bin/brew shellenv)"
+2. Run:
+   brew install ffmpeg whisper-cpp
+3. Restart Adobe Premiere Pro.
+
+--------------------------------------------------------------------------------
+ISSUE 3: Manual Speech Model Download
+--------------------------------------------------------------------------------
+If your network connection dropped while downloading the Large-v3 model (~3.1 GB):
+1. Open Terminal and create the models folder:
+   mkdir -p ~/.whisper-models
+2. Download the model directly using curl:
+   curl -fL --progress-bar "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3.bin" -o ~/.whisper-models/ggml-large-v3.bin
+3. Restart Adobe Premiere Pro.
+
+--------------------------------------------------------------------------------
+ISSUE 4: macOS Security Warning "Unidentified Developer" on .pkg file
+--------------------------------------------------------------------------------
+SOLUTION:
+1. Right-click (or Control + click) on "1_Install_Bisik_Extension.pkg".
+2. Select "Open" from the context menu.
+3. Click "Open" on the macOS security dialog.
+   (On macOS Sequoia 15+: Navigate to System Settings > Privacy & Security,
+    scroll down to the Security section, and click "Open Anyway").
+================================================================================
+
