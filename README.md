@@ -17,7 +17,7 @@
 
 - **100% Local & Privacy-Guaranteed**: Audio extraction (FFmpeg) and speech transcription (Whisper.cpp) run entirely on your CPU, Apple Neural Engine, or GPU. No audio files or transcripts ever touch the internet.
 - **Zero Subscriptions & Zero API Keys**: No monthly token quotas, no OpenAI billing, and no metered fees. Transcribe unlimited hours offline.
-- **15 Kinetic, Documentary & Cinema Caption Styles**: Handcrafted `.mogrt` templates designed for reels, YouTube videos, feature films, and documentaries (Spring Rise, Bento Card, Blur Pop, Karaoke Pill, Netflix Cinema [static], Archival Type, Editorial Serif, etc.). Includes a real-time proportional text scale slider (40%–250%).
+- **15 Kinetic, Documentary & Cinema Caption Styles**: Handcrafted `.mogrt` templates designed for reels, YouTube videos, feature films, and documentaries (Spring Rise, Bento Card, Blur Pop, Karaoke Pill, Cinema Subtitle [static], Archival Type, Editorial Serif, etc.). Includes a real-time proportional text scale slider (40%–250%).
 - **Procedural SFX Audio Sync**: Automatically generates and attaches synced audio pop, tick, and whoosh effects for subtitle animations.
 - **Sample-Accurate Timecode Alignment**: Quantizes subframe speech boundaries to exact Adobe universal tick frames (254,016,000,000 ticks/sec).
 - **90+ Languages Supported**: Powered by OpenAI's Whisper multilingual model (Indonesian, English, Spanish, Japanese, Mandarin, etc.).

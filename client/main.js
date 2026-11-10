@@ -85,6 +85,7 @@ function readJsonSafe(file, defaultValue = null) {
 }
 
 const LEGACY_STYLE_MAP = {
+  "bisik_Netflix_Cinema.mogrt": "bisik_Cinema_Subtitle.mogrt",
   "bisik_Netflix_Doc.mogrt": "bisik_Cinema_Broadcast.mogrt",
   "bisik_Vox_Highlighter.mogrt": "bisik_Marker_Highlight.mogrt"
 };
@@ -296,12 +297,12 @@ const BISIK_ANIMATION_STYLES = [
     favorite: false
   },
   {
-    id: "bisik_Netflix_Cinema",
-    mogrt: "bisik_Netflix_Cinema.mogrt",
+    id: "bisik_Cinema_Subtitle",
+    mogrt: "bisik_Cinema_Subtitle.mogrt",
     name: "Static Cut",
-    title: "Netflix Cinema",
+    title: "Cinema Subtitle",
     category: "documentary",
-    cssClass: "anim-netflix",
+    cssClass: "anim-cinema-sub",
     previewHtml: '“I know what we have to do now.”',
     favorite: true
   },

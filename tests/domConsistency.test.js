@@ -29,7 +29,7 @@ describe("DOM and Assets Integrity", () => {
     assert.ok(htmlContent.includes('id="colorSwatchContainer"'));
     assert.ok(htmlContent.includes('id="textScaleSlider"'), "Must include textScaleSlider range input");
     assert.ok(htmlContent.includes('id="textScaleBadge"'), "Must include textScaleBadge display");
-    assert.ok(BISIK_ANIMATION_STYLES.some(s => s.id === "bisik_Netflix_Cinema"), "Must include Netflix Cinema style");
+    assert.ok(BISIK_ANIMATION_STYLES.some(s => s.id === "bisik_Cinema_Subtitle"), "Must include Cinema Subtitle style");
   });
 
   test("all getEl IDs in main.js exist in index.html", () => {

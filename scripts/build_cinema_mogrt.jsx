@@ -1,7 +1,7 @@
 /**
- * bisik by rygh — Single MOGRT Generator for Netflix Cinema Style (Static / No-Motion)
+ * bisik by rygh — Single MOGRT Generator for Cinema Subtitle Style (Static / No-Motion)
  */
-(function buildNetflixCinemaMogrt() {
+(function buildCinemaSubtitleMogrt() {
     app.beginSuppressDialogs();
 
     var projectRoot = new Folder("/Users/reygha/Projects/bisik-by-rygh");
@@ -11,9 +11,9 @@
     var tempFolder = new Folder(projectRoot.fsName + "/temp");
     if (!tempFolder.exists) tempFolder.create();
 
-    var logFile = new File(tempFolder.fsName + "/netflix_mogrt_build_log.txt");
+    var logFile = new File(tempFolder.fsName + "/cinema_mogrt_build_log.txt");
     logFile.open("w");
-    logFile.writeln("=== BISIK BY RYGH: NETFLIX CINEMA MOGRT EXPORT START ===");
+    logFile.writeln("=== BISIK BY RYGH: CINEMA SUBTITLE MOGRT EXPORT START ===");
 
     try {
         if (app.project) {
@@ -24,19 +24,19 @@
             app.project.expressionEngine = "javascript-1.0";
         } catch (engineErr) { }
 
-        var tempAepFile = new File(tempFolder.fsName + "/bisik_netflix_factory.aep");
+        var tempAepFile = new File(tempFolder.fsName + "/bisik_cinema_factory.aep");
         app.project.save(tempAepFile);
 
         var p = {
-            id: "bisik_Netflix_Cinema",
-            title: "Netflix Cinema",
+            id: "bisik_Cinema_Subtitle",
+            title: "Cinema Subtitle",
             font: "HelveticaNeue-Medium",
             size: 66,
             hasBox: false,
             hasStroke: false,
             hasShadow: true,
             scaleHighlight: 100, // Strictly 100% (No scale jump/bounce)
-            animType: "NETFLIX_CINEMA"
+            animType: "CINEMA_SUBTITLE"
         };
 
         logFile.writeln("Creating comp: " + p.id);
@@ -62,7 +62,7 @@
         var textDoc = textProp.value;
         textDoc.resetCharStyle();
         textDoc.fontSize = p.size;
-        textDoc.fillColor = [1.0, 1.0, 1.0]; // Pure white text like Netflix
+        textDoc.fillColor = [1.0, 1.0, 1.0]; // Pure white text
         textDoc.applyFill = true;
         textDoc.justification = ParagraphJustification.CENTER_JUSTIFY;
         textDoc.applyStroke = false;
@@ -223,7 +223,7 @@
         if (tempAepFile.exists) tempAepFile.remove();
 
         app.endSuppressDialogs(false);
-        logFile.writeln("=== FINISHED NETFLIX MOGRT EXPORT ===");
+        logFile.writeln("=== FINISHED CINEMA SUBTITLE MOGRT EXPORT ===");
         logFile.close();
         return exportOk ? "SUCCESS" : "FAILED";
     } catch (err) {
