@@ -1,0 +1,74 @@
+================================================================================
+                          TROUBLESHOOTING GUIDE
+             Self-Service Resolution Guide for Intel macOS Users
+================================================================================
+
+If you encounter any issues during setup on your Intel Mac, follow the quick
+solutions below. Any speech models you have already downloaded remain completely
+safe and do NOT need to be re-downloaded.
+
+--------------------------------------------------------------------------------
+ISSUE 1: macOS Gatekeeper Warning "Cannot be opened because the developer cannot be verified"
+--------------------------------------------------------------------------------
+REASON:
+macOS Gatekeeper checks unsigned scripts or binaries downloaded from the internet.
+
+SOLUTION:
+1. Right-click (or Control + click) on "2_Setup_AI_Engine.command" or "1_Install_Bisik_Extension.pkg".
+2. Select "Open" from the context menu.
+3. Click "Open" or "Open Anyway" on the prompt.
+4. Alternatively, open Terminal and run:
+   xattr -cr ~/whisper-cpp
+   xattr -cr ~/Downloads/bisik_by_rygh_macOS_Intel_v1.1.0
+
+--------------------------------------------------------------------------------
+ISSUE 2: Red error message in Premiere Pro:
+"Whisper engine executable not found. Verify whisper-cli installation in PATH"
+--------------------------------------------------------------------------------
+REASON:
+The Whisper executable was not found in ~/whisper-cpp or your system PATH.
+
+SOLUTION:
+1. Re-run "2_Setup_AI_Engine.command" to ensure whisper-cli is copied to ~/whisper-cpp.
+2. Verify that the file exists by opening Terminal and typing:
+   ls -la ~/whisper-cpp/whisper-cli
+3. Ensure it has execute permissions:
+   chmod +x ~/whisper-cpp/whisper-cli
+4. Restart Adobe Premiere Pro.
+
+--------------------------------------------------------------------------------
+ISSUE 3: "FFmpeg conversion failed. Check that FFmpeg is installed"
+--------------------------------------------------------------------------------
+REASON:
+FFmpeg was not detected in ~/whisper-cpp or system PATH.
+
+SOLUTION:
+1. Run "2_Setup_AI_Engine.command" again to allow the script to automatically
+   download the static FFmpeg binary.
+2. Alternatively, download ffmpeg for macOS manually and place the "ffmpeg"
+   executable inside:
+   ~/whisper-cpp/ffmpeg
+3. Make it executable:
+   chmod +x ~/whisper-cpp/ffmpeg
+4. Restart Adobe Premiere Pro.
+
+--------------------------------------------------------------------------------
+ISSUE 4: Manual Speech Model Download
+--------------------------------------------------------------------------------
+If your network connection dropped while downloading the Large-v3 model (~3.1 GB):
+1. Open Terminal and create the models folder:
+   mkdir -p ~/.whisper-models
+2. Download the model directly using curl:
+   curl -fL --progress-bar "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3.bin" -o ~/.whisper-models/ggml-large-v3.bin
+3. Restart Adobe Premiere Pro.
+
+--------------------------------------------------------------------------------
+ISSUE 5: Extension does not appear in Window > Extensions
+--------------------------------------------------------------------------------
+SOLUTION:
+1. Ensure Adobe Premiere Pro was fully closed during installation.
+2. Verify the extension folder exists:
+   ls "/Library/Application Support/Adobe/CEP/extensions/com.rygh.bisik"
+3. If missing, double-click "1_Install_Bisik_Extension.pkg" to re-install.
+4. Relaunch Premiere Pro.
+================================================================================

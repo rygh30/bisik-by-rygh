@@ -29,9 +29,17 @@
 Visit the [Releases](https://github.com/reygha/bisik-by-rygh/releases) page to download the latest pre-packaged installer bundle for your operating system:
 
 ### For macOS Users
+
+#### Apple Silicon (M1/M2/M3/M4)
 Download `bisik_by_rygh_macOS_v1.1.0.zip`:
 1. **Double-click** `1_Install_Bisik_Extension.pkg` and follow the installer wizard.
 2. **Double-click** `2_Setup_AI_Engine.command` to automatically configure Homebrew, FFmpeg, Whisper CLI, and speech models.
+3. Open Adobe Premiere Pro and navigate to: `Window > Extensions > bisik by rygh`.
+
+#### Intel Macs (Core i5/i7/i9/Xeon — No Homebrew Required)
+Download `bisik_by_rygh_macOS_Intel_v1.1.0.zip`:
+1. **Double-click** `1_Install_Bisik_Extension.pkg` and follow the installer wizard.
+2. **Double-click** `2_Setup_AI_Engine.command` (whisper-cli is precompiled and included; portable FFmpeg and models are downloaded directly without Homebrew or root permissions).
 3. Open Adobe Premiere Pro and navigate to: `Window > Extensions > bisik by rygh`.
 
 ### For Windows Users
@@ -67,13 +75,16 @@ cd bisik-by-rygh
 # Run full automated test suite (81 tests)
 npm test
 
-# Build macOS Distribution ZIP bundle (.pkg + .command)
+# Build macOS Apple Silicon Distribution ZIP bundle (.pkg + .command)
 npm run package-mac-zip
+
+# Build macOS Intel Standalone Distribution ZIP bundle (.pkg + portable binaries)
+npm run package-mac-intel-zip
 
 # Build Windows Distribution ZIP bundle (.zxp + .bat)
 npm run package-win-zip
 
-# Build both release packages simultaneously
+# Build all release packages simultaneously
 npm run package-all
 ```
 

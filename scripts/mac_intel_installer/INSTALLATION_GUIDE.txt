@@ -1,0 +1,71 @@
+================================================================================
+   INSTALLATION GUIDE — bisik by rygh (Adobe Premiere Pro Extension)
+   Version: 1.1.0 | Platform: macOS Intel Edition (x86_64 Core i5/i7/i9/Xeon)
+================================================================================
+
+Thank you for choosing bisik by rygh!
+This package installs 14 kinetic & documentary caption styles, procedural sound
+effects, and offline AI speech transcription directly into Adobe Premiere Pro
+for Intel-based Macs.
+
+This standalone edition requires ZERO Homebrew setup and ZERO administrator
+root commands. All processing components run portably in your user folder.
+
+To complete installation on your Intel Mac, follow the 3 steps below.
+
+--------------------------------------------------------------------------------
+STEP 1: INSTALL THE PREMIERE PRO EXTENSION
+--------------------------------------------------------------------------------
+1. Right-click (or Control + click) on:
+   "1_Install_Bisik_Extension.pkg"
+2. Select "Open" from the context menu, then click "Open" on the security dialog.
+   (macOS Sequoia 15+ note: If prompted by Gatekeeper, navigate to 
+    System Settings > Privacy & Security > Security, and click "Open Anyway").
+3. Follow the on-screen installer wizard:
+   - Review and accept the End User License Agreement (EULA).
+   - Enter your Mac password or Touch ID when requested.
+4. Click "Close" when installation succeeds.
+
+--------------------------------------------------------------------------------
+STEP 2: CONFIGURE THE AI & AUDIO ENGINE (FFmpeg & Whisper)
+--------------------------------------------------------------------------------
+1. Right-click (or Control + click) on:
+   "2_Setup_AI_Engine.command" and select "Open".
+2. A Terminal window will launch automatically:
+   - Whisper CLI is prebundled and copied directly to ~/whisper-cpp.
+   - If FFmpeg is not already installed on your Mac, the script downloads 
+     the portable static FFmpeg binary automatically.
+   - When prompted for the speech model, Option [5] (Large-v3, ~3.1 GB) or 
+     Option [6] (Large-v3-Turbo, ~1.6 GB) is recommended. For lighter setups, 
+     Option [2] (Base, ~145 MB) or Option [3] (Small, ~460 MB) can be chosen.
+3. Once the message "AI ENGINE SETUP COMPLETED SUCCESSFULLY" appears, 
+   press any key to close the Terminal.
+
+--------------------------------------------------------------------------------
+STEP 3: LAUNCH IN ADOBE PREMIERE PRO
+--------------------------------------------------------------------------------
+1. Launch Adobe Premiere Pro.
+2. In the top application menu bar, navigate to:
+   Window > Extensions > bisik by rygh
+3. The panel is now ready to transcribe audio and generate kinetic captions!
+
+--------------------------------------------------------------------------------
+TROUBLESHOOTING & SUPPORT
+--------------------------------------------------------------------------------
+If you experience any issues, refer to "TROUBLESHOOTING.txt" included in this
+package for immediate solutions to common questions.
+
+================================================================================
+PRIVACY & ARCHITECTURE NOTICE
+================================================================================
+- 100% Local & Offline: All audio extraction (FFmpeg) and artificial 
+  intelligence transcription (Whisper.cpp) execute entirely on your machine.
+  No audio, media clips, or transcripts are ever transmitted to external servers.
+- System Requirements:
+  - macOS 10.15 (Catalina), 11.0 (Big Sur), 12.0 (Monterey), 13.0 (Ventura),
+    14.0 (Sonoma), or 15.0 (Sequoia) on Intel Core or Xeon processors.
+  - Adobe Premiere Pro 2022 (v22.0) through 2025 (v25.x) or later.
+  - Recommended minimum 8 GB RAM (16 GB recommended for Large-v3 model).
+
+Copyright (c) 2026 rygh. All rights reserved.
+================================================================================

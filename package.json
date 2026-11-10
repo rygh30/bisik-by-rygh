@@ -8,8 +8,9 @@
     "package": "bash scripts/package_zxp.sh",
     "build-pkg": "bash scripts/build_mac_pkg.sh",
     "package-mac-zip": "bash scripts/package_mac_zip.sh",
+    "package-mac-intel-zip": "bash scripts/package_mac_intel_zip.sh",
     "package-win-zip": "bash scripts/package_windows_zip.sh",
-    "package-all": "npm run package-mac-zip && npm run package-win-zip",
+    "package-all": "npm run package-mac-zip && npm run package-mac-intel-zip && npm run package-win-zip",
     "setup-ai": "node scripts/setup_ai_engine.js",
     "setup-assets": "bash scripts/generate_assets.sh"
   },

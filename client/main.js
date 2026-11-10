@@ -2035,6 +2035,9 @@ function getSystemEnvPath() {
     return [...commonWinPaths, process.env.PATH || ""].join(path.delimiter);
   } else {
     const commonMacPaths = [
+      path.join(os.homedir(), "whisper-cpp"),
+      path.join(os.homedir(), ".whisper-models"),
+      path.join(os.homedir(), "Library", "Application Support", "bisik", "bin"),
       "/opt/homebrew/bin",
       "/usr/local/bin",
       "/usr/bin",
@@ -2185,6 +2188,9 @@ function findAvailableWhisperModel(extRoot, lang = "id") {
   const candidateDirs = [
     path.join(os.homedir(), ".whisper-models"),
     path.join(os.homedir(), "whisper-models"),
+    path.join(os.homedir(), "whisper-cpp", "models"),
+    path.join(os.homedir(), "whisper-cpp"),
+    path.join(os.homedir(), "Library", "Application Support", "bisik", "models"),
     path.join(os.homedir(), "AppData", "Local", "whisper-models"),
     path.join(extRoot || "", "models")
   ];
