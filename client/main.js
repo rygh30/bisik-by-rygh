@@ -296,6 +296,16 @@ const BISIK_ANIMATION_STYLES = [
     favorite: false
   },
   {
+    id: "bisik_Netflix_Cinema",
+    mogrt: "bisik_Netflix_Cinema.mogrt",
+    name: "Static Cut",
+    title: "Netflix Cinema",
+    category: "documentary",
+    cssClass: "anim-netflix",
+    previewHtml: '“I know what we have to do now.”',
+    favorite: true
+  },
+  {
     id: "bisik_Archival_Type",
     mogrt: "bisik_Archival_Type.mogrt",
     name: "Typewriter",
@@ -1052,6 +1062,12 @@ function renderStylePreviewGallery() {
 
     gallery.appendChild(card);
   });
+
+  const curScale = parseInt(getEl("textScale")?.value, 10) || 100;
+  gallery.querySelectorAll(".preview-caption").forEach((el) => {
+    el.style.transform = `scale(${curScale / 100})`;
+    el.style.transformOrigin = "center center";
+  });
 }
 
 function initGalleryAndFilterListeners() {
@@ -1117,6 +1133,25 @@ function renderPresetDropdown() {
   });
 }
 
+function syncTextScale(val) {
+  const num = Math.max(40, Math.min(250, parseInt(val, 10) || 100));
+  const numberInput = getEl("textScale");
+  const sliderInput = getEl("textScaleSlider");
+  const badge = getEl("textScaleBadge");
+  if (numberInput && parseInt(numberInput.value, 10) !== num) numberInput.value = num;
+  if (sliderInput && parseInt(sliderInput.value, 10) !== num) sliderInput.value = num;
+  if (badge) badge.textContent = `${num}%`;
+
+  // Real-time proportional zoom on preview gallery cards
+  const gallery = getEl("stylePreviewGallery");
+  if (gallery) {
+    gallery.querySelectorAll(".preview-caption").forEach((el) => {
+      el.style.transform = `scale(${num / 100})`;
+      el.style.transformOrigin = "center center";
+    });
+  }
+}
+
 function applyPreset(idx) {
   const p = state.presets[idx];
   if (!p) return;
@@ -1125,7 +1160,6 @@ function applyPreset(idx) {
   const wordsInput = getEl("wordsPerClip");
   const modeSel = getEl("highlightMode");
   const posSel = getEl("posPreset");
-  const scaleInput = getEl("textScale");
   const dualCheck = getEl("chkDualLine");
 
   if (styleSel) styleSel.value = migrateStyleName(p.style);
@@ -1140,7 +1174,7 @@ function applyPreset(idx) {
   state.selectedHex = p.highlightColor || "#FFC400";
   if (activeHexLabel) activeHexLabel.textContent = state.selectedHex;
   if (posSel) posSel.value = p.posY;
-  if (scaleInput) scaleInput.value = p.scale;
+  syncTextScale(p.scale || 100);
   if (dualCheck) dualCheck.checked = Boolean(p.dualLine);
   renderColorPalette();
   saveAppSettings();
@@ -1220,7 +1254,7 @@ function loadAppSettings() {
       }
       renderColorPalette();
       if (s.posY && getEl("posPreset")) getEl("posPreset").value = s.posY;
-      if (s.scale && getEl("textScale")) getEl("textScale").value = s.scale;
+      if (s.scale) syncTextScale(s.scale); else syncTextScale(100);
       if (s.sfxMode && sfxModeSelect) {
         sfxModeSelect.value = s.sfxMode;
         if (sfxTrackSelect) sfxTrackSelect.disabled = s.sfxMode === "none";
@@ -1807,6 +1841,14 @@ function analyzeTranscriptQC(customWords, customOptions) {
 
 getEl("wordsPerClip")?.addEventListener("input", () => renderWordEditor());
 getEl("chkDualLine")?.addEventListener("change", () => renderWordEditor());
+getEl("textScaleSlider")?.addEventListener("input", (e) => {
+  syncTextScale(e.target.value);
+  saveAppSettings();
+});
+getEl("textScale")?.addEventListener("input", (e) => {
+  syncTextScale(e.target.value);
+  saveAppSettings();
+});
 
 function validateTranscriptWords(items, maxItems = 50000) {
   if (!Array.isArray(items)) return { words: [], droppedCount: 0 };

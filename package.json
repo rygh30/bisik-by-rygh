@@ -1,7 +1,7 @@
 {
   "name": "bisik",
   "version": "1.1.0",
-  "description": "bisik by rygh - 14 Kinetic & Documentary Caption Styles for Premiere Pro",
+  "description": "bisik by rygh - 15 Kinetic, Documentary & Cinema Caption Styles for Premiere Pro",
   "main": "client/main.js",
   "scripts": {
     "test": "node --test tests/*.test.js",

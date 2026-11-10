@@ -168,6 +168,39 @@
     select:focus, input:focus {
       border-color: var(--accent);
     }
+    /* Proportional Scale Range Slider */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      outline: none;
+      margin: 0;
+      padding: 0;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--gold);
+      border: 2px solid var(--bg);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: transform 0.12s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.18);
+    }
+    input[type="range"]:focus-visible {
+      outline: 2px solid var(--accent, #0070D2) !important;
+      outline-offset: 2px !important;
+    }
     /* Adobe Spectrum Accessible Focus-Visible Ring */
     select:focus-visible,
     input[type="text"]:focus-visible,
@@ -968,6 +1001,17 @@
     .anim-cinema .aw {
       color: var(--preview-accent, var(--gold));
     }
+    .anim-netflix {
+      font-weight: 600;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 0 2px rgba(0, 0, 0, 0.9);
+      letter-spacing: 0.3px;
+      color: #ffffff;
+      animation: none !important;
+    }
+    .anim-netflix .aw {
+      color: var(--preview-accent, var(--gold));
+    }
     .anim-typewriter {
       font-family: "Source Code Pro", monospace;
       font-size: 11px;
@@ -1197,9 +1241,9 @@
 
     <!-- Category Filter Bar -->
     <div class="preset-filter-bar" id="styleFilterBar">
-      <button type="button" class="filter-tab active" data-filter="all">All (14)</button>
+      <button type="button" class="filter-tab active" data-filter="all">All (15)</button>
       <button type="button" class="filter-tab" data-filter="modern">Modern (8)</button>
-      <button type="button" class="filter-tab" data-filter="documentary">Documentary (6)</button>
+      <button type="button" class="filter-tab" data-filter="documentary">Documentary (7)</button>
       <button type="button" class="filter-tab" data-filter="fav">★ Saved</button>
     </div>
 
@@ -1219,6 +1263,7 @@
       <option value="bisik_Box_Tape.mogrt">Box Tape Cut (Accent Box)</option>
       <option value="bisik_Marker_Highlight.mogrt">Marker Highlight (Doc Sweep)</option>
       <option value="bisik_Cinema_Broadcast.mogrt">Cinema Broadcast (Doc)</option>
+      <option value="bisik_Netflix_Cinema.mogrt">Netflix Cinema (Film Subtitle)</option>
       <option value="bisik_Archival_Type.mogrt">Archival Typewriter (Doc)</option>
       <option value="bisik_Editorial_Serif.mogrt">Editorial Serif (Film Doc)</option>
       <option value="bisik_Minimal_Fade.mogrt">Minimal Whisper (Doc Fade)</option>
@@ -1280,8 +1325,14 @@
           <input type="number" id="wordsPerClip" value="3" min="1" max="10" />
         </div>
         <div class="field">
-          <label>Scale (%)</label>
-          <input type="number" id="textScale" value="100" min="40" max="250" step="5" />
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label for="textScaleSlider">Scale</label>
+            <span id="textScaleBadge" style="font-size:11px; font-weight:700; color:var(--gold); background:rgba(255, 196, 0, 0.12); border:1px solid rgba(255, 196, 0, 0.28); border-radius:4px; padding:1px 6px;">100%</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; margin-top:3px;">
+            <input type="range" id="textScaleSlider" min="40" max="250" value="100" step="5" />
+            <input type="number" id="textScale" value="100" min="40" max="250" step="5" style="width:64px; min-width:64px; text-align:center; font-weight:600;" />
+          </div>
         </div>
       </div>
     </div>

@@ -188,6 +188,17 @@
                 hasBox: false,
                 scaleHighlight: 110,
                 animType: "STOMP_IMPACT"
+            },
+            {
+                id: "bisik_Netflix_Cinema",
+                title: "Netflix Cinema",
+                font: "HelveticaNeue-Medium",
+                size: 66,
+                hasBox: false,
+                hasStroke: false,
+                hasShadow: true,
+                scaleHighlight: 100,
+                animType: "NETFLIX_CINEMA"
             }
         ];
 
@@ -351,7 +362,7 @@
             }
 
             // Subtle Drop Shadow
-            if (p.hasShadow || p.animType === "CINEMA_BROADCAST" || p.animType === "CUT_ACCENT") {
+            if (p.hasShadow || p.animType === "CINEMA_BROADCAST" || p.animType === "CUT_ACCENT" || p.animType === "NETFLIX_CINEMA") {
                 var ds = textLayer.property("ADBE Effect Parade").addProperty("ADBE Drop Shadow");
                 if (ds) {
                     ds.property("ADBE Drop Shadow-0002").setValue(120);

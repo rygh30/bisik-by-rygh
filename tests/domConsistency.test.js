@@ -21,12 +21,15 @@ describe("DOM and Assets Integrity", () => {
     assert.ok(manifestContent.includes("--mixed-context"), "Manifest must enable mixed-context");
   });
 
-  test("14 animation styles (4 master + 10 production) and 8 symmetrical swatches are configured", () => {
-    assert.equal(BISIK_ANIMATION_STYLES.length, 14, "Must provide 14 animation styles");
+  test("15 animation styles (4 master + 10 production + 1 cinema static) and 8 symmetrical swatches are configured", () => {
+    assert.equal(BISIK_ANIMATION_STYLES.length, 15, "Must provide 15 animation styles");
     assert.equal(SPECTRUM_SWATCHES.length, 8, "Must provide symmetrical 4x2 (8) color swatches");
     assert.ok(htmlContent.includes('id="stylePreviewGallery"'));
     assert.ok(htmlContent.includes('id="styleFilterBar"'));
     assert.ok(htmlContent.includes('id="colorSwatchContainer"'));
+    assert.ok(htmlContent.includes('id="textScaleSlider"'), "Must include textScaleSlider range input");
+    assert.ok(htmlContent.includes('id="textScaleBadge"'), "Must include textScaleBadge display");
+    assert.ok(BISIK_ANIMATION_STYLES.some(s => s.id === "bisik_Netflix_Cinema"), "Must include Netflix Cinema style");
   });
 
   test("all getEl IDs in main.js exist in index.html", () => {
