@@ -1134,13 +1134,14 @@ function renderPresetDropdown() {
   });
 }
 
-function syncTextScale(val) {
-  const num = Math.max(40, Math.min(250, parseInt(val, 10) || 100));
+function syncTextScale(val, source) {
+  const parsed = parseInt(val, 10);
+  const num = isNaN(parsed) ? 100 : Math.max(40, Math.min(200, parsed));
   const numberInput = getEl("textScale");
   const sliderInput = getEl("textScaleSlider");
   const badge = getEl("textScaleBadge");
-  if (numberInput && parseInt(numberInput.value, 10) !== num) numberInput.value = num;
-  if (sliderInput && parseInt(sliderInput.value, 10) !== num) sliderInput.value = num;
+  if (source !== "number" && numberInput && parseInt(numberInput.value, 10) !== num) numberInput.value = num;
+  if (source !== "slider" && sliderInput && parseInt(sliderInput.value, 10) !== num) sliderInput.value = num;
   if (badge) badge.textContent = `${num}%`;
 
   // Real-time proportional zoom on preview gallery cards
@@ -1843,10 +1844,17 @@ function analyzeTranscriptQC(customWords, customOptions) {
 getEl("wordsPerClip")?.addEventListener("input", () => renderWordEditor());
 getEl("chkDualLine")?.addEventListener("change", () => renderWordEditor());
 getEl("textScaleSlider")?.addEventListener("input", (e) => {
-  syncTextScale(e.target.value);
+  syncTextScale(e.target.value, "slider");
   saveAppSettings();
 });
 getEl("textScale")?.addEventListener("input", (e) => {
+  const v = parseInt(e.target.value, 10);
+  if (!isNaN(v) && v >= 40 && v <= 200) {
+    syncTextScale(v, "number");
+    saveAppSettings();
+  }
+});
+getEl("textScale")?.addEventListener("change", (e) => {
   syncTextScale(e.target.value);
   saveAppSettings();
 });

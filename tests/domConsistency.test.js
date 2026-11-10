@@ -29,6 +29,8 @@ describe("DOM and Assets Integrity", () => {
     assert.ok(htmlContent.includes('id="colorSwatchContainer"'));
     assert.ok(htmlContent.includes('id="textScaleSlider"'), "Must include textScaleSlider range input");
     assert.ok(htmlContent.includes('id="textScaleBadge"'), "Must include textScaleBadge display");
+    assert.ok(htmlContent.includes('min="40" max="200"'), "Scale inputs must be bounded strictly between 40% and 200%");
+    assert.ok(htmlContent.includes('class="premiere-slider"'), "Must use native Premiere Pro styled slider");
     assert.ok(BISIK_ANIMATION_STYLES.some(s => s.id === "bisik_Cinema_Subtitle"), "Must include Cinema Subtitle style");
   });
 

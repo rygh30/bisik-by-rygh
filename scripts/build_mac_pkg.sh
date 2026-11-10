@@ -5,6 +5,7 @@ PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 DIST_DIR="$PROJECT_DIR/dist"
 INSTALLER_ASSETS_DIR="$PROJECT_DIR/scripts/mac_installer"
 OUTPUT_PKG="$DIST_DIR/bisik_by_rygh_installer.pkg"
+VERSION=$(node -p "require('$PROJECT_DIR/package.json').version")
 
 mkdir -p "$DIST_DIR"
 rm -f "$OUTPUT_PKG"
@@ -50,7 +51,7 @@ fi
 echo "2. Building component package (pkgbuild)..."
 pkgbuild --root "$STAGE_ROOT" \
          --identifier "com.rygh.bisik.pkg" \
-         --version "1.1.0" \
+         --version "$VERSION" \
          --install-location "/" \
          --scripts "$SCRIPTS_DIR" \
          "$COMPONENT_PKG"
@@ -71,7 +72,7 @@ cat << EOF > "$DISTRIBUTION_XML"
     <choice id="com.rygh.bisik.pkg" visible="false">
         <pkg-ref id="com.rygh.bisik.pkg"/>
     </choice>
-    <pkg-ref id="com.rygh.bisik.pkg" version="1.1.0" onConclusion="none">$COMPONENT_PKG_NAME</pkg-ref>
+    <pkg-ref id="com.rygh.bisik.pkg" version="$VERSION" onConclusion="none">$COMPONENT_PKG_NAME</pkg-ref>
 </installer-gui-script>
 EOF
 

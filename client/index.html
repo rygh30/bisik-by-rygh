@@ -168,38 +168,132 @@
     select:focus, input:focus {
       border-color: var(--accent);
     }
-    /* Proportional Scale Range Slider */
-    input[type="range"] {
+    /* Premiere Pro Native UI Scale Range Slider */
+    .scale-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--s-1);
+      padding: var(--s-2) var(--s-3);
+      margin: var(--s-2) 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .scale-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .scale-header label {
+      font-size: var(--f-xs);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin: 0;
+    }
+    .scale-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold);
+      background: rgba(255, 196, 0, 0.12);
+      border: 1px solid rgba(255, 196, 0, 0.28);
+      border-radius: 4px;
+      padding: 1px 6px;
+    }
+    .scale-slider-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+    .scale-track-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      height: 24px;
+    }
+    .premiere-slider {
       -webkit-appearance: none;
       appearance: none;
       width: 100%;
-      height: 6px;
-      border-radius: 3px;
-      background: var(--surface);
-      border: 1px solid var(--border);
+      height: 4px;
+      border-radius: 2px;
+      background: #141414;
+      border: 1px solid #2b2b2b;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7);
       outline: none;
       margin: 0;
       padding: 0;
       cursor: pointer;
     }
-    input[type="range"]::-webkit-slider-thumb {
+    .premiere-slider::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: #141414;
+      border: 1px solid #2b2b2b;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7);
+    }
+    .premiere-slider::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: var(--gold);
-      border: 2px solid var(--bg);
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+      width: 14px;
+      height: 18px;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="18" viewBox="0 0 14 18"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="%23a4a4a4"/><stop offset="45%" stop-color="%23767676"/><stop offset="100%" stop-color="%23484848"/></linearGradient></defs><path d="M 7 1 C 7 1, 13 6.5, 13 11 C 13 14.5, 10.3 17, 7 17 C 3.7 17, 1 14.5, 1 11 C 1 6.5, 7 1, 7 1 Z" fill="url(%23g)" stroke="%23161616" stroke-width="1.2"/></svg>') no-repeat center center;
       cursor: pointer;
-      transition: transform 0.12s ease;
+      margin-top: -7px;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+      transition: filter 0.12s ease;
     }
-    input[type="range"]::-webkit-slider-thumb:hover {
-      transform: scale(1.18);
+    .premiere-slider::-webkit-slider-thumb:hover {
+      filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8)) brightness(1.15);
     }
-    input[type="range"]:focus-visible {
+    .premiere-slider::-webkit-slider-thumb:active {
+      filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.95)) brightness(1.25);
+    }
+    .premiere-slider:focus-visible {
       outline: 2px solid var(--accent, #0070D2) !important;
       outline-offset: 2px !important;
+    }
+    .scale-number-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0 6px;
+      height: 24px;
+      min-width: 62px;
+      transition: border-color 0.15s ease;
+    }
+    .scale-number-wrap:focus-within {
+      border-color: var(--accent);
+    }
+    .scale-number-wrap input[type="number"] {
+      width: 42px;
+      height: 22px;
+      border: none !important;
+      background: transparent !important;
+      text-align: right;
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 0;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    .scale-number-wrap input[type="number"]::-webkit-outer-spin-button,
+    .scale-number-wrap input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .scale-percent-unit {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 2px;
     }
     /* Adobe Spectrum Accessible Focus-Visible Ring */
     select:focus-visible,
@@ -1297,42 +1391,44 @@
       </div>
     </div>
 
-    <!-- Row 2: Highlight Mode, Words/Clip, Position Y, Scale % -->
-    <div class="grid-2">
-      <div class="grid-2">
-        <div class="field">
-          <label>Highlight</label>
-          <select id="highlightMode">
-            <option value="active">Active Word</option>
-            <option value="both" selected>Active + Key</option>
-            <option value="keywords">Keywords Only</option>
-            <option value="off">Disabled</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Position Y</label>
-          <select id="posPreset">
-            <option value="880" selected>Bottom (880)</option>
-            <option value="540">Center (540)</option>
-            <option value="200">Top (200)</option>
-          </select>
-        </div>
+    <!-- Row 2: Highlight Mode, Position Y, Words per Clip (Proportional 3-column row) -->
+    <div class="grid-3">
+      <div class="field">
+        <label>Highlight</label>
+        <select id="highlightMode">
+          <option value="active">Active Word</option>
+          <option value="both" selected>Active + Key</option>
+          <option value="keywords">Keywords Only</option>
+          <option value="off">Disabled</option>
+        </select>
       </div>
+      <div class="field">
+        <label>Position Y</label>
+        <select id="posPreset">
+          <option value="880" selected>Bottom (880)</option>
+          <option value="540">Center (540)</option>
+          <option value="200">Top (200)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Words per Clip</label>
+        <input type="number" id="wordsPerClip" value="3" min="1" max="10" />
+      </div>
+    </div>
 
-      <div class="grid-2">
-        <div class="field">
-          <label>Words per Clip</label>
-          <input type="number" id="wordsPerClip" value="3" min="1" max="10" />
+    <!-- Row 2.5: Scale Slider in Dedicated Container (Premiere Pro Native Style, 40% - 200%) -->
+    <div class="scale-container">
+      <div class="scale-header">
+        <label for="textScaleSlider">Scale</label>
+        <span id="textScaleBadge" class="scale-badge">100%</span>
+      </div>
+      <div class="scale-slider-row">
+        <div class="scale-track-wrap">
+          <input type="range" id="textScaleSlider" class="premiere-slider" min="40" max="200" value="100" step="1" />
         </div>
-        <div class="field">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label for="textScaleSlider">Scale</label>
-            <span id="textScaleBadge" style="font-size:11px; font-weight:700; color:var(--gold); background:rgba(255, 196, 0, 0.12); border:1px solid rgba(255, 196, 0, 0.28); border-radius:4px; padding:1px 6px;">100%</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:8px; margin-top:3px;">
-            <input type="range" id="textScaleSlider" min="40" max="250" value="100" step="5" />
-            <input type="number" id="textScale" value="100" min="40" max="250" step="5" style="width:64px; min-width:64px; text-align:center; font-weight:600;" />
-          </div>
+        <div class="scale-number-wrap">
+          <input type="number" id="textScale" min="40" max="200" value="100" step="1" />
+          <span class="scale-percent-unit">%</span>
         </div>
       </div>
     </div>

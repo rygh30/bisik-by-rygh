@@ -17,7 +17,7 @@
 
 - **100% Local & Privacy-Guaranteed**: Audio extraction (FFmpeg) and speech transcription (Whisper.cpp) run entirely on your CPU, Apple Neural Engine, or GPU. No audio files or transcripts ever touch the internet.
 - **Zero Subscriptions & Zero API Keys**: No monthly token quotas, no OpenAI billing, and no metered fees. Transcribe unlimited hours offline.
-- **15 Kinetic, Documentary & Cinema Caption Styles**: Handcrafted `.mogrt` templates designed for reels, YouTube videos, feature films, and documentaries (Spring Rise, Bento Card, Blur Pop, Karaoke Pill, Cinema Subtitle [static], Archival Type, Editorial Serif, etc.). Includes a real-time proportional text scale slider (40%–250%).
+- **15 Kinetic, Documentary & Cinema Caption Styles**: Handcrafted `.mogrt` templates designed for reels, YouTube videos, feature films, and documentaries (Spring Rise, Bento Card, Blur Pop, Karaoke Pill, Cinema Subtitle [static], Archival Type, Editorial Serif, etc.). Includes a real-time proportional text scale slider (40%–200%).
 - **Procedural SFX Audio Sync**: Automatically generates and attaches synced audio pop, tick, and whoosh effects for subtitle animations.
 - **Sample-Accurate Timecode Alignment**: Quantizes subframe speech boundaries to exact Adobe universal tick frames (254,016,000,000 ticks/sec).
 - **90+ Languages Supported**: Powered by OpenAI's Whisper multilingual model (Indonesian, English, Spanish, Japanese, Mandarin, etc.).
@@ -31,19 +31,19 @@ Visit the [Releases](https://github.com/reygha/bisik-by-rygh/releases) page to d
 ### For macOS Users
 
 #### Apple Silicon (M1/M2/M3/M4)
-Download `bisik_by_rygh_macOS_v1.1.0.zip`:
+Download `bisik_by_rygh_macOS_v1.1.1.zip`:
 1. **Double-click** `1_Install_Bisik_Extension.pkg` and follow the installer wizard.
 2. **Double-click** `2_Setup_AI_Engine.command` to automatically configure Homebrew, FFmpeg, Whisper CLI, and speech models.
 3. Open Adobe Premiere Pro and navigate to: `Window > Extensions > bisik by rygh`.
 
 #### Intel Macs (Core i5/i7/i9/Xeon — No Homebrew Required)
-Download `bisik_by_rygh_macOS_Intel_v1.1.0.zip`:
+Download `bisik_by_rygh_macOS_Intel_v1.1.1.zip`:
 1. **Double-click** `1_Install_Bisik_Extension.pkg` and follow the installer wizard.
 2. **Double-click** `2_Setup_AI_Engine.command` (whisper-cli is precompiled and included; portable FFmpeg and models are downloaded directly without Homebrew or root permissions).
 3. Open Adobe Premiere Pro and navigate to: `Window > Extensions > bisik by rygh`.
 
 ### For Windows Users
-Download `bisik_by_rygh_Windows_v1.1.0.zip`:
+Download `bisik_by_rygh_Windows_v1.1.1.zip`:
 1. **Option A (1-Click)**: Double-click `1_Install_Extension.bat` to automatically install the extension and configure registry permissions.
    * **Option B (Adobe Standard)**: Drag & drop `bisik_by_rygh.zxp` into [ZXP Installer](https://zxpinstaller.com/).
 2. **Double-click** `2_Setup_AI_Engine.bat` to automatically configure FFmpeg, Whisper CLI, and download your chosen AI model.
