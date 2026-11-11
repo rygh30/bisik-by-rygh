@@ -25,3 +25,4 @@ All notable changes to the Bisik by Rygh Adobe Premiere Pro extension are docume
 - Photoshop Color Picker integration with Spectrum Quick Palette swatches.
 - Multi-track timeline collision detection and smart track auto-selection.
 - Multi-platform packaging scripts for macOS Apple Silicon, macOS Intel, and Windows.
+

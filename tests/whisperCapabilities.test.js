@@ -22,3 +22,4 @@ describe("Whisper Capabilities Probing & Flag Detection", () => {
     assert.equal(caps.supportsSplitOnWord, true);
   });
 });
+
