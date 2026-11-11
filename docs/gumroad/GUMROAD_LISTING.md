@@ -40,46 +40,46 @@ Perkenalkan **bisik by rygh** — ekstensi native Adobe Premiere Pro (CEP) yang 
 
 ---
 
-### 🔥 Kenapa Creator & Video Editor Memilih Bisik?
+### Kenapa Creator & Video Editor Memilih Bisik?
 
-* **⚡ 100% Offline & Private (Bertenaga OpenAI Whisper Lokal)**  
+* **100% Offline & Private (Bertenaga OpenAI Whisper Lokal)**  
   Tidak ada data video yang diunggah ke cloud. Tidak perlu API key berbayar. Transkripsi suara Anda diproses langsung di CPU/GPU komputer Anda secara instan dan tanpa batas durasi!
-* **🎬 21 Kinetic MOGRT Presets Siap Pakai**  
+* **21 Kinetic MOGRT Presets Siap Pakai**  
   Mulai dari gaya sinematik minimalis (*Clean Cut*, *Soft Fade*), gaya karaoke viral TikTok/Reels (*Active Highlight*, *Karaoke Pill*), hingga animasi energik (*Pop Bounce*, *Spring Rise*, *Soft Glitch*).
-* **🎨 3-Channel Color & Particle Engine**  
+* **3-Channel Color & Particle Engine**  
   Atur warna teks utama, warna highlight kata aktif, dan warna elemen partikel/box dekoratif secara terpisah dengan Photoshop-style Color Picker.
-* **✍️ Interactive Word-Chip Editor**  
-  Bukan sekadar teks biasa. Setiap kata ditampilkan dalam bentuk chip interaktif: koreksi typo langsung, tandai kata kunci (★), potong baris kalimat (↵), atau hapus kata (×) dalam 1 klik.
-* **🔤 350+ System Fonts & 5 Recent Fonts Auto-Sync**  
+* **Interactive Word-Chip Editor**  
+  Bukan sekadar teks biasa. Setiap kata ditampilkan dalam bentuk chip interaktif: koreksi typo langsung, tandai kata kunci ([Star]), potong baris kalimat ([↵]), atau hapus kata ([×]) dalam 1 klik.
+* **350+ System Fonts & 5 Recent Fonts Auto-Sync**  
   Secara otomatis memindai seluruh font lokal di Mac dan Windows Anda, lengkap dengan daftar 5 font terakhir yang Anda pakai untuk workflow super cepat.
-* **⏱️ Sub-Frame Sync Precision (254M Ticks)**  
+* **Sub-Frame Sync Precision (254M Ticks)**  
   Sinkronisasi timing kata akurat hingga ke tingkat milidetik, otomatis menyesuaikan frame rate sequence Anda.
-* **💻 Kompatibilitas Lengkap**  
+* **Kompatibilitas Lengkap**  
   Tersedia installer siap pakai untuk **macOS Apple Silicon (M1/M2/M3/M4)**, **macOS Intel Standalone**, dan **Windows 10/11**.
 
 ---
 
-### 🚀 Cara Kerja (Hanya 3 Langkah Sederhana)
+### Cara Kerja (3 Langkah Sederhana)
 
 1. **Pilih Track & Transcribe:** Pilih track dialog di Premiere Pro, klik `Transcribe Audio`. AI Whisper lokal akan mengekstrak suara dan menyusun kata-kata dalam hitungan detik.
 2. **Review & Styling:** Koreksi kata jika perlu di Interactive Editor, pilih salah satu dari 21 gaya animasi MOGRT, tentukan font dan warna favorit Anda.
-3. **Insert Captions:** Klik tombol hijau `Insert Captions to Timeline`. Boom! Subtitle animasi kinetik langsung tertata rapi di timeline video Anda.
+3. **Insert Captions:** Klik tombol hijau `Insert Captions to Timeline`. Subtitle animasi kinetik langsung tertata rapi di timeline video Anda.
 
 ---
 
-### 📦 Apa yang Anda Dapatkan di Dalam Paket?
+### Yang Anda Dapatkan di Dalam Paket
 
-- ✅ **Installer macOS Apple Silicon** (`.pkg` + setup command otomatis)
-- ✅ **Installer macOS Intel Standalone** (`.pkg` + precompiled x86_64 binary tanpa perlu Homebrew)
-- ✅ **Installer Windows** (Signed `.zxp` + batch auto-installer)
-- ✅ **21 Premium MOGRT Presets** (Cinema, Word Reveal, Karaoke, Dynamic Bounce, Glitch)
-- ✅ **Interactive Color Engine** (Photoshop-style hex picker & 8 Quick Palette swatches)
-- ✅ **Panduan Instalasi & Troubleshooting Lengkap** (PDF / Text Guide)
-- ✅ **Free Lifetime Updates** untuk v1.x
+- **Installer macOS Apple Silicon** (`.pkg` + setup command otomatis)
+- **Installer macOS Intel Standalone** (`.pkg` + precompiled x86_64 binary tanpa perlu Homebrew)
+- **Installer Windows** (Signed `.zxp` + batch auto-installer)
+- **21 Premium MOGRT Presets** (Cinema, Word Reveal, Karaoke, Dynamic Bounce, Glitch)
+- **Interactive Color Engine** (Photoshop-style hex picker & 8 Quick Palette swatches)
+- **Panduan Instalasi & Troubleshooting Lengkap** (PDF / Text Guide)
+- **Free Lifetime Updates** untuk v1.x
 
 ---
 
-### 🖥️ Persyaratan Sistem & Kompatibilitas
+### Persyaratan Sistem & Kompatibilitas
 
 - **Host Application:** Adobe Premiere Pro 2021, 2022, 2023, 2024, 2025, 2026+
 - **Sistem Operasi:**
@@ -89,7 +89,7 @@ Perkenalkan **bisik by rygh** — ekstensi native Adobe Premiere Pro (CEP) yang 
 
 ---
 
-### ❓ Pertanyaan yang Sering Diajukan (FAQ)
+### Pertanyaan yang Sering Diajukan (FAQ)
 
 **Q: Apakah ini langganan bulanan?**  
 A: Tidak! Pembelian ini adalah **sekali bayar seumur hidup (One-time payment)**. Bebas dipakai untuk proyek video tanpa batas.
@@ -135,7 +135,7 @@ Berikut adalah referensi fungsi teknis setiap tombol dan kolom pada panel Bisik:
 | **13** | `Redo (↻)` | Button | Membatalkan perintah Undo. |
 | **14** | `Clean` | Button | Filter cerdas 1-klik untuk menghapus filler words ("um", "uh", "anu"), teks suara kurung `[musik]`, dan kata gagap yang berulang. |
 | **15** | `Clear` | Button | Mengosongkan seluruh kata di editor transkrip. |
-| **16** | `Aa` | Button | Mengubah siklus kapitalisasi huruf pada seluruh kata: Title Case ➔ UPPERCASE ➔ lowercase. |
+| **16** | `Aa` | Button | Mengubah siklus kapitalisasi huruf pada seluruh kata: Title Case -> UPPERCASE -> lowercase. |
 | **17** | `Two-Line` | Checkbox | Memaksa susunan subtitle menjadi 2 baris seimbang simetris berdasarkan jumlah karakter. |
 | **18** | `Sync CTI` | Checkbox | Sinkronisasi Playhead: Saat aktif, mengklik kata apa pun di editor akan langsung memindahkan playhead (CTI) Premiere Pro ke detik kata tersebut diucapkan. |
 | **19** | `Find in transcript`| Input Field | Kolom untuk mengetik kata yang ingin dicari di seluruh transkrip. |
@@ -143,9 +143,9 @@ Berikut adalah referensi fungsi teknis setiap tombol dan kolom pada panel Bisik:
 | **21** | `Replace All` | Button | Mengganti seluruh kata yang cocok sekaligus dalam satu klik. |
 | **22** | `Word Timestamp` | Chip Label | Menunjukkan detik waktu mulai kata diucapkan di timeline (misal: `1.4s`). |
 | **23** | `Word Input Text` | Chip Input | Kotak teks kata yang dapat diedit langsung jika ada typo. Lebar kotak otomatis fleksibel menyesuaikan panjang kata. |
-| **24** | `Star Icon (★)` | Chip Button | Menandai kata sebagai **Keyword Highlight** (kata kunci yang akan selalu menyala sesuai warna highlight). |
-| **25** | `Split Icon (↵)` | Chip Button | Memotong kalimat secara manual tepat di kata tersebut menjadi event klip subtitle baru. |
-| **26** | `Delete Icon (×)` | Chip Button | Menghapus kata dari subtitle tanpa merusak sinkronisasi waktu kata lainnya. |
+| **24** | `Star Icon ([Star])`| Chip Button | Menandai kata sebagai **Keyword Highlight** (kata kunci yang akan selalu menyala sesuai warna highlight). |
+| **25** | `Split Icon ([↵])`| Chip Button | Memotong kalimat secara manual tepat di kata tersebut menjadi event klip subtitle baru. |
+| **26** | `Delete Icon ([×])`| Chip Button | Menghapus kata dari subtitle tanpa merusak sinkronisasi waktu kata lainnya. |
 
 ---
 
@@ -153,7 +153,7 @@ Berikut adalah referensi fungsi teknis setiap tombol dan kolom pada panel Bisik:
 
 | No | Elemen / Tombol | Tipe | Fungsi & Penjelasan |
 | :---: | :--- | :--- | :--- |
-| **27** | `Kategori Animasi` | Tab Filter | Filter koleksi: `All (21)`, `Calm (6)` (sinematik halus), `Word (6)` (karaoke per kata), `Dynamic (6)` (reels/tiktok), `Style (3)` (glitch/wave), dan `★ Saved`. |
+| **27** | `Kategori Animasi` | Tab Filter | Filter koleksi: `All (21)`, `Calm (6)` (sinematik halus), `Word (6)` (karaoke per kata), `Dynamic (6)` (reels/tiktok), `Style (3)` (glitch/wave), dan `Saved`. |
 | **28** | `Style Cards (21)` | Interactive Cards | Memilih gaya animasi MOGRT. Dilengkapi nama style, preview visual tipografi, dan tombol bintang favorit. |
 | **29** | `Font Family` | Dropdown + Search | Memilih jenis font. Menyajikan **5 Recent Fonts** teratas + pencarian instan **350+ System Fonts** lokal. |
 | **30** | `Video Track` | Dropdown | Memilih track video tujuan di Premiere Pro (Video 1, Video 2, Video 3, dst). Otomatis memilih track kosong teratas. |
@@ -175,8 +175,8 @@ Berikut adalah referensi fungsi teknis setiap tombol dan kolom pada panel Bisik:
 | **39** | `Quick Palette` | 8 Swatches | Palet warna cepat siap pakai: Lime, Coral, Gold, Cyan, Vox Yellow, Amber, Azure, White. |
 | **40** | `Palette Target` | Toggle Button | Menentukan channel mana yang ingin diwarnai saat swatch diklik (`Particle`, `Highlight`, atau `Font`). |
 | **41** | `Preset Selector` | Dropdown | Memuat kombinasi styling, warna, dan posisi yang pernah Anda simpan sebelumnya. |
-| **42** | `Save Preset (💾)` | Button | Menyimpan konfigurasi styling saat ini menjadi preset custom baru. |
-| **43** | `Delete Preset (🗑️)`| Button | Menghapus preset custom yang dipilih. |
+| **42** | `Save Preset` | Button | Menyimpan konfigurasi styling saat ini menjadi preset custom baru. |
+| **43** | `Delete Preset` | Button | Menghapus preset custom yang dipilih. |
 | **44** | `Insert Captions` | Button (Hijau Besar)| **Eksekusi Utama:** Membangun dan menata seluruh klip animasi MOGRT langsung ke timeline sequence Premiere Pro dengan akurasi sub-frame! |
 | **45** | `Clear Track` | Button (Merah) | Menghapus seluruh klip subtitle Bisik pada track video yang dipilih dengan aman tanpa menghapus footage asli editor. |
 
@@ -210,11 +210,10 @@ Berikut 3 opsi strategi harga terbaik:
   - Untuk production house, agensi konten, atau tim editor (hingga 3-5 seat).
 
 #### 2. Strategi Launching / Early Bird
-* Pasang harga coret di Gumroad: ~~$59~~ ➔ **$29 (Diskon 50% untuk 100 pembeli pertama)** dengan kupon `EARLYBIRD`.
+* Pasang harga coret di Gumroad: ~~$59~~ -> **$29 (Diskon 50% untuk 100 pembeli pertama)** dengan kupon `EARLYBIRD`.
 * **Tujuan:** Mendapatkan penjualan awal dengan cepat, mengumpulkan review bintang 5 di Gumroad, dan menciptakan efek FOMO (*Fear of Missing Out*) di komunitas editor (Twitter/X, Facebook Premiere Pro groups, Reddit r/premiere).
 
 #### 3. Jika Dijual untuk Pasar Lokal Indonesia (Lynk.id / Mayar / Karyakarsa)
 * Jika Anda juga menjualnya langsung ke editor lokal di Indonesia:
   - **Harga Rekomendasi:** **Rp 299.000 – Rp 399.000** (One-time payment).
   - Angka ini adalah *sweet spot* psikologis untuk editor Indonesia yang lelah berlangganan CapCut Pro atau Premiere manual.
-
