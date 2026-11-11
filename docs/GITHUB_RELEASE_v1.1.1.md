@@ -85,3 +85,4 @@ Handcrafted Motion Graphics templates organized into 4 curated categories, compl
 
 - **Automated Test Suite:** 97 tests across 27 suites passing (100% pass rate).
 - **Integrity Validation:** Zero `.debug` files, sanitized macOS metadata attributes, and certified ZXP digital signature.
+
