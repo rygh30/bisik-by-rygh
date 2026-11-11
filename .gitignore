@@ -14,4 +14,18 @@ dist/com.rygh.bisik/
 *.log
 *.zip
 assets/legacy_mogrts/
-.DS_Store
+
+# Environment and Credentials
+.env
+.env.*
+!.env.example
+
+# Internal Audit & Export Reports (Kept local, never pushed to GitHub)
+*AUDIT*
+*audit*
+BISIK_EXTERNAL_AUDIT_COMPLETE.md
+BISIK_PROJECT_AUDIT_EXPORT.md
+docs/BISIK_EXTERNAL_AUDIT_COMPLETE.md
+docs/EXTERNAL_PROJECT_AUDIT_REPORT.md
+scripts/export_audit.py
+scripts/merge_audit_report.py

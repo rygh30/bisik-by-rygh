@@ -8,7 +8,16 @@ CERT_FILE="$DIST_DIR/rygh_bisik_cert.p12"
 OUTPUT_ZXP="$DIST_DIR/bisik_by_rygh.zxp"
 TSA_URL="${BISIK_TSA_URL:-}"
 
-BISIK_CERT_PASS="${BISIK_CERT_PASS:-BisikPass2026}"
+# Load optional local environment config if present (untracked in git)
+if [ -f "$PROJECT_DIR/.env.local" ]; then
+  # shellcheck source=/dev/null
+  source "$PROJECT_DIR/.env.local"
+elif [ -f "$PROJECT_DIR/.env" ]; then
+  # shellcheck source=/dev/null
+  source "$PROJECT_DIR/.env"
+fi
+
+BISIK_CERT_PASS="${BISIK_CERT_PASS:-}"
 
 mkdir -p "$DIST_DIR"
 
@@ -39,8 +48,17 @@ cp "$PROJECT_DIR/package.json" "$STAGE_DIR/"
 find "$STAGE_DIR" \( -name ".DS_Store" -o -name "Thumbs.db" -o -name "__MACOSX" \) -prune -exec rm -rf {} +
 
 if [ ! -f "$CERT_FILE" ]; then
+  if [ -z "$BISIK_CERT_PASS" ]; then
+    BISIK_CERT_PASS=$(openssl rand -hex 16 2>/dev/null || date +%s)
+  fi
   echo "Generating self-signed certificate for bisik by rygh..."
   "$ZXP_CMD" -selfSignedCert ID Riau "rygh" "bisik_by_rygh" "$BISIK_CERT_PASS" "$CERT_FILE"
+fi
+
+if [ -z "$BISIK_CERT_PASS" ]; then
+  echo "ERROR: BISIK_CERT_PASS environment variable is required to sign with existing certificate." >&2
+  echo "Please set BISIK_CERT_PASS in your environment or in .env.local" >&2
+  exit 1
 fi
 
 echo "Signing package with ZXPSignCmd..."
