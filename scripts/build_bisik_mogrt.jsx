@@ -499,14 +499,15 @@
 
                 // If Marker Highlight or Karaoke Pill, color is driven dynamically by the accent color!
                 if (p.animType === "MARKER_HIGHLIGHT" || p.animType === "KARAOKE_PILL") {
-                    var defaultColStr = "[" + (p.boxColor ? p.boxColor.join(", ") : "1.0, 0.90, 0.04") + "]";
+                    var defaultColStr = "[" + (p.boxColor ? (p.boxColor.length === 4 ? p.boxColor.join(", ") : p.boxColor.concat(1.0).join(", ")) : "1.0, 0.90, 0.04, 1.0") + "]";
                     boxFill.property("ADBE Vector Fill Color").expression = [
                         "var raw = thisComp.layer('WordTimingJSON').text.sourceText.value;",
                         "var col = " + defaultColStr + ";",
                         "try {",
                         "    var cfg = JSON.parse(raw);",
                         "    if (cfg && cfg.textEditValue) cfg = JSON.parse(cfg.textEditValue);",
-                        "    if (cfg && cfg.c && cfg.c.length === 3) col = cfg.c;",
+                        "    if (cfg && cfg.bc && cfg.bc.length === 3) col = [cfg.bc[0], cfg.bc[1], cfg.bc[2], 1.0];",
+                        "    else if (cfg && cfg.c && cfg.c.length === 3) col = [cfg.c[0], cfg.c[1], cfg.c[2], 1.0];",
                         "} catch(e) {}",
                         "col;"
                     ].join("\n");

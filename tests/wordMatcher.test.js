@@ -9,11 +9,12 @@ function evaluateWordMatcher(item, time, inPoint) {
     res = 100;
   } else if (item.k === 1) {
     const t = time - inPoint;
-    const f = 0.04;
-    if (t >= item.s - f && t <= item.e + f) {
-      if (t < item.s) res = ((t - (item.s - f)) / f) * 100;
-      else if (t > item.e) res = (1 - (t - item.e) / f) * 100;
-      else res = 100;
+    if (t >= item.s && t <= item.e) {
+      res = 100;
+    } else if (t > item.e && t <= item.e + 0.03) {
+      res = (1 - (t - item.e) / 0.03) * 100;
+    } else {
+      res = 0;
     }
   }
   return Math.max(0, Math.min(100, res));

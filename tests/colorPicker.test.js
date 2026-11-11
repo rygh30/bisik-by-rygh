@@ -62,12 +62,13 @@ describe("Photoshop Color Picker & Dual Color Payload", () => {
     });
   });
 
-  test("validates dual color payload containing both fc (font color) and c (highlight color)", () => {
+  test("validates dual and triple color payload containing fc, c, and bc (particle/box color)", () => {
     const timingPayload = {
       t: "yang terbaik Assalamualaikum",
       f: "Futura-Bold",
       fc: [1.0, 1.0, 0.0],       // Custom Yellow Base Font
       c: [0.0, 0.9, 1.0],        // Cyan Active Highlight
+      bc: [0.96, 0.25, 0.37],     // Vibrant Coral Particle/Box Color
       y: 880,
       sc: 100,
       w: [{ s: 0, e: 1, k: 1 }]
@@ -79,8 +80,10 @@ describe("Photoshop Color Picker & Dual Color Payload", () => {
     assert.strictEqual(parsed.f, "Futura-Bold");
     assert.deepStrictEqual(parsed.fc, [1.0, 1.0, 0.0]);
     assert.deepStrictEqual(parsed.c, [0.0, 0.9, 1.0]);
+    assert.deepStrictEqual(parsed.bc, [0.96, 0.25, 0.37]);
     assert.strictEqual(parsed.fc.length, 3);
     assert.strictEqual(parsed.c.length, 3);
+    assert.strictEqual(parsed.bc.length, 3);
   });
 });
 

@@ -21,8 +21,8 @@ describe("DOM and Assets Integrity", () => {
     assert.ok(manifestContent.includes("--mixed-context"), "Manifest must enable mixed-context");
   });
 
-  test("15 animation styles (4 master + 10 production + 1 cinema static) and 8 symmetrical swatches are configured", () => {
-    assert.equal(BISIK_ANIMATION_STYLES.length, 15, "Must provide 15 animation styles");
+  test("21 animation styles (schema-driven presets) and 8 symmetrical swatches are configured", () => {
+    assert.equal(BISIK_ANIMATION_STYLES.length, 21, "Must provide 21 animation styles");
     assert.equal(SPECTRUM_SWATCHES.length, 8, "Must provide symmetrical 4x2 (8) color swatches");
     assert.ok(htmlContent.includes('id="stylePreviewGallery"'));
     assert.ok(htmlContent.includes('id="styleFilterBar"'));
@@ -31,7 +31,20 @@ describe("DOM and Assets Integrity", () => {
     assert.ok(htmlContent.includes('id="textScaleBadge"'), "Must include textScaleBadge display");
     assert.ok(htmlContent.includes('min="40" max="200"'), "Scale inputs must be bounded strictly between 40% and 200%");
     assert.ok(htmlContent.includes('class="premiere-slider"'), "Must use native Premiere Pro styled slider");
-    assert.ok(BISIK_ANIMATION_STYLES.some(s => s.id === "bisik_Cinema_Subtitle"), "Must include Cinema Subtitle style");
+    assert.ok(BISIK_ANIMATION_STYLES.some(s => s.id === "clean-cut"), "Must include Clean Cut style as default");
+
+    // Verify Recent Fonts and Dynamic System Font Groups
+    assert.ok(htmlContent.includes('id="recentFontsGroup"'), "Must include recentFontsGroup");
+    assert.ok(htmlContent.includes('id="systemFontsGroup"'), "Must include systemFontsGroup");
+    assert.ok(htmlContent.includes('id="customFontWrapper"'), "Must include customFontWrapper");
+    assert.ok(htmlContent.includes('id="customFontTrigger"'), "Must include customFontTrigger");
+    assert.ok(htmlContent.includes('id="customFontMenu"'), "Must include customFontMenu");
+    assert.ok(htmlContent.includes('id="fontSearchInput"'), "Must include fontSearchInput");
+
+    // Verify responsive position presets
+    assert.ok(htmlContent.includes('value="bottom"'), "Must include bottom position preset");
+    assert.ok(htmlContent.includes('value="center"'), "Must include center position preset");
+    assert.ok(htmlContent.includes('value="top"'), "Must include top position preset");
   });
 
   test("all getEl IDs in main.js exist in index.html", () => {
@@ -61,18 +74,29 @@ describe("DOM and Assets Integrity", () => {
     assert.deepEqual(missingMogrts, [], `Missing MOGRT files in assets/: ${missingMogrts.join(", ")}`);
   });
 
-  test("all SFX files referenced in main.js exist in assets/sfx/", () => {
-    const sfxFiles = ["bisik_sfx_whoosh.wav", "bisik_sfx_pop.wav", "bisik_sfx_tick.wav"];
-    for (const sfx of sfxFiles) {
-      const p = path.join(root, "assets", "sfx", sfx);
-      assert.ok(fs.existsSync(p), `Missing SFX asset: ${sfx}`);
-    }
-  });
-
   test("ExtendScript host/index.jsx defines core bisik Premiere Pro entry points and tick constant", () => {
     assert.ok(jsxContent.includes("function bisikGetSequenceInfo"));
     assert.ok(jsxContent.includes("function bisikGetAudioClipsForTrack"));
     assert.ok(jsxContent.includes("function bisikInjectSubtitles"));
     assert.ok(jsxContent.includes("254016000000"));
+  });
+
+  test("caption-presets.json schema conformance and 21 MOGRT presence", () => {
+    const jsonPath = path.join(root, "assets", "caption-presets.json");
+    assert.ok(fs.existsSync(jsonPath), "caption-presets.json must exist in assets/");
+    const schema = JSON.parse(fs.readFileSync(jsonPath, "utf8"));
+    assert.equal(schema.schemaVersion, "1.0.0");
+    assert.equal(schema.presets.length, 21, "Must define exactly 21 presets in schema");
+
+    const defaultPreset = schema.presets.find(p => p.isDefault);
+    assert.ok(defaultPreset, "Must designate a default preset");
+    assert.equal(defaultPreset.id, "clean-cut", "Default preset must be clean-cut");
+
+    for (const preset of schema.presets) {
+      const mogrtName = `bisik_${preset.id}.mogrt`;
+      const mogrtPath = path.join(root, "assets", mogrtName);
+      assert.ok(fs.existsSync(mogrtPath), `Missing generated MOGRT for preset ${preset.id}: ${mogrtName}`);
+      assert.ok(BISIK_ANIMATION_STYLES.some(s => s.id === preset.id), `Preset ${preset.id} missing from BISIK_ANIMATION_STYLES in main.js`);
+    }
   });
 });

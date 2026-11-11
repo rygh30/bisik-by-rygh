@@ -5,5 +5,13 @@ temp/*
 !temp/.gitkeep
 dist/*.p12
 dist/*.zxp
+dist/*.pkg
+dist/*.zip
+dist/mac/
+dist/mac_intel/
+dist/windows/
+dist/com.rygh.bisik/
 *.log
 *.zip
+assets/legacy_mogrts/
+.DS_Store

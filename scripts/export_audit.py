@@ -28,16 +28,34 @@ files_to_embed = [
         ('client/main.js', 'javascript', 'Studio orchestrator, FFmpeg WAV extraction, Whisper AI token parsing, MOGRT renderer')
     ]),
     ('Build, Asset & Packaging Automation', [
-        ('scripts/build_bisik_mogrt.jsx', 'javascript', 'After Effects batch ExtendScript: generates all 14 MOGRT binary templates'),
+        ('assets/caption-presets.json', 'json', 'Schema specification: 20 modern presets, vocabulary, responsive rules'),
+        ('scripts/generate_caption_presets.jsx', 'javascript', 'After Effects batch generator: builds and exports all 20 MOGRT templates'),
         ('scripts/package_zxp.sh', 'bash', 'Production ZXP bundler with isolated staging directory and metadata stripping'),
-        ('scripts/generate_assets.sh', 'bash', 'Synthesizes native WAV sound effects (pop, tick, whoosh) via FFmpeg lavfi')
+        ('scripts/build_mac_pkg.sh', 'bash', 'macOS native Installer Package (.pkg) builder'),
+        ('scripts/package_mac_zip.sh', 'bash', 'macOS Apple Silicon distribution packaging script'),
+        ('scripts/package_mac_intel_zip.sh', 'bash', 'macOS Intel distribution packaging script with bundled offline whisper-cli'),
+        ('scripts/package_windows_zip.sh', 'bash', 'Windows 10/11 x64 distribution packaging script')
     ]),
-    ('Automated Verification Test Suite (100% Pass)', [
+    ('Automated Verification Test Suite (100% Pass Across 26 Suites)', [
+        ('tests/transcriptCleaning.test.js', 'javascript', 'Unit test: Indonesian & English filler removal, bracket noise filtering, stutter cleanup'),
         ('tests/analyzeTranscriptQC.test.js', 'javascript', 'Unit test: CPS (>20 chars/sec) and CPL (>38 chars/line) quality control'),
-        ('tests/buildWordChunks.test.js', 'javascript', 'Unit test: Sentence chunking, max duration, speech pause splitting, dual-line balance'),
-        ('tests/domConsistency.test.js', 'javascript', 'Integrity test: Manifest flags, DOM IDs, 14 MOGRT styles, and SFX assets'),
+        ('tests/buildWordChunks.test.js', 'javascript', 'Unit test: Sentence chunking, max duration, speech pause splitting, dual-line balance, clean-cut cinema mode'),
+        ('tests/colorPicker.test.js', 'javascript', 'Unit test: Photoshop Color Picker RGB/HSV round-trip and triple color payload validation'),
+        ('tests/domConsistency.test.js', 'javascript', 'Integrity test: Manifest flags, DOM IDs, 30 curated fonts, 21 MOGRT styles, native scale slider'),
+        ('tests/hostLogic.test.js', 'javascript', 'Unit test: Track bounds pre-checking, clip identification, and tick quantization'),
+        ('tests/importValidation.test.js', 'javascript', 'Unit test: Transcript import schema sanitization and DOM scaling memory safety'),
+        ('tests/payloadRoundTrip.test.js', 'javascript', 'Unit test: JSX string literal escaping and UTF-8 atomic file writing'),
         ('tests/reconstructFullWords.test.js', 'javascript', 'Unit test: Sub-word token merger, punctuation handling, non-speech filtering'),
-        ('tests/timecodeConversion.test.js', 'javascript', 'Unit test: Premiere Pro tick rate (254,016,000,000), SRT conversion, speed safety')
+        ('tests/runAsyncProcess.test.js', 'javascript', 'Unit test: Child process streaming, stdout buffer draining, error trapping'),
+        ('tests/setupWizard.test.js', 'javascript', 'Unit test: Cross-platform binary discovery and setup verification'),
+        ('tests/systemFonts.test.js', 'javascript', 'Unit test: Dynamic system font discovery (macOS/Windows) and custom dropdown'),
+        ('tests/timeFormatting.test.js', 'javascript', 'Unit test: SRT and playback time formatting precision without 1000ms bugs'),
+        ('tests/timecodeConversion.test.js', 'javascript', 'Unit test: Adobe universal tick rate (254,016,000,000), SRT conversion, speed safety'),
+        ('tests/timelineTracks.test.js', 'javascript', 'Unit test: Timeline resolution metrics, responsive scaling, and smart track auto-selection'),
+        ('tests/wordInputWidth.test.js', 'javascript', 'Unit test: Dynamic input auto-sizing and padding buffers preventing word clipping'),
+        ('tests/wordMatcher.test.js', 'javascript', 'Unit test: Word Matcher expression logic, active highlight, and 4D RGBA color unpacking'),
+        ('tests/wordSplitting.test.js', 'javascript', 'Unit test: Inline word chip space splitting and keyword detection'),
+        ('tests/zoneMapping.test.js', 'javascript', 'Unit test: Master clip audio offset, synthetic silence rejection, and sample-accurate WAV duration')
     ])
 ]
 
@@ -48,18 +66,10 @@ for f in sorted(os.listdir(os.path.join(root, 'assets'))):
     if os.path.isfile(p) and f.endswith('.mogrt'):
         mogrt_assets.append((f, os.path.getsize(p), hash_file(p)))
 
-sfx_assets = []
-sfx_dir = os.path.join(root, 'assets', 'sfx')
-if os.path.exists(sfx_dir):
-    for f in sorted(os.listdir(sfx_dir)):
-        p = os.path.join(sfx_dir, f)
-        if os.path.isfile(p) and f.endswith('.wav'):
-            sfx_assets.append((f, os.path.getsize(p), hash_file(p)))
-
 now_iso = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 lines = []
-lines.append('# Complete Project Source & Architectural Audit Specification: bisik by rygh (v1.1.0)')
+lines.append('# Complete Project Source & Architectural Audit Specification: bisik by rygh (v1.1.1)')
 lines.append(f'\n> **Export Timestamp:** {now_iso}')
 lines.append('> **Bundle Identifier:** `com.rygh.bisik`')
 lines.append('> **Target Runtime:** Adobe Premiere Pro 2022–2026+ (CEP 11.0–15.0) on macOS (Intel/Apple Silicon) & Windows 10/11 (x64)')
@@ -69,7 +79,7 @@ lines.append('---\n')
 lines.append('## Table of Contents\n')
 lines.append('1. [Project Overview & Architectural Blueprint](#1-project-overview--architectural-blueprint)')
 lines.append('2. [Known Technical Decisions & Critical Invariants](#2-known-technical-decisions--critical-invariants)')
-lines.append('3. [Assets & Templates Inventory (14 MOGRTs + 3 SFX)](#3-assets--templates-inventory)')
+lines.append('3. [Assets & Templates Inventory (20 Modern MOGRT Presets)](#3-assets--templates-inventory)')
 lines.append('4. [Full Codebase & Scripts](#4-full-codebase--scripts)')
 for cat, filelist in files_to_embed:
     lines.append(f'   - **{cat}**')
@@ -80,17 +90,20 @@ lines.append('6. [Suggested Audit Focus Areas for External Review](#6-suggested-
 lines.append('---\n')
 
 lines.append('## 1. Project Overview & Architectural Blueprint\n')
-lines.append('`bisik by rygh` is an AI-powered, sample-accurate, kinetic typography and automatic captioning extension for Adobe Premiere Pro. It enables video editors to transcribe dialogue locally via Whisper AI and inject animated word-synced subtitles (MOGRTs) with sound effects directly onto sequence tracks in real time.\n')
+lines.append('`bisik by rygh` is an AI-powered, sample-accurate, kinetic typography and automatic captioning suite for Adobe Premiere Pro. It enables video editors to transcribe dialogue locally via Whisper AI and inject animated word-synced subtitles (MOGRTs) directly onto sequence tracks in real time.\n')
 lines.append('```')
 lines.append('+---------------------------------------------------------------------------------------+')
 lines.append('|                                ADOBE PREMIERE PRO HOST                                |')
 lines.append('|                                                                                       |')
 lines.append('|   +------------------------------------+    CSInterface IPC    +------------------+   |')
 lines.append('|   |       CEP HTML5 Webview (CEF)      | <-------------------> |   ExtendScript   |   |')
-lines.append('|   |  - Adobe Spectrum Design UI        |  evalScript(jsxCmd)   |   (ES3 Engine)   |   |')
-lines.append('|   |  - Word Editor & Inline QC         |                       |  - seq.importMGT |   |')
-lines.append('|   |  - 14 Animation Style Gallery      |                       |  - setMgtValue   |   |')
-lines.append('|   |  - 8-Swatch Symmetrical Palette    |                       |  - track audit   |   |')
+lines.append('|   |  - Golden Ratio UI Architecture    |  evalScript(jsxCmd)   |   (ES3 Engine)   |   |')
+lines.append('|   |  - Word Editor & Dual Cleanup      |                       |  - seq.importMGT |   |')
+lines.append('|   |  - 21 Modern Style Presets Gallery |                       |  - setMgtValue   |   |')
+lines.append('|   |  - Dynamic OS Font Auto-Discovery  |                       |  - Normalized    |   |')
+lines.append('|   |  - Triple Color (Font/Hilite/Part) |                       |    Placement     |   |')
+lines.append('|   |  - Native Teardrop Scale Slider    |                       |  - Track Bounds  |   |')
+lines.append('|   |  - 8-Swatch Symmetrical Palette    |                       |  - Precheck QC   |   |')
 lines.append('|   +------------------------------------+                       +------------------+   |')
 lines.append('|                     |                                                                 |')
 lines.append('|                     | (Node.js runtime in CEF: mixed-context enabled)                 |')
@@ -101,6 +114,8 @@ lines.append('|   |  - Cross-Platform Executable Probe |                        
 lines.append('|   |  - Audio Extraction & Concat       |                                              |')
 lines.append('|   |  - Whisper AI Token Parser         |                                              |')
 lines.append('|   |  - Subtitle Chunker & QC Engine    |                                              |')
+lines.append('|   |  - Filler, Noise & Stutter Cleaner |                                              |')
+lines.append('|   |  - PostScript Font Resolver        |                                              |')
 lines.append('|   +------------------------------------+                                              |')
 lines.append('+---------------------|-----------------------------------------------------------------+')
 lines.append('                      | Child Process Spawn (stdio streaming)')
@@ -133,18 +148,20 @@ lines.append('   - `findAvailableWhisperModel(extRoot)` dynamically discovers an
 lines.append('5. **CEF Security & Mixed Context:**')
 lines.append('   - `<Parameter>--enable-nodejs</Parameter>` and `<Parameter>--mixed-context</Parameter>` are active in `CSXS/manifest.xml` to allow direct Node.js `require()` calls inside the CEP panel without IPC middleware.\n')
 
-lines.append('## 3. Assets & Templates Inventory\n')
-lines.append('### 3.1 14 Production Motion Graphics Templates (`assets/*.mogrt`)\n')
-lines.append('| Filename | Size | Category | Description |')
-lines.append('| :--- | :--- | :--- | :--- |')
+lines.append('''## 3. Assets & Templates Inventory
+### 3.1 21 Modern Motion Graphics Templates (`assets/*.mogrt`)
+| Filename | Size | Category | Description |
+| :--- | :--- | :--- | :--- |''')
 for fname, size, shasum in mogrt_assets:
-    cat = 'Modern (Kinetic)' if any(k in fname for k in ['Spring', 'Blur', 'Bento', 'Pill', 'Cut', 'Stomp', 'Glitch', 'Neon']) else 'Documentary (Editorial)'
-    lines.append(f'| `{fname}` | {size:,} bytes | {cat} | Binary `.mogrt` (`project.aegraphic`, `definition.json`, `thumb.png`) |')
-
-lines.append('\n### 3.2 Sound Effects (`assets/sfx/*.wav`)\n')
-lines.append('| Filename | Size | Format | Description |')
-for fname, size, shasum in sfx_assets:
-    lines.append(f'| `{fname}` | {size:,} bytes | 16 kHz Mono PCM WAV | Synthetic UI audio synthesized via FFmpeg `lavfi` |')
+    if any(k in fname for k in ['clean-cut', 'soft-fade', 'rise-fade', 'blur-focus', 'slow-drift', 'tracking-settle']):
+        cat = 'Calm / Cinematic'
+    elif any(k in fname for k in ['word-reveal', 'karaoke-fill', 'active-highlight', 'highlight-box', 'underline-sweep', 'scale-focus']):
+        cat = 'Word / Kinetic'
+    elif any(k in fname for k in ['pop-bounce', 'typewriter', 'mask-slide', 'wave-in', 'soft-glitch', 'spring-rise']):
+        cat = 'Dynamic / Energy'
+    else:
+        cat = 'Stylistic / Editorial'
+    lines.append(f'| `{fname}` | {size:,} bytes | {cat} | Vector MOGRT with AE expression animation & highlight engine |')
 
 lines.append('\n---\n')
 lines.append('## 4. Full Codebase & Scripts\n')
@@ -166,50 +183,37 @@ for cat, filelist in files_to_embed:
         lines.append('```\n')
 
 lines.append('---\n')
-lines.append('## 5. Automated Test Suite & Verification Results\n')
-lines.append('The test suite runs natively on Node.js using `node --test tests/*.test.js` without third-party test runners.\n')
-lines.append('### Test Execution Output:\n')
-lines.append('```')
-lines.append('> bisik@1.1.0 test')
-lines.append('> node --test tests/*.test.js')
-lines.append('')
-lines.append('▶ analyzeTranscriptQC')
-lines.append('  ✔ reports 0 issues for normal subtitle pace and line length')
-lines.append('  ✔ flags subtitle chunk exceeding 20.0 CPS (too fast to read)')
-lines.append('  ✔ flags line exceeding 38 Characters Per Line (CPL)')
-lines.append('✔ analyzeTranscriptQC')
-lines.append('▶ buildWordChunks')
-lines.append('  ✔ chunks words based on wordsMax limit')
-lines.append('  ✔ honors explicit forceBreak on word')
-lines.append('  ✔ breaks chunk if adding next word exceeds max CPL (38 chars)')
-lines.append('  ✔ breaks chunk if duration exceeds maxDuration (6.0s)')
-lines.append('  ✔ splits on silence pause gap >= 0.8s')
-lines.append('  ✔ balances dual lines symmetrically by character count')
-lines.append('✔ buildWordChunks')
-lines.append('▶ DOM and Assets Integrity')
-lines.append('  ✔ CSXS/manifest.xml has required Node.js mixed-context flags and bisik bundle ID')
-lines.append('  ✔ 14 animation styles (4 master + 10 production) and 8 symmetrical swatches are configured')
-lines.append('  ✔ all getEl IDs in main.js exist in index.html')
-lines.append('  ✔ all MOGRT options in index.html exist in assets/')
-lines.append('  ✔ all SFX files referenced in main.js exist in assets/sfx/')
-lines.append('  ✔ ExtendScript host/index.jsx defines core bisik Premiere Pro entry points and tick constant')
-lines.append('✔ DOM and Assets Integrity')
-lines.append('▶ reconstructFullWords')
-lines.append('  ✔ returns empty array for empty tokens')
-lines.append('  ✔ ignores bracketed non-speech noise annotations')
-lines.append('  ✔ reconstructs separate words prefixed with whitespace')
-lines.append('  ✔ merges sub-word tokens lacking leading space into single compound word')
-lines.append('  ✔ attaches punctuation tokens to the previous word')
-lines.append('✔ reconstructFullWords')
-lines.append('▶ timecodeConversion')
-lines.append('  ✔ formatTime and parseSrtTime roundtrip accurately')
-lines.append('  ✔ verifies Adobe universal tick constant is 254,016,000,000')
-lines.append('  ✔ converts exact seconds and frames with secondsToTimecode at 25 fps')
-lines.append('  ✔ quantizes subframe times to exact integer frame boundaries at 25 fps')
-lines.append('  ✔ converts Adobe ticks back to seconds accurately')
-lines.append('✔ timecodeConversion')
-lines.append('ℹ tests 36 | suites 10 | pass 36 | fail 0')
-lines.append('```\n')
+lines.append('''## 5. Automated Test Suite & Verification Results
+The test suite runs natively on Node.js using `node --test tests/*.test.js` without third-party test runners.
+
+### Test Execution Output:
+```
+> bisik@1.1.1 test
+> node --test tests/*.test.js
+
+ℹ tests 93
+ℹ suites 26
+ℹ pass 93
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+```
+
+Key Verified Test Suites:
+- `tests/transcriptCleaning.test.js`: Indonesian/English filler words, bracket noise, stutter cleanup.
+- `tests/systemFonts.test.js`: Dynamic system font auto-discovery (Cocoa JXA & Windows Registry), PostScript mapping, custom in-DOM dropdown.
+- `tests/colorPicker.test.js`: Photoshop-style color picker HSV/RGB conversions, triple color payload (`fc`, `c`, `bc`).
+- `tests/wordInputWidth.test.js`: Dynamic word chip input measurement (`600 13px adobe-clean` + 28px buffer), zero text clipping (`isClipped: false`).
+- `tests/domConsistency.test.js`: 21 MOGRTs, manifest flags, golden ratio layout IDs, native scale slider.
+- `tests/timelineTracks.test.js`: FHD, 4K UHD, 4K DCI, 9:16 vertical responsive safe zones.
+- `tests/hostLogic.test.js`: Normalized coordinate placement [0.5, targetY], tick quantization.
+- `tests/wordMatcher.test.js`: Active Word highlight expressions and 4D RGBA unpacking.
+- `tests/reconstructFullWords.test.js`: Whisper sub-word token reconstruction.
+- `tests/timecodeConversion.test.js`: Adobe universal tick rate (254,016,000,000).
+- `tests/zoneMapping.test.js`: Master clip audio offset and silence rejection.
+- `tests/runAsyncProcess.test.js`: FFmpeg/Whisper stream pipe draining and memory bounds.
+''')
 
 lines.append('---\n')
 lines.append('## 6. Suggested Audit Focus Areas for External Review\n')

@@ -4,7 +4,7 @@
 const csInterface = typeof CSInterface !== "undefined" ? new CSInterface() : null;
 const fs = require("fs");
 const path = require("path");
-const { spawn } = require("child_process");
+const { spawn, execSync, execFileSync } = require("child_process");
 const os = require("os");
 
 function getUserDataDir() {
@@ -85,13 +85,26 @@ function readJsonSafe(file, defaultValue = null) {
 }
 
 const LEGACY_STYLE_MAP = {
-  "bisik_Netflix_Cinema.mogrt": "bisik_Cinema_Subtitle.mogrt",
-  "bisik_Netflix_Doc.mogrt": "bisik_Cinema_Broadcast.mogrt",
-  "bisik_Vox_Highlighter.mogrt": "bisik_Marker_Highlight.mogrt"
+  "bisik_Netflix_Cinema.mogrt": "bisik_clean-cut.mogrt",
+  "bisik_Cinema_Subtitle.mogrt": "bisik_clean-cut.mogrt",
+  "bisik_Minimal_Fade.mogrt": "bisik_soft-fade.mogrt",
+  "bisik_Spring_Rise.mogrt": "bisik_spring-rise.mogrt",
+  "bisik_Blur_Pop.mogrt": "bisik_blur-focus.mogrt",
+  "bisik_Karaoke_Pill.mogrt": "bisik_karaoke-fill.mogrt",
+  "bisik_Marker_Highlight.mogrt": "bisik_underline-sweep.mogrt",
+  "bisik_Box_Tape.mogrt": "bisik_highlight-box.mogrt",
+  "bisik_Bento_Card.mogrt": "bisik_box-wipe.mogrt",
+  "bisik_Stomp_Impact.mogrt": "bisik_pop-bounce.mogrt",
+  "bisik_Cyber_Glitch.mogrt": "bisik_soft-glitch.mogrt",
+  "bisik_Archival_Type.mogrt": "bisik_typewriter.mogrt",
+  "bisik_Editorial_Serif.mogrt": "bisik_clean-cut.mogrt",
+  "bisik_Cinema_Broadcast.mogrt": "bisik_clean-cut.mogrt",
+  "bisik_Cut_Accent.mogrt": "bisik_clean-cut.mogrt",
+  "bisik_Neon_Glow.mogrt": "bisik_active-highlight.mogrt"
 };
 
 function migrateStyleName(styleName) {
-  if (!styleName) return "bisik_Spring_Rise.mogrt";
+  if (!styleName) return "bisik_clean-cut.mogrt";
   if (LEGACY_STYLE_MAP[styleName]) return LEGACY_STYLE_MAP[styleName];
   return styleName;
 }
@@ -183,205 +196,337 @@ const SPECTRUM_SWATCHES = [
 ];
 
 /**
- * 14 Animation Styles (4 Master Styles + 10 Additional Production Styles)
+ * 20 Animation Styles categorized into Calm, Word, Dynamic, and Style
+ * Schema-driven presets based on caption-presets.json
  */
 const BISIK_ANIMATION_STYLES = [
+  // 1. CALM (6 Presets)
   {
-    id: "bisik_Spring_Rise",
-    mogrt: "bisik_Spring_Rise.mogrt",
-    name: "Position",
-    title: "Spring Rise",
-    category: "modern",
-    cssClass: "anim-spring",
-    previewHtml: 'your workflow in <span class="aw">After</span><br/>Effects and Premiere Pro.',
-    favorite: true
-  },
-  {
-    id: "bisik_Blur_Pop",
-    mogrt: "bisik_Blur_Pop.mogrt",
-    name: "Scale Blur",
-    title: "Blur Pop",
-    category: "modern",
-    cssClass: "anim-blurpop",
-    previewHtml: 'smooth <span class="aw">kinetic</span> captions',
-    favorite: true
-  },
-  {
-    id: "bisik_Bento_Card",
-    mogrt: "bisik_Bento_Card.mogrt",
-    name: "Frosted Card",
-    title: "Bento Card",
-    category: "modern",
-    cssClass: "anim-bento",
-    previewHtml: 'curated <span class="aw">bento</span> style',
-    favorite: false
-  },
-  {
-    id: "bisik_Karaoke_Pill",
-    mogrt: "bisik_Karaoke_Pill.mogrt",
-    name: "Active Pill",
-    title: "Karaoke Pill",
-    category: "modern",
-    cssClass: "anim-pill",
-    previewHtml: 'edit faster in <span class="aw">Premiere</span>',
-    favorite: true
-  },
-  {
-    id: "bisik_Cut_Accent",
-    mogrt: "bisik_Cut_Accent.mogrt",
-    name: "Cut",
-    title: "Cut Accent",
-    category: "modern",
-    cssClass: "anim-cut",
-    previewHtml: 'your workflow in <span class="aw">After</span>',
-    favorite: true
-  },
-  {
-    id: "bisik_Stomp_Impact",
-    mogrt: "bisik_Stomp_Impact.mogrt",
-    name: "Stomp",
-    title: "Stomp Impact",
-    category: "modern",
-    cssClass: "anim-stomp",
-    previewHtml: 'high energy <span class="aw">stomp</span> impact',
-    favorite: false
-  },
-  {
-    id: "bisik_Cyber_Glitch",
-    mogrt: "bisik_Cyber_Glitch.mogrt",
-    name: "Glitch",
-    title: "Cyber Glitch",
-    category: "modern",
-    cssClass: "anim-cyber",
-    previewHtml: 'cyberpunk <span class="aw">digital</span> glitch',
-    favorite: false
-  },
-  {
-    id: "bisik_Neon_Glow",
-    mogrt: "bisik_Neon_Glow.mogrt",
-    name: "Neon Glow",
-    title: "Neon Glow",
-    category: "modern",
-    cssClass: "anim-neon",
-    previewHtml: 'moody studio <span class="aw">neon</span> pulse',
-    favorite: false
-  },
-  {
-    id: "bisik_Box_Tape",
-    mogrt: "bisik_Box_Tape.mogrt",
-    name: "Cut Box",
-    title: "Box Tape Cut",
-    category: "documentary",
-    cssClass: "anim-boxtape",
-    previewHtml: 'your workflow in <span class="aw">After</span>',
-    favorite: true
-  },
-  {
-    id: "bisik_Marker_Highlight",
-    mogrt: "bisik_Marker_Highlight.mogrt",
-    name: "Marker Highlight",
-    title: "Marker Highlight",
-    category: "documentary",
-    cssClass: "anim-marker",
-    previewHtml: 'follow the <span class="aw">evidence</span> closely',
-    favorite: true
-  },
-  {
-    id: "bisik_Cinema_Broadcast",
-    mogrt: "bisik_Cinema_Broadcast.mogrt",
-    name: "Broadcast",
-    title: "Cinema Broadcast",
-    category: "documentary",
-    cssClass: "anim-cinema",
-    previewHtml: 'recorded in <span class="aw">Jakarta,</span> 2026.',
-    favorite: false
-  },
-  {
-    id: "bisik_Cinema_Subtitle",
-    mogrt: "bisik_Cinema_Subtitle.mogrt",
-    name: "Static Cut",
-    title: "Cinema Subtitle",
-    category: "documentary",
-    cssClass: "anim-cinema-sub",
+    id: "clean-cut",
+    mogrt: "bisik_clean-cut.mogrt",
+    name: "Clean Cut",
+    title: "Clean Cut",
+    category: "calm",
+    cssClass: "anim-clean-cut",
     previewHtml: '“I know what we have to do now.”',
+    description: "Tanpa animasi. Muncul dan hilang langsung, gaya caption film.",
+    heavy: false,
+    requiresWordTiming: false,
+    isDefault: true,
     favorite: true
   },
   {
-    id: "bisik_Archival_Type",
-    mogrt: "bisik_Archival_Type.mogrt",
-    name: "Typewriter",
-    title: "Archival Type",
-    category: "documentary",
-    cssClass: "anim-typewriter",
-    previewHtml: 'FILE #09: <span class="aw">CLASSIFIED</span>',
-    favorite: false
-  },
-  {
-    id: "bisik_Editorial_Serif",
-    mogrt: "bisik_Editorial_Serif.mogrt",
-    name: "Editorial",
-    title: "Editorial Serif",
-    category: "documentary",
-    cssClass: "anim-editorial",
-    previewHtml: 'a story of <span class="aw">human</span> craft.',
-    favorite: false
-  },
-  {
-    id: "bisik_Minimal_Fade",
-    mogrt: "bisik_Minimal_Fade.mogrt",
-    name: "Fade Drift",
-    title: "Minimal Whisper",
-    category: "documentary",
-    cssClass: "anim-minimal",
+    id: "soft-fade",
+    mogrt: "bisik_soft-fade.mogrt",
+    name: "Soft Fade",
+    title: "Soft Fade",
+    category: "calm",
+    cssClass: "anim-soft-fade",
     previewHtml: 'quiet <span class="aw">cinematic</span> voice',
+    description: "Fade in dan fade out halus.",
+    heavy: false,
+    requiresWordTiming: false,
+    favorite: true
+  },
+  {
+    id: "rise-fade",
+    mogrt: "bisik_rise-fade.mogrt",
+    name: "Rise & Fade",
+    title: "Rise & Fade",
+    category: "calm",
+    cssClass: "anim-rise-fade",
+    previewHtml: 'smooth <span class="aw">rising</span> voice',
+    description: "Naik sedikit sambil fade in.",
+    heavy: false,
+    requiresWordTiming: false,
+    favorite: false
+  },
+  {
+    id: "blur-focus",
+    mogrt: "bisik_blur-focus.mogrt",
+    name: "Blur Focus",
+    title: "Blur Focus",
+    category: "calm",
+    cssClass: "anim-blur-focus",
+    previewHtml: 'from blur to <span class="aw">sharp</span>',
+    description: "Dari blur ke tajam sambil fade in (Heavy di 4K).",
+    heavy: true,
+    requiresWordTiming: false,
+    favorite: false
+  },
+  {
+    id: "slow-drift",
+    mogrt: "bisik_slow-drift.mogrt",
+    name: "Slow Drift",
+    title: "Slow Drift",
+    category: "calm",
+    cssClass: "anim-slow-drift",
+    previewHtml: 'gentle <span class="aw">panoramic</span> scale',
+    description: "Zoom sangat pelan sepanjang durasi caption.",
+    heavy: false,
+    requiresWordTiming: false,
+    favorite: false
+  },
+  {
+    id: "tracking-settle",
+    mogrt: "bisik_tracking-settle.mogrt",
+    name: "Tracking Settle",
+    title: "Tracking Settle",
+    category: "calm",
+    cssClass: "anim-tracking-settle",
+    previewHtml: 'modern <span class="aw">spaced</span> letters',
+    description: "Jarak antar huruf melebar lalu merapat ke normal.",
+    heavy: false,
+    requiresWordTiming: false,
+    favorite: false
+  },
+
+  // 2. WORD (6 Presets)
+  {
+    id: "word-reveal",
+    mogrt: "bisik_word-reveal.mogrt",
+    name: "Word Reveal",
+    title: "Word Reveal",
+    category: "word",
+    cssClass: "anim-word-reveal",
+    previewHtml: 'words appear <span class="aw">as spoken</span>',
+    description: "Kata muncul satu per satu sesuai ucapan.",
+    heavy: false,
+    requiresWordTiming: true,
+    favorite: true
+  },
+  {
+    id: "karaoke-fill",
+    mogrt: "bisik_karaoke-fill.mogrt",
+    name: "Karaoke Fill",
+    title: "Karaoke Fill",
+    category: "word",
+    cssClass: "anim-karaoke-fill",
+    previewHtml: 'edit faster in <span class="aw">Premiere</span>',
+    description: "Warna mengisi dari kiri ke kanan mengikuti kata aktif.",
+    heavy: false,
+    requiresWordTiming: true,
+    favorite: true
+  },
+  {
+    id: "active-highlight",
+    mogrt: "bisik_active-highlight.mogrt",
+    name: "Active Highlight",
+    title: "Active Highlight",
+    category: "word",
+    cssClass: "anim-active-highlight",
+    previewHtml: 'spoken words <span class="aw">stand out</span>',
+    description: "Kata aktif putih penuh, kata lain redup.",
+    heavy: false,
+    requiresWordTiming: true,
+    favorite: true
+  },
+  {
+    id: "highlight-box",
+    mogrt: "bisik_highlight-box.mogrt",
+    name: "Highlight Box",
+    title: "Highlight Box",
+    category: "word",
+    cssClass: "anim-highlight-box",
+    previewHtml: 'follow the <span class="aw">active</span> box',
+    description: "Kotak berwarna bergeser di belakang kata aktif.",
+    heavy: false,
+    requiresWordTiming: true,
+    favorite: true
+  },
+  {
+    id: "underline-sweep",
+    mogrt: "bisik_underline-sweep.mogrt",
+    name: "Underline Sweep",
+    title: "Underline Sweep",
+    category: "word",
+    cssClass: "anim-underline-sweep",
+    previewHtml: 'clean <span class="aw">underlined</span> words',
+    description: "Garis bawah menyapu mengikuti kata aktif.",
+    heavy: false,
+    requiresWordTiming: true,
+    favorite: false
+  },
+  {
+    id: "scale-focus",
+    mogrt: "bisik_scale-focus.mogrt",
+    name: "Scale Focus",
+    title: "Scale Focus",
+    category: "word",
+    cssClass: "anim-scale-focus",
+    previewHtml: 'focus on the <span class="aw">active</span> word',
+    description: "Kata aktif membesar 110%, kata lain redup.",
+    heavy: false,
+    requiresWordTiming: true,
+    favorite: false
+  },
+
+  // 3. DYNAMIC (6 Presets)
+  {
+    id: "pop-bounce",
+    mogrt: "bisik_pop-bounce.mogrt",
+    name: "Pop Bounce",
+    title: "Pop Bounce",
+    category: "dynamic",
+    cssClass: "anim-pop-bounce",
+    previewHtml: 'high energy <span class="aw">punchy</span> pop',
+    description: "Tiap kata muncul dengan overshoot kecil.",
+    heavy: false,
+    requiresWordTiming: true,
+    favorite: true
+  },
+  {
+    id: "spring-rise",
+    mogrt: "bisik_spring-rise.mogrt",
+    name: "Spring Rise",
+    title: "Spring Rise",
+    category: "dynamic",
+    cssClass: "anim-spring-rise",
+    previewHtml: 'elastic <span class="aw">spring</span> bounce',
+    description: "Animasi pegas elastis memantul naik secara dinamis.",
+    heavy: false,
+    requiresWordTiming: false,
+    favorite: true
+  },
+  {
+    id: "typewriter",
+    mogrt: "bisik_typewriter.mogrt",
+    name: "Typewriter",
+    title: "Typewriter",
+    category: "dynamic",
+    cssClass: "anim-typewriter",
+    previewHtml: 'DOCUMENT: <span class="aw">CLASSIFIED|</span>',
+    description: "Huruf muncul berurutan, kursor opsional.",
+    heavy: false,
+    requiresWordTiming: false,
+    favorite: false
+  },
+  {
+    id: "mask-slide",
+    mogrt: "bisik_mask-slide.mogrt",
+    name: "Mask Slide",
+    title: "Mask Slide",
+    category: "dynamic",
+    cssClass: "anim-mask-slide",
+    previewHtml: 'lines slide <span class="aw">from bottom</span>',
+    description: "Teks terungkap dari bawah lewat mask per baris.",
+    heavy: false,
+    requiresWordTiming: false,
+    favorite: false
+  },
+  {
+    id: "wave-in",
+    mogrt: "bisik_wave-in.mogrt",
+    name: "Wave In",
+    title: "Wave In",
+    category: "dynamic",
+    cssClass: "anim-wave-in",
+    previewHtml: 'gentle <span class="aw">flowing</span> ripple',
+    description: "Huruf naik-turun ringan seperti gelombang saat masuk.",
+    heavy: false,
+    requiresWordTiming: false,
+    favorite: false
+  },
+  {
+    id: "soft-glitch",
+    mogrt: "bisik_soft-glitch.mogrt",
+    name: "Soft Glitch",
+    title: "Soft Glitch",
+    category: "dynamic",
+    cssClass: "anim-soft-glitch",
+    previewHtml: 'subtle <span class="aw">RGB split</span> glitch',
+    description: "RGB split singkat di awal, lalu stabil (Heavy di 4K).",
+    heavy: true,
+    requiresWordTiming: false,
+    favorite: false
+  },
+
+  // 4. STYLE (3 Presets)
+  {
+    id: "box-wipe",
+    mogrt: "bisik_box-wipe.mogrt",
+    name: "Box Wipe",
+    title: "Box Wipe",
+    category: "style",
+    cssClass: "anim-box-wipe",
+    previewHtml: '<span class="aw">translucent</span> contrast box',
+    description: "Kotak semi-transparan melebar dulu, lalu teks muncul (Heavy).",
+    heavy: true,
+    requiresWordTiming: false,
+    favorite: false
+  },
+  {
+    id: "line-roll",
+    mogrt: "bisik_line-roll.mogrt",
+    name: "Line Roll",
+    title: "Line Roll",
+    category: "style",
+    cssClass: "anim-line-roll",
+    previewHtml: 'seamless <span class="aw">rolling</span> lines',
+    description: "Baris lama naik keluar, baris baru masuk dari bawah.",
+    heavy: false,
+    requiresWordTiming: false,
+    favorite: false
+  },
+  {
+    id: "keyword-accent",
+    mogrt: "bisik_keyword-accent.mogrt",
+    name: "Keyword Accent",
+    title: "Keyword Accent",
+    category: "style",
+    cssClass: "anim-keyword-accent",
+    previewHtml: 'special words <span class="aw">accented</span>',
+    description: "Angka, nama, atau kata kunci otomatis berwarna aksen.",
+    heavy: false,
+    requiresWordTiming: true,
     favorite: false
   }
 ];
 
 const DEFAULT_PRESETS = [
   {
-    name: "Cinema Amber Gold",
-    style: "bisik_Spring_Rise.mogrt",
-    font: "Montserrat-Black",
-    wordsPerClip: 3,
-    highlightMode: "both",
-    highlightColor: "#FFC400",
+    name: "Clean Cut • Natural White",
+    style: "bisik_clean-cut.mogrt",
+    font: "Inter-Medium",
+    wordsPerClip: 4,
+    highlightMode: "off",
+    highlightColor: "#FFD60A",
     posY: "880",
     scale: 100,
     dualLine: false
   },
   {
-    name: "Blur Pop • Cerulean",
-    style: "bisik_Blur_Pop.mogrt",
-    font: "Poppins-Bold",
-    wordsPerClip: 2,
+    name: "Soft Fade • Cerulean",
+    style: "bisik_soft-fade.mogrt",
+    font: "Roboto-Medium",
+    wordsPerClip: 3,
     highlightMode: "active",
     highlightColor: "#0070D2",
-    posY: "540",
-    scale: 110,
+    posY: "880",
+    scale: 100,
     dualLine: false
   },
   {
-    name: "Bento Card • Pure Green",
-    style: "bisik_Bento_Card.mogrt",
-    font: "Inter-Bold",
-    wordsPerClip: 5,
+    name: "Word Reveal • Amber Gold",
+    style: "bisik_word-reveal.mogrt",
+    font: "Inter-Medium",
+    wordsPerClip: 3,
+    highlightMode: "active",
+    highlightColor: "#FFD60A",
+    posY: "880",
+    scale: 100,
+    dualLine: false
+  },
+  {
+    name: "Pop Bounce • Pure Green",
+    style: "bisik_pop-bounce.mogrt",
+    font: "Inter-Medium",
+    wordsPerClip: 4,
     highlightMode: "both",
     highlightColor: "#00C828",
     posY: "880",
-    scale: 95,
-    dualLine: true
-  },
-  {
-    name: "Karaoke Pill • Magenta",
-    style: "bisik_Karaoke_Pill.mogrt",
-    font: "PlusJakartaSans-Bold",
-    wordsPerClip: 3,
-    highlightMode: "active",
-    highlightColor: "#D80B7C",
-    posY: "880",
     scale: 100,
-    dualLine: false
+    dualLine: true
   }
 ];
 
@@ -390,6 +535,8 @@ const state = {
   presets: [],
   selectedHex: "#FFC400",
   fontColorHex: "#FFFFFF",
+  boxColorHex: "#F43F5E",
+  colorTarget: "box",
   lastActiveIndex: -1,
   caseMode: 0
 };
@@ -397,8 +544,6 @@ const state = {
 const statusBar = getEl("statusBar");
 const audioSelect = getEl("audioTrackSelect");
 const videoSelect = getEl("videoTrackSelect");
-const sfxTrackSelect = getEl("sfxTrackSelect");
-const sfxModeSelect = getEl("sfxModeSelect");
 const wordGrid = getEl("wordGrid");
 const btnRender = getEl("btnRender");
 const playheadBadge = getEl("playheadBadge");
@@ -671,7 +816,7 @@ function reconstructFullWords(tokens) {
   for (const t of tokens) {
     const rawText = t.text || "";
     const trimmed = rawText.trim();
-    if (!trimmed || trimmed.startsWith("[") || trimmed.startsWith("(")) {
+    if (!trimmed || /^(\[.*\]|\(.*\))$/.test(trimmed)) {
       if (cur) {
         words.push(cur);
         cur = null;
@@ -701,9 +846,180 @@ function reconstructFullWords(tokens) {
 // ============================================================================
 // 1. RENDER SYMMETRICAL 4x2 SWATCHES & DUAL COLOR CONTROLS
 // ============================================================================
+const fontPostScriptMap = {};
+
+const MAX_RECENT_FONTS = 5;
+const DEFAULT_RECENT_FONTS = [
+  { value: "Arial-Black", family: "Arial Black", label: "Arial Black" },
+  { value: "Impact", family: "Impact", label: "Impact" },
+  { value: "Montserrat-Black", family: "Montserrat Black", label: "Montserrat Black" },
+  { value: "TrebuchetMS-Bold", family: "Trebuchet MS Bold", label: "Trebuchet MS Bold" },
+  { value: "Georgia-Bold", family: "Georgia Bold", label: "Georgia Bold" }
+];
+
+let recentFonts = [];
+
+function loadRecentFonts(forceReload = false) {
+  if (!forceReload && recentFonts && recentFonts.length > 0) {
+    return recentFonts;
+  }
+  try {
+    if (typeof localStorage !== "undefined" && typeof localStorage.getItem === "function") {
+      const stored = localStorage.getItem("bisik_recent_fonts");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          recentFonts = parsed.map((item) => {
+            if (typeof item === "string") {
+              return { value: item, family: cleanFontFamily(item), label: cleanFontFamily(item) };
+            }
+            return item;
+          }).slice(0, MAX_RECENT_FONTS);
+          return recentFonts;
+        }
+      }
+    }
+  } catch (_) {}
+
+  try {
+    const s = readJsonSafe(SETTINGS_FILE, null);
+    if (s && Array.isArray(s.recentFonts) && s.recentFonts.length > 0) {
+      recentFonts = s.recentFonts.map((item) => {
+        if (typeof item === "string") {
+          return { value: item, family: cleanFontFamily(item), label: cleanFontFamily(item) };
+        }
+        return item;
+      }).slice(0, MAX_RECENT_FONTS);
+      return recentFonts;
+    }
+  } catch (_) {}
+
+  recentFonts = [...DEFAULT_RECENT_FONTS];
+  return recentFonts;
+}
+
+function saveRecentFonts() {
+  try {
+    if (typeof localStorage !== "undefined" && typeof localStorage.setItem === "function") {
+      localStorage.setItem("bisik_recent_fonts", JSON.stringify(recentFonts));
+    }
+  } catch (_) {}
+}
+
+function updateRecentFontsGroup() {
+  if (typeof document === "undefined") return;
+  const fontSelect = getEl("fontSelect");
+  if (!fontSelect) return;
+
+  let recentGroup = getEl("recentFontsGroup");
+  if (!recentGroup) {
+    recentGroup = document.createElement("optgroup");
+    recentGroup.id = "recentFontsGroup";
+    fontSelect.insertBefore(recentGroup, fontSelect.firstChild);
+  }
+
+  recentGroup.label = `Recent Fonts (${recentFonts.length})`;
+  recentGroup.innerHTML = "";
+
+  recentFonts.forEach((rf) => {
+    const opt = document.createElement("option");
+    opt.value = rf.value;
+    opt.dataset.family = rf.family || rf.label;
+    opt.textContent = rf.label || rf.family || rf.value;
+    recentGroup.appendChild(opt);
+  });
+}
+
+function recordRecentFont(fontValue, familyName, label) {
+  if (!fontValue) return;
+  const val = String(fontValue).trim();
+  const fam = String(familyName || cleanFontFamily(val) || val).trim();
+  const lbl = String(label || fam || val).trim();
+
+  // Find if already exists in recentFonts by value or family name
+  const existingIdx = recentFonts.findIndex((item) => {
+    const itemVal = typeof item === "string" ? item : item.value;
+    const itemFam = typeof item === "object" ? item.family : "";
+    return itemVal === val || (itemFam && fam && itemFam.toLowerCase() === fam.toLowerCase());
+  });
+
+  if (existingIdx !== -1) {
+    recentFonts.splice(existingIdx, 1);
+  }
+
+  recentFonts.unshift({
+    value: val,
+    family: fam,
+    label: lbl
+  });
+
+  if (recentFonts.length > MAX_RECENT_FONTS) {
+    recentFonts = recentFonts.slice(0, MAX_RECENT_FONTS);
+  }
+
+  saveRecentFonts();
+  updateRecentFontsGroup();
+
+  const fontSelect = getEl("fontSelect");
+  if (fontSelect && fontSelect.value !== val) {
+    fontSelect.value = val;
+  }
+}
+
+function cleanFontFamily(name) {
+  if (!name) return "sans-serif";
+  for (const [fam, ps] of Object.entries(fontPostScriptMap)) {
+    if (ps === name || fam === name) return fam;
+  }
+  return name.replace(/\s*\([^)]*\)/g, "")
+             .replace(/-(Bold|Black|Medium|Regular|Light|Thin|Italic|Oblique|Heavy|Semibold|Demi|SemiBold)$/i, "")
+             .replace(/\s+(Bold|Black|Medium|Regular|Light|Thin|Italic|Oblique|Heavy|Semibold|Demi)$/i, "")
+             .trim();
+}
+
+function applyFontSelection() {
+  const fontSelect = getEl("fontSelect");
+  if (!fontSelect || !fontSelect.value) return;
+  const fVal = fontSelect.value;
+  const selOpt = fontSelect.options[fontSelect.selectedIndex];
+  const familyName = selOpt ? (selOpt.dataset.family || selOpt.textContent) : cleanFontFamily(fVal);
+  const labelName = selOpt ? selOpt.textContent : familyName;
+
+  if (typeof document !== "undefined") {
+    document.documentElement.style.setProperty(
+      "--preview-font-family",
+      `"${familyName}", "${cleanFontFamily(fVal)}", sans-serif`
+    );
+    const fontBadge = getEl("typoLiveFontName");
+    if (fontBadge) fontBadge.textContent = familyName;
+    if (typeof syncCustomFontDisplay === "function") syncCustomFontDisplay();
+  }
+  recordRecentFont(fVal, familyName, labelName);
+  saveAppSettings();
+  setStatus(`Font applied: ${familyName}`, "info");
+}
+
 function renderColorPalette() {
   if (typeof document !== "undefined") {
     document.documentElement.style.setProperty("--preview-accent", state.selectedHex);
+    document.documentElement.style.setProperty("--preview-font-color", state.fontColorHex || "#FFFFFF");
+    document.documentElement.style.setProperty("--preview-box-color", state.boxColorHex || "#F43F5E");
+
+    const fontSelect = getEl("fontSelect");
+    if (fontSelect && fontSelect.value) {
+      document.documentElement.style.setProperty(
+        "--preview-font-family",
+        `"${fontSelect.value}", "${cleanFontFamily(fontSelect.value)}", sans-serif`
+      );
+      const fontBadge = getEl("typoLiveFontName");
+      if (fontBadge) fontBadge.textContent = fontSelect.value;
+    }
+
+    const typoColorDot = getEl("typoLiveColorDot");
+    const typoColorText = getEl("typoLiveColorText");
+    if (typoColorDot) typoColorDot.style.background = state.fontColorHex || "#FFFFFF";
+    if (typoColorText) typoColorText.textContent = state.fontColorHex || "#FFFFFF";
+
     if (activeHexLabel) activeHexLabel.textContent = state.selectedHex;
 
     const fontDot = getEl("fontColorDot");
@@ -713,19 +1029,53 @@ function renderColorPalette() {
 
     const hlDot = getEl("highlightColorDot");
     if (hlDot) hlDot.style.background = state.selectedHex;
+
+    const boxDot = getEl("boxColorDot");
+    const boxLabel = getEl("boxColorHexLabel");
+    if (boxDot) boxDot.style.background = state.boxColorHex || "#F43F5E";
+    if (boxLabel) boxLabel.textContent = state.boxColorHex || "#F43F5E";
+
+    // Highlight active target card
+    const boxFont = getEl("btnOpenFontColorPicker");
+    const boxHl = getEl("btnOpenHighlightColorPicker");
+    const boxBc = getEl("btnOpenBoxColorPicker");
+    if (boxFont) boxFont.classList.toggle("active-target", state.colorTarget === "font");
+    if (boxHl) boxHl.classList.toggle("active-target", state.colorTarget === "highlight");
+    if (boxBc) boxBc.classList.toggle("active-target", state.colorTarget === "box");
+
+    // Highlight active target pill
+    const pillBc = getEl("targetBtnParticle");
+    const pillHl = getEl("targetBtnHighlight");
+    const pillFont = getEl("targetBtnFont");
+    if (pillBc) pillBc.classList.toggle("active", state.colorTarget === "box");
+    if (pillHl) pillHl.classList.toggle("active", state.colorTarget === "highlight");
+    if (pillFont) pillFont.classList.toggle("active", state.colorTarget === "font");
   }
+
   const swatchContainer = getEl("colorSwatchContainer");
   if (swatchContainer) {
     swatchContainer.innerHTML = "";
+    const activeTargetHex = (state.colorTarget === "box")
+      ? (state.boxColorHex || "#F43F5E")
+      : (state.colorTarget === "font")
+        ? (state.fontColorHex || "#FFFFFF")
+        : (state.selectedHex || "#FFC400");
+
     SPECTRUM_SWATCHES.forEach((sw) => {
       const btn = document.createElement("div");
-      btn.className = "color-swatch" + (state.selectedHex.toUpperCase() === sw.hex.toUpperCase() ? " active" : "");
-      btn.title = sw.fullName + " (" + sw.hex + ")";
+      btn.className = "color-swatch" + (activeTargetHex.toUpperCase() === sw.hex.toUpperCase() ? " active" : "");
+      btn.title = sw.fullName + " (" + sw.hex + ") - Apply to " + (state.colorTarget === "box" ? "Particle / Box Color" : (state.colorTarget === "font" ? "Font Color" : "Highlight Color"));
       btn.innerHTML = `<span class="swatch-dot" style="background:${sw.hex};"></span><span>${sw.name}</span>`;
       btn.addEventListener("click", () => {
-        state.selectedHex = sw.hex;
-        if (typeof document !== "undefined") {
-          document.documentElement.style.setProperty("--preview-accent", sw.hex);
+        if (state.colorTarget === "box") {
+          state.boxColorHex = sw.hex;
+          setStatus(`Particle color applied: ${sw.name} (${sw.hex})`, "info");
+        } else if (state.colorTarget === "font") {
+          state.fontColorHex = sw.hex;
+          setStatus(`Font color applied: ${sw.name} (${sw.hex})`, "info");
+        } else {
+          state.selectedHex = sw.hex;
+          setStatus(`Highlight color applied: ${sw.name} (${sw.hex})`, "info");
         }
         renderColorPalette();
         saveAppSettings();
@@ -835,6 +1185,31 @@ function syncPsInputs(source) {
   const prevNew = getEl("psPreviewNew");
   if (prevNew) prevNew.style.background = psState.currentHex;
 
+  if (typeof document !== "undefined") {
+    if (psTarget === "font") {
+      document.documentElement.style.setProperty("--preview-font-color", psState.currentHex);
+      const fontDot = getEl("fontColorDot");
+      const fontLabel = getEl("fontColorHexLabel");
+      if (fontDot) fontDot.style.background = psState.currentHex;
+      if (fontLabel) fontLabel.textContent = psState.currentHex;
+      const typoColorDot = getEl("typoLiveColorDot");
+      const typoColorText = getEl("typoLiveColorText");
+      if (typoColorDot) typoColorDot.style.background = psState.currentHex;
+      if (typoColorText) typoColorText.textContent = psState.currentHex;
+    } else if (psTarget === "box") {
+      document.documentElement.style.setProperty("--preview-box-color", psState.currentHex);
+      const boxDot = getEl("boxColorDot");
+      const boxLabel = getEl("boxColorHexLabel");
+      if (boxDot) boxDot.style.background = psState.currentHex;
+      if (boxLabel) boxLabel.textContent = psState.currentHex;
+    } else {
+      document.documentElement.style.setProperty("--preview-accent", psState.currentHex);
+      const hlDot = getEl("highlightColorDot");
+      if (hlDot) hlDot.style.background = psState.currentHex;
+      if (activeHexLabel) activeHexLabel.textContent = psState.currentHex;
+    }
+  }
+
   if (source !== "hsb") {
     if (getEl("psInputH")) getEl("psInputH").value = psState.h;
     if (getEl("psInputS")) getEl("psInputS").value = psState.s;
@@ -872,12 +1247,20 @@ function openPhotoshopColorPicker(target) {
   const title = getEl("psModalTitle");
   if (!modal) return;
 
-  const initialHex = (target === "font") ? (state.fontColorHex || "#FFFFFF") : (state.selectedHex || "#FFC400");
+  const initialHex = (target === "font")
+    ? (state.fontColorHex || "#FFFFFF")
+    : (target === "box")
+      ? (state.boxColorHex || "#F43F5E")
+      : (state.selectedHex || "#FFC400");
   psState.initialHex = initialHex;
   psState.currentHex = initialHex;
 
   if (title) {
-    title.textContent = (target === "font") ? "Color Picker (Text Color)" : "Color Picker (Highlight Color)";
+    title.textContent = (target === "font")
+      ? "Color Picker (Font Color)"
+      : (target === "box")
+        ? "Color Picker (Particle / Box Color)"
+        : "Color Picker (Highlight Color)";
   }
 
   const rgb = hexToRgb(initialHex);
@@ -896,22 +1279,99 @@ function openPhotoshopColorPicker(target) {
 }
 
 function initPhotoshopColorPicker() {
-  getEl("btnOpenFontColorPicker")?.addEventListener("click", () => openPhotoshopColorPicker("font"));
-  getEl("btnOpenHighlightColorPicker")?.addEventListener("click", () => openPhotoshopColorPicker("highlight"));
+  getEl("btnOpenFontColorPicker")?.addEventListener("click", () => {
+    state.colorTarget = "font";
+    renderColorPalette();
+    openPhotoshopColorPicker("font");
+  });
+  getEl("btnOpenHighlightColorPicker")?.addEventListener("click", () => {
+    state.colorTarget = "highlight";
+    renderColorPalette();
+    openPhotoshopColorPicker("highlight");
+  });
+  getEl("btnOpenBoxColorPicker")?.addEventListener("click", () => {
+    state.colorTarget = "box";
+    renderColorPalette();
+    openPhotoshopColorPicker("box");
+  });
+
+  getEl("targetBtnParticle")?.addEventListener("click", () => {
+    state.colorTarget = "box";
+    renderColorPalette();
+  });
+  getEl("targetBtnHighlight")?.addEventListener("click", () => {
+    state.colorTarget = "highlight";
+    renderColorPalette();
+  });
+  getEl("targetBtnFont")?.addEventListener("click", () => {
+    state.colorTarget = "font";
+    renderColorPalette();
+  });
 
   const modal = getEl("psColorModal");
   const closeModal = () => { if (modal) modal.style.display = "none"; };
 
-  getEl("psBtnCancel")?.addEventListener("click", closeModal);
+  getEl("psBtnCancel")?.addEventListener("click", () => {
+    if (typeof document !== "undefined") {
+      if (psTarget === "font") {
+        document.documentElement.style.setProperty("--preview-font-color", psState.initialHex);
+        const fontDot = getEl("fontColorDot");
+        const fontLabel = getEl("fontColorHexLabel");
+        if (fontDot) fontDot.style.background = psState.initialHex;
+        if (fontLabel) fontLabel.textContent = psState.initialHex;
+        const typoColorDot = getEl("typoLiveColorDot");
+        const typoColorText = getEl("typoLiveColorText");
+        if (typoColorDot) typoColorDot.style.background = psState.initialHex;
+        if (typoColorText) typoColorText.textContent = psState.initialHex;
+      } else if (psTarget === "box") {
+        document.documentElement.style.setProperty("--preview-box-color", psState.initialHex);
+        const boxDot = getEl("boxColorDot");
+        const boxLabel = getEl("boxColorHexLabel");
+        if (boxDot) boxDot.style.background = psState.initialHex;
+        if (boxLabel) boxLabel.textContent = psState.initialHex;
+      } else {
+        document.documentElement.style.setProperty("--preview-accent", psState.initialHex);
+        const hlDot = getEl("highlightColorDot");
+        if (hlDot) hlDot.style.background = psState.initialHex;
+        if (activeHexLabel) activeHexLabel.textContent = psState.initialHex;
+      }
+    }
+    closeModal();
+  });
+
   modal?.addEventListener("click", (e) => {
-    if (e.target === modal) closeModal();
+    if (e.target === modal) {
+      if (typeof document !== "undefined") {
+        if (psTarget === "font") {
+          document.documentElement.style.setProperty("--preview-font-color", psState.initialHex);
+          const typoColorDot = getEl("typoLiveColorDot");
+          const typoColorText = getEl("typoLiveColorText");
+          if (typoColorDot) typoColorDot.style.background = psState.initialHex;
+          if (typoColorText) typoColorText.textContent = psState.initialHex;
+        } else if (psTarget === "box") {
+          document.documentElement.style.setProperty("--preview-box-color", psState.initialHex);
+          const boxDot = getEl("boxColorDot");
+          const boxLabel = getEl("boxColorHexLabel");
+          if (boxDot) boxDot.style.background = psState.initialHex;
+          if (boxLabel) boxLabel.textContent = psState.initialHex;
+        } else {
+          document.documentElement.style.setProperty("--preview-accent", psState.initialHex);
+        }
+      }
+      closeModal();
+    }
   });
 
   getEl("psBtnOk")?.addEventListener("click", () => {
     if (psTarget === "font") {
       state.fontColorHex = psState.currentHex;
+      setStatus(`Font color set to ${state.fontColorHex}.`, "info");
+    } else if (psTarget === "box") {
+      state.boxColorHex = psState.currentHex;
+      setStatus(`Particle color set to ${state.boxColorHex}.`, "info");
     } else {
       state.selectedHex = psState.currentHex;
+      setStatus(`Highlight color set to ${state.selectedHex}.`, "info");
     }
     closeModal();
     renderColorPalette();
@@ -1169,8 +1629,24 @@ function applyPreset(idx) {
     let fVal = p.font;
     if (fVal === "PlayfairDisplay-Bold") fVal = "Georgia-Bold";
     if (fVal === "Cinzel-Bold") fVal = "TimesNewRomanPS-BoldMT";
+    let found = false;
+    for (let i = 0; i < fontSel.options.length; i++) {
+      if (fontSel.options[i].value === fVal) {
+        found = true;
+        break;
+      }
+    }
+    if (!found && fVal) {
+      const customOpt = document.createElement("option");
+      customOpt.value = fVal;
+      customOpt.textContent = fVal;
+      fontSel.appendChild(customOpt);
+    }
     fontSel.value = fVal;
+    applyFontSelection();
   }
+  if (p.fontColor) state.fontColorHex = p.fontColor;
+  if (p.boxColor) state.boxColorHex = p.boxColor;
   if (wordsInput) wordsInput.value = p.wordsPerClip;
   if (modeSel) modeSel.value = p.highlightMode;
   state.selectedHex = p.highlightColor || "#FFC400";
@@ -1190,9 +1666,11 @@ getEl("btnSavePreset")?.addEventListener("click", () => {
     name: `Custom ${state.presets.length + 1} (${state.selectedHex})`,
     style: getEl("styleSelect").value,
     font: getEl("fontSelect").value,
+    fontColor: state.fontColorHex || "#FFFFFF",
     wordsPerClip: parseInt(getEl("wordsPerClip").value, 10) || 3,
     highlightMode: getEl("highlightMode").value,
     highlightColor: state.selectedHex,
+    boxColor: state.boxColorHex || "#F43F5E",
     posY: getEl("posPreset").value,
     scale: parseInt(getEl("textScale").value, 10) || 100,
     dualLine: getEl("chkDualLine").checked
@@ -1213,18 +1691,358 @@ getEl("btnDeletePreset")?.addEventListener("click", () => {
   applyPreset(0);
 });
 
+let cachedSystemFonts = null;
+
+/**
+ * Detects and enumerates all installed system fonts across macOS and Windows.
+ * Returns an alphabetically sorted array of unique font family/postscript names.
+ */
+function getInstalledFontsSync() {
+  if (cachedSystemFonts && cachedSystemFonts.length > 0) {
+    return cachedSystemFonts;
+  }
+
+  const isMac = os.platform() === "darwin";
+  const isWin = os.platform() === "win32";
+  const fonts = new Set();
+
+  if (isMac) {
+    try {
+      // 1. Cocoa NSFontManager query via JavaScript for Automation (JXA) - fetches Family + PostScript name
+      const script = 'ObjC.import("AppKit"); var fm = $.NSFontManager.sharedFontManager; var fams = fm.availableFontFamilies; var r = []; for (var i=0; i<fams.count; i++) { var fam = ObjC.unwrap(fams.objectAtIndex(i)); var mems = fm.availableMembersOfFontFamily(fam); var ps = fam; if (mems && mems.count > 0) { ps = ObjC.unwrap(mems.objectAtIndex(0).objectAtIndex(0)); } r.push({ name: fam, postScript: ps }); } JSON.stringify(r);';
+      const out = execFileSync("osascript", ["-l", "JavaScript", "-e", script], {
+        encoding: "utf8",
+        timeout: 4000
+      });
+      const parsed = JSON.parse(out.trim());
+      if (Array.isArray(parsed)) {
+        parsed.forEach((item) => {
+          if (item && item.name && typeof item.name === "string" && !item.name.startsWith(".")) {
+            const trimmedName = item.name.trim();
+            fonts.add(trimmedName);
+            if (item.postScript) {
+              fontPostScriptMap[trimmedName] = String(item.postScript).trim();
+            }
+          }
+        });
+      }
+    } catch (_) {
+      // Fallback: Scan macOS standard font directories
+      const dirs = [
+        "/Library/Fonts",
+        "/System/Library/Fonts",
+        "/System/Library/Fonts/Supplemental",
+        path.join(os.homedir(), "Library/Fonts")
+      ];
+      dirs.forEach((dir) => {
+        if (fs.existsSync(dir)) {
+          try {
+            fs.readdirSync(dir).forEach((file) => {
+              const ext = path.extname(file).toLowerCase();
+              if ([".ttf", ".otf", ".ttc", ".dfont"].includes(ext)) {
+                const clean = path.basename(file, ext).replace(/[-_]/g, " ").trim();
+                if (clean && !clean.startsWith(".")) fonts.add(clean);
+              }
+            });
+          } catch (_) {}
+        }
+      });
+    }
+  } else if (isWin) {
+    // 1. Query Windows Registry for both Machine and User font registrations
+    const regKeys = [
+      "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts",
+      "HKCU\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts"
+    ];
+    regKeys.forEach((k) => {
+      try {
+        const out = execFileSync("reg", ["query", k], {
+          encoding: "utf8",
+          timeout: 3000
+        });
+        out.split("\n").forEach((line) => {
+          const match = line.trim().match(/^([^]+?)\s+REG_SZ\s+/);
+          if (match && match[1]) {
+            const clean = match[1].replace(/\s*\((TrueType|OpenType)\)\s*$/i, "").trim();
+            if (clean && !clean.startsWith(".")) fonts.add(clean);
+          }
+        });
+      } catch (_) {}
+    });
+
+    // Fallback: Windows font directories
+    const winDirs = [
+      path.join(process.env.WINDIR || "C:\\Windows", "Fonts"),
+      path.join(os.homedir(), "AppData", "Local", "Microsoft", "Windows", "Fonts")
+    ];
+    winDirs.forEach((dir) => {
+      if (fs.existsSync(dir)) {
+        try {
+          fs.readdirSync(dir).forEach((file) => {
+            const ext = path.extname(file).toLowerCase();
+            if ([".ttf", ".otf", ".ttc"].includes(ext)) {
+              const clean = path.basename(file, ext).replace(/[-_]/g, " ").trim();
+              if (clean && !clean.startsWith(".")) fonts.add(clean);
+            }
+          });
+        } catch (_) {}
+      }
+    });
+  }
+
+  const result = Array.from(fonts).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+  cachedSystemFonts = result;
+  return result;
+}
+
+function initFontDropdown() {
+  const fontSelect = getEl("fontSelect");
+  if (!fontSelect) return;
+
+  const systemGroup = getEl("systemFontsGroup");
+  if (!systemGroup) return;
+
+  // Initialize Recent Fonts (5 MRU slots)
+  loadRecentFonts();
+  updateRecentFontsGroup();
+
+  try {
+    const systemFonts = getInstalledFontsSync();
+    if (!systemFonts || systemFonts.length === 0) {
+      systemGroup.label = "Installed System Fonts (None detected)";
+      return;
+    }
+
+    systemGroup.label = `Installed System Fonts (${systemFonts.length})`;
+    systemGroup.innerHTML = "";
+
+    const searchInput = getEl("fontSearchInput");
+    if (searchInput) {
+      searchInput.placeholder = `Search ${systemFonts.length}+ fonts...`;
+    }
+
+    systemFonts.forEach((fontName) => {
+      const opt = document.createElement("option");
+      const psName = fontPostScriptMap[fontName] || fontName;
+      opt.value = psName;
+      opt.dataset.family = fontName;
+      opt.textContent = fontName;
+      systemGroup.appendChild(opt);
+    });
+  } catch (err) {
+    console.error("Failed to populate system fonts:", err);
+  }
+
+  fontSelect.removeEventListener("change", applyFontSelection);
+  fontSelect.addEventListener("change", applyFontSelection);
+  fontSelect.removeEventListener("input", applyFontSelection);
+  fontSelect.addEventListener("input", applyFontSelection);
+
+  populateCustomFontList();
+  syncCustomFontDisplay();
+}
+
+function syncCustomFontDisplay() {
+  if (typeof document === "undefined") return;
+  const fontSelect = getEl("fontSelect");
+  const display = getEl("customFontDisplay");
+  if (!fontSelect || !display) return;
+  const selOpt = fontSelect.options[fontSelect.selectedIndex];
+  if (selOpt) {
+    display.textContent = selOpt.dataset.family || selOpt.textContent;
+  } else if (fontSelect.value) {
+    display.textContent = cleanFontFamily(fontSelect.value);
+  }
+  const items = document.querySelectorAll(".custom-dropdown-item");
+  items.forEach((it) => {
+    if (it.dataset.value === fontSelect.value) {
+      it.classList.add("is-selected");
+    } else {
+      it.classList.remove("is-selected");
+    }
+  });
+}
+
+function openCustomFontMenu() {
+  const menu = getEl("customFontMenu");
+  const trigger = getEl("customFontTrigger");
+  const searchInput = getEl("fontSearchInput");
+  if (!menu || !trigger) return;
+
+  menu.style.display = "flex";
+  trigger.classList.add("is-open");
+  trigger.setAttribute("aria-expanded", "true");
+
+  populateCustomFontList(searchInput ? searchInput.value : "");
+
+  setTimeout(() => {
+    const selectedItem = menu.querySelector(".custom-dropdown-item.is-selected");
+    if (selectedItem) {
+      selectedItem.scrollIntoView({ block: "nearest" });
+    }
+    if (searchInput) searchInput.focus();
+  }, 20);
+}
+
+function closeCustomFontMenu() {
+  const menu = getEl("customFontMenu");
+  const trigger = getEl("customFontTrigger");
+  if (!menu || !trigger) return;
+
+  menu.style.display = "none";
+  trigger.classList.remove("is-open");
+  trigger.setAttribute("aria-expanded", "false");
+}
+
+function populateCustomFontList(filterQuery = "") {
+  if (typeof document === "undefined") return;
+  const fontSelect = getEl("fontSelect");
+  const listEl = getEl("customFontList");
+  if (!fontSelect || !listEl) return;
+
+  const q = (filterQuery || "").trim().toLowerCase();
+  listEl.innerHTML = "";
+
+  let matchCount = 0;
+  const groups = Array.from(fontSelect.querySelectorAll("optgroup"));
+
+  groups.forEach((grp) => {
+    const options = Array.from(grp.querySelectorAll("option"));
+    const matchingOptions = options.filter((opt) => {
+      if (!q) return true;
+      return opt.textContent.toLowerCase().includes(q) || opt.value.toLowerCase().includes(q);
+    });
+
+    if (matchingOptions.length === 0) return;
+
+    const grpHeader = document.createElement("div");
+    grpHeader.className = "custom-dropdown-group-header";
+    const rawLabel = grp.label ? grp.label.replace(/\s*\(\d+[^)]*\)/g, "").trim() : "Fonts";
+    grpHeader.textContent = `${rawLabel} (${matchingOptions.length})`;
+    listEl.appendChild(grpHeader);
+
+    matchingOptions.forEach((opt) => {
+      matchCount++;
+      const item = document.createElement("div");
+      item.className = "custom-dropdown-item";
+      item.dataset.value = opt.value;
+      if (opt.value === fontSelect.value) {
+        item.classList.add("is-selected");
+      }
+
+      const labelSpan = document.createElement("span");
+      labelSpan.textContent = opt.textContent;
+      labelSpan.style.fontFamily = `"${opt.dataset.family || opt.textContent}", "${cleanFontFamily(opt.value)}", sans-serif`;
+
+      const checkSpan = document.createElement("span");
+      checkSpan.className = "custom-dropdown-item-check";
+      checkSpan.textContent = "✓";
+
+      item.appendChild(labelSpan);
+      item.appendChild(checkSpan);
+
+      item.addEventListener("click", (e) => {
+        e.stopPropagation();
+        fontSelect.value = opt.value;
+        recordRecentFont(opt.value, opt.dataset.family, opt.textContent);
+        syncCustomFontDisplay();
+        applyFontSelection();
+        closeCustomFontMenu();
+        populateCustomFontList();
+      });
+
+      listEl.appendChild(item);
+    });
+  });
+
+  if (matchCount === 0) {
+    const empty = document.createElement("div");
+    empty.className = "custom-dropdown-empty";
+    empty.textContent = `No fonts matching "${filterQuery}"`;
+    listEl.appendChild(empty);
+  }
+}
+
+function initCustomFontDropdown() {
+  if (typeof document === "undefined") return;
+  const trigger = getEl("customFontTrigger");
+  const menu = getEl("customFontMenu");
+  const searchInput = getEl("fontSearchInput");
+  const clearBtn = getEl("fontSearchClear");
+  const fontSelect = getEl("fontSelect");
+
+  if (!trigger || !menu || !fontSelect) return;
+
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (menu.style.display === "none" || !menu.style.display) {
+      openCustomFontMenu();
+    } else {
+      closeCustomFontMenu();
+    }
+  });
+
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      const val = e.target.value;
+      if (clearBtn) clearBtn.style.display = val ? "flex" : "none";
+      populateCustomFontList(val);
+    });
+
+    searchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeCustomFontMenu();
+        trigger.focus();
+      } else if (e.key === "Enter") {
+        const firstItem = menu.querySelector(".custom-dropdown-item");
+        if (firstItem) {
+          firstItem.click();
+        }
+      }
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (searchInput) {
+        searchInput.value = "";
+        searchInput.focus();
+      }
+      clearBtn.style.display = "none";
+      populateCustomFontList("");
+    });
+  }
+
+  // Close when clicking outside
+  document.addEventListener("pointerdown", (e) => {
+    const wrap = getEl("customFontWrapper");
+    if (wrap && !wrap.contains(e.target)) {
+      closeCustomFontMenu();
+    }
+  });
+
+  // Keep trigger display text in sync when fontSelect changes
+  fontSelect.addEventListener("change", syncCustomFontDisplay);
+
+  populateCustomFontList();
+  syncCustomFontDisplay();
+}
+
 function saveAppSettings() {
   const settings = {
     lang: getEl("langSelect")?.value || "id",
     style: getEl("styleSelect")?.value,
     font: getEl("fontSelect")?.value,
+    recentFonts: recentFonts,
     fontColor: state.fontColorHex || "#FFFFFF",
     wordsPerClip: getEl("wordsPerClip")?.value,
     highlightMode: getEl("highlightMode")?.value,
     highlightColor: state.selectedHex,
+    boxColor: state.boxColorHex || "#F43F5E",
+    colorTarget: state.colorTarget || "box",
     posY: getEl("posPreset")?.value,
     scale: getEl("textScale")?.value,
-    sfxMode: sfxModeSelect?.value || "none",
     dualLine: getEl("chkDualLine") ? getEl("chkDualLine").checked : false
   };
   try {
@@ -1239,6 +2057,15 @@ function loadAppSettings() {
       s = readJsonSafe(LEGACY_DOT_SETTINGS, null);
     }
     if (s && typeof s === "object") {
+      if (Array.isArray(s.recentFonts) && s.recentFonts.length > 0) {
+        recentFonts = s.recentFonts.map((item) => {
+          if (typeof item === "string") {
+            return { value: item, family: cleanFontFamily(item), label: cleanFontFamily(item) };
+          }
+          return item;
+        }).slice(0, MAX_RECENT_FONTS);
+        updateRecentFontsGroup();
+      }
       if (s.style) s.style = migrateStyleName(s.style);
       if (s.lang && getEl("langSelect")) getEl("langSelect").value = s.lang;
       if (s.style && getEl("styleSelect")) getEl("styleSelect").value = s.style;
@@ -1246,7 +2073,25 @@ function loadAppSettings() {
         let fVal = s.font;
         if (fVal === "PlayfairDisplay-Bold") fVal = "Georgia-Bold";
         if (fVal === "Cinzel-Bold") fVal = "TimesNewRomanPS-BoldMT";
-        getEl("fontSelect").value = fVal;
+        if (fontPostScriptMap && fontPostScriptMap[fVal]) fVal = fontPostScriptMap[fVal];
+        const fontSelect = getEl("fontSelect");
+        let found = false;
+        for (let i = 0; i < fontSelect.options.length; i++) {
+          const opt = fontSelect.options[i];
+          if (opt.value === fVal || opt.dataset?.family === fVal || opt.textContent?.trim() === fVal) {
+            found = true;
+            fVal = opt.value;
+            break;
+          }
+        }
+        if (!found && fVal) {
+          const customOpt = document.createElement("option");
+          customOpt.value = fVal;
+          customOpt.textContent = cleanFontFamily(fVal);
+          fontSelect.appendChild(customOpt);
+        }
+        fontSelect.value = fVal;
+        applyFontSelection();
       }
       if (s.fontColor) state.fontColorHex = s.fontColor;
       if (s.wordsPerClip && getEl("wordsPerClip")) getEl("wordsPerClip").value = s.wordsPerClip;
@@ -1254,13 +2099,15 @@ function loadAppSettings() {
       if (s.highlightColor) {
         state.selectedHex = s.highlightColor;
       }
+      if (s.boxColor) {
+        state.boxColorHex = s.boxColor;
+      }
+      if (s.colorTarget) {
+        state.colorTarget = s.colorTarget;
+      }
       renderColorPalette();
       if (s.posY && getEl("posPreset")) getEl("posPreset").value = s.posY;
       if (s.scale) syncTextScale(s.scale); else syncTextScale(100);
-      if (s.sfxMode && sfxModeSelect) {
-        sfxModeSelect.value = s.sfxMode;
-        if (sfxTrackSelect) sfxTrackSelect.disabled = s.sfxMode === "none";
-      }
       if (typeof s.dualLine === "boolean" && getEl("chkDualLine")) {
         getEl("chkDualLine").checked = s.dualLine;
       }
@@ -1270,11 +2117,6 @@ function loadAppSettings() {
   renderColorPalette();
 }
 
-sfxModeSelect?.addEventListener("change", () => {
-  if (sfxTrackSelect) sfxTrackSelect.disabled = sfxModeSelect.value === "none";
-  saveAppSettings();
-});
-
 // ============================================================================
 // 3. LOAD SEQUENCE TRACKS
 // ============================================================================
@@ -1282,7 +2124,6 @@ async function loadTracks(opts = {}) {
   const applyDefaults = opts.applyDefaults === true;
   const prevAudio = audioSelect ? audioSelect.value : null;
   const prevVideo = videoSelect ? videoSelect.value : null;
-  const prevSfx = sfxTrackSelect ? sfxTrackSelect.value : null;
 
   const raw = await evalJSX("getSequenceTracksInfo()");
   try {
@@ -1333,10 +2174,13 @@ async function loadTracks(opts = {}) {
       audioSelect.appendChild(opt);
     });
 
-    // Default video track: choose topmost (highest index) empty video track across timeline
+    // Default video track: choose topmost empty video track across timeline, prioritizing unmuted tracks
     let safeDefaultVideoIdx = -1;
+    const unmutedEmptyVideoTracks = data.videoTracks.filter((v) => v.clipCount === 0 && !v.isMuted);
     const emptyVideoTracks = data.videoTracks.filter((v) => v.clipCount === 0);
-    if (emptyVideoTracks.length > 0) {
+    if (unmutedEmptyVideoTracks.length > 0) {
+      safeDefaultVideoIdx = unmutedEmptyVideoTracks[unmutedEmptyVideoTracks.length - 1].index;
+    } else if (emptyVideoTracks.length > 0) {
       safeDefaultVideoIdx = emptyVideoTracks[emptyVideoTracks.length - 1].index;
     } else if (data.videoTracks.length > 0) {
       safeDefaultVideoIdx = data.videoTracks[data.videoTracks.length - 1].index;
@@ -1351,46 +2195,15 @@ async function loadTracks(opts = {}) {
       const opt = document.createElement("option");
       opt.value = v.index;
       const status = v.clipCount === 0 ? "Empty" : `${v.clipCount} clips`;
-      opt.textContent = `${v.name} (${status})`;
+      const mutedTag = v.isMuted ? " [Muted]" : "";
+      opt.textContent = `${v.name} (${status})${mutedTag}`;
       if (String(v.index) === targetVideoVal) opt.selected = true;
       videoSelect.appendChild(opt);
     });
 
-    // Default SFX track: choose bottom-most track if higher tracks are filled with speech and music
-    let defaultSfxIdx = -1;
-    const nonDialogueTracks = data.audioTracks.filter((t) => String(t.index) !== targetAudioVal);
-    const labeledSfxTrack = nonDialogueTracks.find((t) => /sfx|sound fx|foley|effect/i.test(t.name));
-    if (labeledSfxTrack) {
-      defaultSfxIdx = labeledSfxTrack.index;
-    } else {
-      const emptyAudioTracks = nonDialogueTracks.filter((t) => t.clipCount === 0);
-      if (emptyAudioTracks.length > 0) {
-        defaultSfxIdx = emptyAudioTracks[emptyAudioTracks.length - 1].index;
-      } else if (nonDialogueTracks.length > 0) {
-        defaultSfxIdx = nonDialogueTracks[nonDialogueTracks.length - 1].index;
-      }
+    if (opts && opts.applyDefaults) {
+      loadAppSettings();
     }
-
-    const targetSfxVal = (!applyDefaults && prevSfx !== null && data.audioTracks.some((t) => String(t.index) === String(prevSfx)))
-      ? prevSfx
-      : (defaultSfxIdx !== -1 ? String(defaultSfxIdx) : "");
-
-    sfxTrackSelect.innerHTML = "";
-    data.audioTracks.forEach((t) => {
-      const opt = document.createElement("option");
-      opt.value = t.index;
-      const isDialogue = String(t.index) === targetAudioVal;
-      const status = isDialogue ? "Dialogue" : (t.clipCount === 0 ? "Empty" : `${t.clipCount} clips`);
-      opt.textContent = `${t.name} (${status})`;
-      if (String(t.index) === targetSfxVal) opt.selected = true;
-      sfxTrackSelect.appendChild(opt);
-    });
-
-    if (defaultSfxIdx === -1 && data.audioTracks.length <= 1) {
-      if (sfxModeSelect) sfxModeSelect.value = "none";
-    }
-
-    loadAppSettings();
     const resInfo = data.profile ? ` • ${data.profile}` : "";
     const scaleInfo = (data.scalePercent && data.scalePercent !== 100) ? ` (${data.scalePercent}% scale)` : "";
     setStatus(`Sequence "${data.sequenceName}"${resInfo}${scaleInfo} connected.`, "success");
@@ -1399,12 +2212,37 @@ async function loadTracks(opts = {}) {
   }
 }
 
-getEl("btnRefresh")?.addEventListener("click", (e) => {
-  if (e.shiftKey || e.altKey) {
-    window.location.reload();
+getEl("btnRefresh")?.addEventListener("click", async (e) => {
+  if (e && e.altKey) {
+    if (typeof window !== "undefined") window.location.reload();
     return;
   }
-  loadTracks({ applyDefaults: false });
+  const btn = getEl("btnRefresh");
+  const origText = btn ? btn.textContent : "Refresh";
+  if (btn) btn.textContent = "Refreshing...";
+  try {
+    cachedSystemFonts = null;
+    await loadTracks({ applyDefaults: false });
+    initFontDropdown();
+    applyFontSelection();
+    renderColorPalette();
+    renderWordEditor();
+    const curSeqRaw = await evalJSX("bisikGetActiveSequenceId()");
+    const curSeq = JSON.parse(curSeqRaw || "{}");
+    if (curSeq.sequenceName) {
+      setStatus(`Refreshed tracks for "${curSeq.sequenceName}".`, "success");
+    } else {
+      setStatus("Refreshed sequence tracks, fonts & transcript QC.", "success");
+    }
+  } catch (err) {
+    setStatus("Unable to refresh tracks from Premiere Pro.", "error");
+  } finally {
+    if (btn) btn.textContent = origText;
+  }
+});
+
+getEl("btnRefresh")?.addEventListener("dblclick", () => {
+  if (typeof window !== "undefined") window.location.reload();
 });
 
 if (typeof window !== "undefined") {
@@ -1488,23 +2326,48 @@ if (typeof window !== "undefined") {
 let textMeasureCanvas = null;
 function measureWordInputWidth(text) {
   const str = String(text || "");
+  const baseSafe = Math.max(38, Math.ceil(str.length * 10) + 26);
   if (typeof document === "undefined") {
-    return Math.max(38, Math.ceil(str.length * 10) + 26);
+    return baseSafe;
   }
   if (!textMeasureCanvas) {
     textMeasureCanvas = document.createElement("canvas");
   }
   const ctx = textMeasureCanvas.getContext("2d");
   if (ctx) {
-    ctx.font = "500 12px adobe-clean, 'Adobe Clean', 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif";
+    ctx.font = "600 13px adobe-clean, 'Adobe Clean', 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif";
     const textWidth = ctx.measureText(str).width;
-    return Math.max(38, Math.ceil(textWidth) + 26);
+    // Provide generous breathing room (+ 28px) so no letter is ever clipped at the end of the input
+    return Math.max(baseSafe, Math.ceil(textWidth) + 28);
   }
-  return Math.max(38, Math.ceil(str.length * 10) + 26);
+  return baseSafe;
 }
 
 function renderWordEditor() {
   wordGrid.innerHTML = "";
+
+  // Auto-flatten any multi-word entries with whitespace so every chip represents a discrete word
+  let hasMultiWord = false;
+  for (let i = 0; i < state.words.length; i++) {
+    const w = state.words[i];
+    if (w && w.text && /\s+/.test(w.text.trim())) {
+      hasMultiWord = true;
+      break;
+    }
+  }
+  if (hasMultiWord) {
+    const flattened = [];
+    for (let i = 0; i < state.words.length; i++) {
+      const w = state.words[i];
+      if (w && w.text && /\s+/.test(w.text.trim())) {
+        flattened.push(...splitWordAtSpaces(w));
+      } else {
+        flattened.push(w);
+      }
+    }
+    state.words = flattened;
+  }
+
   const activeWords = state.words.filter((w) => w.text && w.text.trim().length > 0);
   wordCountBadge.textContent = `(${activeWords.length})`;
 
@@ -1513,6 +2376,9 @@ function renderWordEditor() {
     if (qcBadge) qcBadge.style.display = "none";
     wordGrid.innerHTML = `<div style="color:var(--muted); font-size:var(--f-sm); padding:var(--s-4); text-align:center; width:100%;">No transcript loaded. Transcribe an audio track or import an SRT/JSON file.</div>`;
     btnRender.disabled = true;
+    if (typeof sessionStorage !== "undefined") {
+      try { sessionStorage.removeItem("bisik_cached_words"); } catch (_) {}
+    }
     return;
   }
 
@@ -1657,17 +2523,101 @@ function renderWordEditor() {
     wordGrid.appendChild(chip);
   });
 
+  if (typeof sessionStorage !== "undefined") {
+    try {
+      if (state.words && state.words.length > 0) {
+        sessionStorage.setItem("bisik_cached_words", JSON.stringify(state.words));
+      }
+    } catch (_) {}
+  }
+
   btnRender.disabled = false;
 }
 
+function filterFillerWords(words) {
+  if (!Array.isArray(words) || words.length === 0) return [];
+
+  const fillers = new Set([
+    // English & international fillers
+    "um", "umm", "ummm", "uh", "uhh", "uhhh", "er", "erm", "ah", "ahh", "ahhh",
+    "oh", "ohh", "hm", "hmm", "hmmm", "ha", "haa", "haah", "huh", "mhm",
+    // Indonesian fillers & hesitations
+    "em", "emm", "emmm", "ehm", "eh", "ehh", "ehhh", "eee", "ee", "anu", "nganu"
+  ]);
+
+  const isBracketNoise = (str) => /^(\[.*\]|\(.*\))$/.test((str || "").trim());
+  const normalize = (str) => (str || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  const filtered = [];
+  for (let i = 0; i < words.length; i++) {
+    const w = words[i];
+    const norm = normalize(w.text);
+
+    // 1. Check if word is a recognized filler sound
+    if (fillers.has(norm)) continue;
+
+    // 2. Check if word is bracketed noise like [Musik], [Tawa], etc.
+    if (isBracketNoise(w.text)) continue;
+
+    // 3. Check for consecutive identical stutter words within 0.65s
+    if (filtered.length > 0) {
+      const prev = filtered[filtered.length - 1];
+      const prevNorm = normalize(prev.text);
+      if (norm && norm === prevNorm && Math.abs(w.start - prev.end) < 0.65) {
+        // Skip duplicate stutter
+        continue;
+      }
+    }
+
+    filtered.push(w);
+  }
+
+  return filtered;
+}
+
 getEl("btnCleanFillers")?.addEventListener("click", () => {
-  if (state.words.length === 0) return;
+  if (state.words.length === 0) {
+    return setStatus("No transcript loaded to clean.", "warning");
+  }
   pushHistoryState();
-  const fillers = new Set(["umm", "um", "uh", "uhh", "eee", "ee", "eh", "hmm", "hm", "ah", "anu"]);
+
   const before = state.words.length;
-  state.words = state.words.filter((w) => !fillers.has(w.text.toLowerCase().replace(/[^a-z]/g, "")));
-  renderWordEditor();
-  setStatus(`Removed ${before - state.words.length} filler words.`, "info");
+  const filtered = filterFillerWords(state.words);
+  const removedCount = before - filtered.length;
+
+  if (removedCount > 0) {
+    state.words = filtered;
+    renderWordEditor();
+    setStatus(`Cleaned ${removedCount} filler word(s) & stutter(s).`, "success");
+  } else {
+    setStatus("No filler words or stutters detected in transcript.", "info");
+  }
+});
+
+let clearTranscriptTimer = null;
+const btnClearTranscript = getEl("btnClearTranscript");
+btnClearTranscript?.addEventListener("click", () => {
+  if (state.words.length === 0) {
+    return setStatus("Transcript is already empty.", "info");
+  }
+
+  if (btnClearTranscript.dataset.confirming === "true") {
+    clearTimeout(clearTranscriptTimer);
+    delete btnClearTranscript.dataset.confirming;
+    btnClearTranscript.textContent = "Clear";
+    pushHistoryState();
+    state.words = [];
+    renderWordEditor();
+    setStatus("Transcript cleared (Press ↺ to Undo).", "info");
+    return;
+  }
+
+  btnClearTranscript.dataset.confirming = "true";
+  btnClearTranscript.textContent = "Confirm?";
+  clearTranscriptTimer = setTimeout(() => {
+    delete btnClearTranscript.dataset.confirming;
+    btnClearTranscript.textContent = "Clear";
+  }, 3500);
 });
 
 getEl("btnReplaceAll")?.addEventListener("click", () => {
@@ -1705,22 +2655,60 @@ getEl("btnCapitalize")?.addEventListener("click", () => {
 // ============================================================================
 function buildWordChunks(customWords, customOptions = {}) {
   const sourceWords = customWords || (state && state.words) || [];
-  const validWords = sourceWords.filter((w) => w.text && w.text.trim().length > 0);
+  
+  // 1. Pre-flatten any multi-word entry containing whitespace.
+  // Guarantees discrete individual words even if full segments or multi-word SRT entries are loaded.
+  const validWords = [];
+  for (let idx = 0; idx < sourceWords.length; idx++) {
+    const w = sourceWords[idx];
+    if (!w || !w.text || !w.text.trim()) continue;
+    const trimmed = w.text.trim();
+    if (/\s+/.test(trimmed)) {
+      const parts = splitWordAtSpaces(w);
+      validWords.push(...parts);
+    } else {
+      validWords.push(w);
+    }
+  }
 
-  const wordsMax = customOptions.wordsMax !== undefined
-    ? customOptions.wordsMax
-    : ((typeof document !== "undefined" && getEl("wordsPerClip"))
-      ? parseInt(getEl("wordsPerClip").value, 10) || 3
-      : 3);
+  // 2. Identify style: clean-cut (Cinema / Documentary) vs Animated Kinetic
+  const styleId = customOptions.style !== undefined
+    ? String(customOptions.style)
+    : ((typeof document !== "undefined" && getEl("styleSelect"))
+      ? getEl("styleSelect").value
+      : "");
+  const isCleanCut = styleId.includes("clean-cut");
 
-  const isDualLine = customOptions.isDualLine !== undefined
+  // 3. User Two-Line toggle
+  const userDualLine = customOptions.isDualLine !== undefined
     ? customOptions.isDualLine
     : ((typeof document !== "undefined" && getEl("chkDualLine"))
       ? getEl("chkDualLine").checked
       : false);
 
-  const maxCpl = customOptions.maxCpl || 38;
-  const maxDuration = customOptions.maxDuration || 6.0;
+  // 4. Maximum CPL: standard 34 characters per line for safe margins (unifies chunker, QC, and AE MOGRT expression)
+  const maxCpl = customOptions.maxCpl || 34;
+
+  // 5. Dynamic wordsMax & maxDuration:
+  // - Clean Cut: Cinema sentence phrases (8-12 words, up to 5.0s, bounded strictly by max 2 lines / 68 chars)
+  // - Animated styles: Natural sentence clause (3-6 words, up to 3.2s) so words aren't too short,
+  //   while strictly bounded by maxCpl so inserted text NEVER exceeds the video frame!
+  const uiWords = (typeof document !== "undefined" && getEl("wordsPerClip"))
+    ? parseInt(getEl("wordsPerClip").value, 10) || 0
+    : 0;
+
+  let wordsMax;
+  if (customOptions.wordsMax !== undefined) {
+    wordsMax = customOptions.wordsMax;
+  } else if (isCleanCut) {
+    wordsMax = (uiWords && uiWords !== 5) ? uiWords : 12;
+  } else if (uiWords > 0) {
+    wordsMax = uiWords;
+  } else {
+    wordsMax = 5;
+  }
+
+  const maxDuration = customOptions.maxDuration || (isCleanCut ? 5.0 : 3.2);
 
   function formatWordsLine(wList) {
     return wList.map((w) => (w.text ? w.text.trim() : "")).join(" ");
@@ -1729,16 +2717,18 @@ function buildWordChunks(customWords, customOptions = {}) {
   function splitIntoTwoBalancedLines(wList) {
     if (wList.length <= 1) return [wList];
     let bestIndex = 1;
-    let minDiff = Infinity;
+    let minScore = Infinity;
     for (let k = 1; k < wList.length; k++) {
       const line1 = formatWordsLine(wList.slice(0, k));
       const line2 = formatWordsLine(wList.slice(k));
       let penalty = 0;
-      if (line1.length > maxCpl) penalty += (line1.length - maxCpl) * 10;
-      if (line2.length > maxCpl) penalty += (line2.length - maxCpl) * 10;
-      const diff = Math.abs(line1.length - line2.length) + penalty;
-      if (diff < minDiff) {
-        minDiff = diff;
+      if (line1.length > maxCpl) penalty += (line1.length - maxCpl) * 50;
+      if (line2.length > maxCpl) penalty += (line2.length - maxCpl) * 50;
+      const endsWithComma = /[,;:]$/.test(wList[k - 1].text);
+      if (endsWithComma) penalty -= 15;
+      const score = Math.abs(line1.length - line2.length) + penalty;
+      if (score < minScore) {
+        minScore = score;
         bestIndex = k;
       }
     }
@@ -1747,7 +2737,11 @@ function buildWordChunks(customWords, customOptions = {}) {
 
   function pushChunk(chunkWords) {
     if (!chunkWords || chunkWords.length === 0) return;
-    if (isDualLine && chunkWords.length >= 2) {
+    const fullText = formatWordsLine(chunkWords);
+    // In clean-cut (if phrase exceeds 1 line or >= 7 words), or if user checked Two-Line, or single line exceeds maxCpl:
+    // format as 2 balanced lines so text NEVER exceeds video frame!
+    const shouldDualLine = userDualLine || (fullText.length > maxCpl) || (isCleanCut && (fullText.length > maxCpl || chunkWords.length >= 7));
+    if (shouldDualLine && chunkWords.length >= 2) {
       chunks.push({
         words: chunkWords,
         lines: splitIntoTwoBalancedLines(chunkWords)
@@ -1771,10 +2765,11 @@ function buildWordChunks(customWords, customOptions = {}) {
       const projectedWords = [...currentChunk, w];
       const projectedDuration = (w.end || w.start) - currentChunk[0].start;
       const fullText = formatWordsLine(projectedWords);
-      const isSpeechPause = prevWord && (w.start - prevWord.end >= 0.8);
+      const isSpeechPause = prevWord && (w.start - prevWord.end >= (isCleanCut ? 0.70 : 0.55));
 
       let exceedsCpl = false;
-      if (!isDualLine) {
+      const allowDual = userDualLine || isCleanCut;
+      if (!allowDual) {
         exceedsCpl = fullText.length > maxCpl;
       } else {
         if (fullText.length > maxCpl * 2) {
@@ -1787,10 +2782,16 @@ function buildWordChunks(customWords, customOptions = {}) {
         }
       }
 
+      // Sentence boundary check: if prevWord ended with sentence punctuation [.?!], break!
+      const isSentenceEnd = prevWord && /[.?!]$/.test(prevWord.text) && currentChunk.length >= 2;
+
+      // Natural clause boundary for animated chunks: break on comma if already 3+ words
+      const isClauseBreak = !isCleanCut && prevWord && /[,;:]$/.test(prevWord.text) && currentChunk.length >= 3;
+
       const exceedsDuration = projectedDuration > maxDuration;
       const exceedsWordCount = projectedWords.length > wordsMax;
 
-      if (exceedsWordCount || exceedsDuration || exceedsCpl || isSpeechPause) {
+      if (exceedsWordCount || exceedsDuration || exceedsCpl || isSpeechPause || isSentenceEnd || isClauseBreak) {
         pushChunk(currentChunk);
         currentChunk = [];
       }
@@ -1841,8 +2842,20 @@ function analyzeTranscriptQC(customWords, customOptions) {
   return { chunks, totalIssues, wordWarnings };
 }
 
-getEl("wordsPerClip")?.addEventListener("input", () => renderWordEditor());
-getEl("chkDualLine")?.addEventListener("change", () => renderWordEditor());
+getEl("wordsPerClip")?.addEventListener("input", () => {
+  renderWordEditor();
+  saveAppSettings();
+});
+getEl("wordsPerClip")?.addEventListener("change", saveAppSettings);
+getEl("chkDualLine")?.addEventListener("change", () => {
+  renderWordEditor();
+  saveAppSettings();
+});
+getEl("posPreset")?.addEventListener("change", saveAppSettings);
+getEl("highlightMode")?.addEventListener("change", saveAppSettings);
+getEl("langSelect")?.addEventListener("change", saveAppSettings);
+getEl("styleSelect")?.addEventListener("change", saveAppSettings);
+getEl("videoTrackSelect")?.addEventListener("change", saveAppSettings);
 getEl("textScaleSlider")?.addEventListener("input", (e) => {
   syncTextScale(e.target.value, "slider");
   saveAppSettings();
@@ -1882,13 +2895,36 @@ function validateTranscriptWords(items, maxItems = 50000) {
       continue;
     }
 
-    valid.push({
-      text,
-      start: Number(start.toFixed(3)),
-      end: Number(end.toFixed(3)),
-      isKeyword: Boolean(item.isKeyword),
-      forceBreak: Boolean(item.forceBreak)
-    });
+    if (/\s+/.test(text)) {
+      const parts = splitWordAtSpaces({
+        text,
+        start,
+        end,
+        isKeyword: Boolean(item.isKeyword),
+        forceBreak: Boolean(item.forceBreak)
+      });
+      parts.forEach((p) => {
+        if (valid.length < maxItems) {
+          valid.push({
+            text: p.text,
+            start: Number(p.start.toFixed(3)),
+            end: Number(p.end.toFixed(3)),
+            isKeyword: Boolean(p.isKeyword),
+            forceBreak: Boolean(p.forceBreak)
+          });
+        } else {
+          droppedCount++;
+        }
+      });
+    } else {
+      valid.push({
+        text,
+        start: Number(start.toFixed(3)),
+        end: Number(end.toFixed(3)),
+        isKeyword: Boolean(item.isKeyword),
+        forceBreak: Boolean(item.forceBreak)
+      });
+    }
   }
 
   valid.sort((a, b) => a.start - b.start);
@@ -2143,23 +3179,27 @@ function cleanupDirectorySafe(dirPath) {
 }
 
 function cleanOldTempDirectories() {
-  try {
-    const root = os.tmpdir();
-    const now = Date.now();
-    const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-    const entries = fs.readdirSync(root);
-    for (const name of entries) {
-      if (name.startsWith("bisik_job_") || name.startsWith("bisik_payload_") || name.startsWith("bisik_temp")) {
-        const full = path.join(root, name);
-        try {
-          const st = fs.statSync(full);
-          if (now - st.mtimeMs > ONE_DAY_MS) {
-            cleanupDirectorySafe(full);
-          }
-        } catch (e) { }
+  const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  const rootsToScan = [os.tmpdir(), getSafeTempRoot()];
+
+  for (const root of rootsToScan) {
+    try {
+      if (!fs.existsSync(root)) continue;
+      const entries = fs.readdirSync(root);
+      for (const name of entries) {
+        if (name.startsWith("bisik_job_") || name.startsWith("bisik_payload_") || name.startsWith("bisik_temp") || name.startsWith("bisik_")) {
+          const full = path.join(root, name);
+          try {
+            const st = fs.statSync(full);
+            if (now - st.mtimeMs > ONE_DAY_MS) {
+              cleanupDirectorySafe(full);
+            }
+          } catch (e) { }
+        }
       }
-    }
-  } catch (err) { }
+    } catch (err) { }
+  }
 }
 
 let currentJob = null;
@@ -2204,21 +3244,35 @@ let cachedWhisperCaps = null;
 function probeWhisperCapabilities(whisperBin, env) {
   if (cachedWhisperCaps) return cachedWhisperCaps;
   try {
-    const stdout = execSync(`"${whisperBin}" --help`, {
-      env: env || process.env,
-      timeout: 5000,
-      windowsHide: true,
-      stdio: ["ignore", "pipe", "pipe"]
-    }).toString();
+    let output = "";
+    try {
+      const res = spawnSync(whisperBin, ["--help"], {
+        env: env || process.env,
+        timeout: 5000,
+        windowsHide: true,
+        encoding: "utf8"
+      });
+      output = ((res.stdout || "") + "\n" + (res.stderr || "")).toString();
+    } catch (cmdErr) {
+      if (cmdErr && cmdErr.stdout) output += cmdErr.stdout.toString();
+      if (cmdErr && cmdErr.stderr) output += cmdErr.stderr.toString();
+    }
+
+    if (!output || output.trim().length === 0) {
+      throw new Error("Empty help output from whisper-cli");
+    }
+
     cachedWhisperCaps = {
-      supportsNoPrints: stdout.includes("-np") || stdout.includes("--no-prints"),
-      supportsPrintProgress: stdout.includes("-pp") || stdout.includes("--print-progress"),
-      supportsMaxContext: stdout.includes("-mc") || stdout.includes("--max-context"),
-      supportsEntropyThold: stdout.includes("--entropy-thold") || stdout.includes("-et"),
-      supportsLogprobThold: stdout.includes("--logprob-thold") || stdout.includes("-lpt"),
-      supportsSplitOnWord: stdout.includes("-sow") || stdout.includes("--split-on-word"),
-      supportsMaxLen: stdout.includes("-ml") || stdout.includes("--max-len"),
-      isWhisperCpp: stdout.includes("whisper-cli") || stdout.includes("usage: main") || stdout.includes("ggml") || stdout.includes("--model")
+      supportsNoPrints: output.includes("-np") || output.includes("--no-prints"),
+      supportsPrintProgress: output.includes("-pp") || output.includes("--print-progress"),
+      supportsMaxContext: output.includes("-mc") || output.includes("--max-context"),
+      supportsEntropyThold: output.includes("--entropy-thold") || output.includes("-et"),
+      supportsLogprobThold: output.includes("--logprob-thold") || output.includes("-lpt"),
+      supportsSplitOnWord: output.includes("-sow") || output.includes("--split-on-word"),
+      supportsMaxLen: output.includes("-ml") || output.includes("--max-len"),
+      supportsOutputJsonFull: output.includes("-ojf") || output.includes("--output-json-full"),
+      supportsSuppressNst: output.includes("--suppress-nst"),
+      isWhisperCpp: output.includes("whisper-cli") || output.includes("usage: main") || output.includes("ggml") || output.includes("--model")
     };
   } catch (err) {
     cachedWhisperCaps = {
@@ -2229,6 +3283,8 @@ function probeWhisperCapabilities(whisperBin, env) {
       supportsLogprobThold: false,
       supportsSplitOnWord: true,
       supportsMaxLen: true,
+      supportsOutputJsonFull: true,
+      supportsSuppressNst: false,
       isWhisperCpp: true
     };
   }
@@ -2246,12 +3302,13 @@ function findAvailableWhisperModel(extRoot, lang = "id") {
     path.join(extRoot || "", "models")
   ];
 
+  // Prioritize quality models: Turbo -> Large-v3 -> Medium -> Small -> Base -> Tiny
   const preferredFiles = [
-    "ggml-large-v3.bin",
     "ggml-large-v3-turbo.bin",
-    "ggml-base.bin",
-    "ggml-small.bin",
+    "ggml-large-v3.bin",
     "ggml-medium.bin",
+    "ggml-small.bin",
+    "ggml-base.bin",
     "ggml-tiny.bin"
   ];
 
@@ -2287,7 +3344,6 @@ function terminateProcess(proc) {
   if (!proc || !proc.pid) return;
   try {
     if (process.platform === "win32") {
-      const { execSync } = require("child_process");
       try {
         execSync(`taskkill /pid ${proc.pid} /T /F`, { stdio: "ignore" });
       } catch (e) {
@@ -2377,75 +3433,72 @@ btnTranscribe?.addEventListener("click", async () => {
     btnCancelTranscribe.textContent = "Cancel";
   }
 
-  const trackIdx = audioSelect.value;
-  const lang = getEl("langSelect").value;
-  const rangeMode = queryEl('input[name="rangeMode"]:checked').value;
-
-  const extRoot = csInterface.getSystemPath(SystemPath.EXTENSION);
-
-  // Task 15: Capture active sequence identifier to prevent rendering to wrong sequence
+  let job = null;
   try {
-    const rawSeq = await evalJSX("bisikGetActiveSequenceId()");
-    const seqData = JSON.parse(rawSeq);
-    if (seqData.sequenceId) {
-      state.transcribedSequenceId = seqData.sequenceId;
+    const trackIdx = audioSelect ? audioSelect.value : null;
+    if (trackIdx === null || trackIdx === "") {
+      throw new Error("No audio track selected.");
     }
-  } catch (seqErr) { }
+    const lang = getEl("langSelect") ? getEl("langSelect").value : "id";
+    const rangeRadio = queryEl('input[name="rangeMode"]:checked');
+    const rangeMode = rangeRadio ? rangeRadio.value : "entire";
 
-  // Task 11: Create job with isolated temporary scratch directory and cancellation token
-  const job = createJob();
-  currentJob = job;
+    const extRoot = csInterface.getSystemPath(SystemPath.EXTENSION);
 
-  setStatus(`Extracting audio (${rangeMode})...`, "info");
-  const rawClips = await evalJSX(`getTrackAudioClipsByRange(${trackIdx}, "${rangeMode}")`);
-  const clipData = JSON.parse(rawClips);
-  if (clipData.error) {
-    btnTranscribe.disabled = false;
-    cleanupDirectorySafe(job.dir);
-    currentJob = null;
-    return setStatus(clipData.error, "error");
-  }
+    // Task 15: Capture active sequence identifier to prevent rendering to wrong sequence
+    try {
+      const rawSeq = await evalJSX("bisikGetActiveSequenceId()");
+      const seqData = JSON.parse(rawSeq);
+      if (seqData && seqData.sequenceId) {
+        state.transcribedSequenceId = seqData.sequenceId;
+      }
+    } catch (seqErr) { }
 
-  if (state.words.length > 0) pushHistoryState(); // Task 20: save history state before re-transcribing
-  state.words = [];
-  const childEnv = buildChildEnv();
-  const ffmpegBin = resolveExecutable("ffmpeg");
-  const whisperBin = resolveExecutable("whisper-cli", ["whisper-cpp"]);
+    // Task 11: Create job with isolated temporary scratch directory and cancellation token
+    job = createJob();
+    currentJob = job;
 
-  if (!fs.existsSync(ffmpegBin)) {
-    btnTranscribe.disabled = false;
-    cleanupDirectorySafe(job.dir);
-    currentJob = null;
-    const installCmd = process.platform === "win32" ? "winget install Gyan.FFmpeg" : "brew install ffmpeg";
-    setStatus(`FFmpeg not found. Please install via '${installCmd}' or run the AI setup script.`, "error");
-    return;
-  }
+    setStatus(`Extracting audio (${rangeMode})...`, "info");
+    const rawClips = await evalJSX(`getTrackAudioClipsByRange(${trackIdx}, "${rangeMode}")`);
+    let clipData;
+    try {
+      clipData = JSON.parse(rawClips);
+    } catch (parseErr) {
+      throw new Error("ExtendScript error while reading timeline audio clips: " + (rawClips ? rawClips.slice(0, 80) : "empty response"));
+    }
+    if (clipData.error) {
+      throw new Error(clipData.error);
+    }
+    if (!clipData.clips || clipData.clips.length === 0) {
+      throw new Error("No audio clips found on selected track in this range.");
+    }
 
-  if (!fs.existsSync(whisperBin)) {
-    btnTranscribe.disabled = false;
-    cleanupDirectorySafe(job.dir);
-    currentJob = null;
-    const installCmd = process.platform === "win32" ? "winget install whisper.cpp" : "brew install whisper-cpp";
-    setStatus(`Whisper CLI not found. Please install via '${installCmd}' or run the AI setup script.`, "error");
-    return;
-  }
+    if (state.words.length > 0) pushHistoryState(); // Task 20: save history state before re-transcribing
+    state.words = [];
+    const childEnv = buildChildEnv();
+    const ffmpegBin = resolveExecutable("ffmpeg");
+    const whisperBin = resolveExecutable("whisper-cli", ["whisper-cpp"]);
 
-  const modelPath = findAvailableWhisperModel(extRoot, lang);
-  if (!modelPath) {
-    btnTranscribe.disabled = false;
-    cleanupDirectorySafe(job.dir);
-    currentJob = null;
-    const expectedDir = path.join(os.homedir(), ".whisper-models");
-    setStatus(`Whisper model missing. Run the AI setup script or place ggml-large-v3.bin into ${expectedDir}`, "error");
-    return;
-  }
+    if (!fs.existsSync(ffmpegBin)) {
+      const installCmd = process.platform === "win32" ? "winget install Gyan.FFmpeg" : "brew install ffmpeg";
+      throw new Error(`FFmpeg not found. Please install via '${installCmd}' or run the AI setup script.`);
+    }
 
-  const modelShortName = path.basename(modelPath, ".bin").replace(/^ggml-/, "").toUpperCase();
+    if (!fs.existsSync(whisperBin)) {
+      const installCmd = process.platform === "win32" ? "winget install whisper.cpp" : "brew install whisper-cpp";
+      throw new Error(`Whisper CLI not found. Please install via '${installCmd}' or run the AI setup script.`);
+    }
 
-  if (progressContainer) progressContainer.style.display = "flex";
-  if (progressBar) progressBar.style.width = "0%";
+    const modelPath = findAvailableWhisperModel(extRoot, lang);
+    if (!modelPath) {
+      const expectedDir = path.join(os.homedir(), ".whisper-models");
+      throw new Error(`Whisper model missing. Run the AI setup script or place a ggml model into ${expectedDir}`);
+    }
 
-  try {
+    const modelShortName = path.basename(modelPath, ".bin").replace(/^ggml-/, "").toUpperCase();
+
+    if (progressContainer) progressContainer.style.display = "flex";
+    if (progressBar) progressBar.style.width = "0%";
     const totalClips = clipData.clips.length;
     // Sort clips chronologically by timeline start to guarantee sequential audio assembly
     clipData.clips.sort((a, b) => a.timelineStart - b.timelineStart);
@@ -2467,14 +3520,15 @@ btnTranscribe?.addEventListener("click", async () => {
       if (progressText) progressText.textContent = `${convPct}% Converting WAV [${i + 1}/${totalClips}]...`;
       setStatus(`[${i + 1}/${totalClips}] Converting WAV via FFmpeg...`);
 
-      // Task 9: Fast frame-accurate input seeking (-ss before -i) with quiet flags
+      // Sample-accurate audio decoding (-accurate_seek -ss before -i guarantees exact sample sync with timeline)
       await runAsyncProcess(
         ffmpegBin,
         [
           "-hide_banner", "-nostats", "-loglevel", "error", "-y",
+          "-accurate_seek",
           "-ss", String(clip.inPoint),
-          "-t", duration,
           "-i", clip.mediaPath,
+          "-t", duration,
           "-vn", "-ar", "16000", "-ac", "1", "-c:a", "pcm_s16le",
           wavPath
         ],
@@ -2566,10 +3620,15 @@ btnTranscribe?.addEventListener("click", async () => {
       "-t", threadCount,
       "-m", modelPath,
       "-f", masterWavPath,
-      "-l", lang,
-      "-oj",
-      "-of", jsonOutPrefix
+      "-l", lang
     ];
+
+    if (caps.supportsOutputJsonFull) {
+      whisperArgs.push("-ojf");
+    } else {
+      whisperArgs.push("-oj");
+    }
+    whisperArgs.push("-of", jsonOutPrefix);
 
     if (caps.supportsSplitOnWord) whisperArgs.push("-sow");
     if (caps.supportsMaxLen) whisperArgs.push("-ml", "1");
@@ -2577,6 +3636,9 @@ btnTranscribe?.addEventListener("click", async () => {
     if (caps.supportsPrintProgress) whisperArgs.push("-pp");
     // -mc 0 stops Whisper carrying over context across 30-sec windows, preventing repetition loops!
     if (caps.supportsMaxContext) whisperArgs.push("-mc", "0");
+    if (caps.supportsEntropyThold) whisperArgs.push("--entropy-thold", "2.4");
+    if (caps.supportsLogprobThold) whisperArgs.push("--logprob-thold", "-1.0");
+    if (caps.supportsSuppressNst) whisperArgs.push("--suppress-nst");
 
     await runAsyncProcess(
       whisperBin,
@@ -2598,10 +3660,75 @@ btnTranscribe?.addEventListener("click", async () => {
     if (progressText) progressText.textContent = "90% Parsing tokens & mapping timeline...";
 
     const whisperJson = JSON.parse(fs.readFileSync(`${jsonOutPrefix}.json`, "utf8"));
-    const reconstructed = reconstructFullWords(whisperJson.transcription || []);
+
+    // Extract individual tokens from Whisper segments or interpolate words if full segments
+    const rawTokens = [];
+    if (Array.isArray(whisperJson.transcription)) {
+      for (const seg of whisperJson.transcription) {
+        if (Array.isArray(seg.tokens) && seg.tokens.length > 0) {
+          rawTokens.push(...seg.tokens);
+        } else if (seg.text && seg.offsets) {
+          const segText = seg.text.trim();
+          const wordsInSeg = segText.split(/\s+/).filter(Boolean);
+          if (wordsInSeg.length > 1) {
+            const segStart = seg.offsets.from;
+            const segEnd = seg.offsets.to;
+            const segDur = Math.max(100, segEnd - segStart);
+            const totalChars = wordsInSeg.reduce((sum, w) => sum + w.length, 0);
+            let curFrom = segStart;
+            for (let wi = 0; wi < wordsInSeg.length; wi++) {
+              const wStr = wordsInSeg[wi];
+              const frac = totalChars > 0 ? (wStr.length / totalChars) : (1 / wordsInSeg.length);
+              const wDur = segDur * frac;
+              const curTo = (wi === wordsInSeg.length - 1) ? segEnd : Math.round(curFrom + wDur);
+              rawTokens.push({
+                text: " " + wStr,
+                offsets: { from: curFrom, to: curTo }
+              });
+              curFrom = curTo;
+            }
+          } else {
+            rawTokens.push({
+              text: seg.text,
+              offsets: seg.offsets
+            });
+          }
+        }
+      }
+    }
+
+    const reconstructed = reconstructFullWords(rawTokens.length > 0 ? rawTokens : (whisperJson.transcription || []));
+
+    // Ensure every single item in reconstructed is a discrete, single word
+    const singleTokens = [];
+    for (const item of reconstructed) {
+      const trimmed = (item.text || "").trim();
+      const fromMs = (typeof item.from === "number") ? item.from : ((item.offsets && typeof item.offsets.from === "number") ? item.offsets.from : 0);
+      const toMs = (typeof item.to === "number") ? item.to : ((item.offsets && typeof item.offsets.to === "number") ? item.offsets.to : fromMs + 200);
+      if (/\s+/.test(trimmed)) {
+        const parts = splitWordAtSpaces({
+          text: trimmed,
+          start: fromMs / 1000,
+          end: toMs / 1000
+        });
+        parts.forEach((p) => {
+          singleTokens.push({
+            text: p.text,
+            from: Math.round(p.start * 1000),
+            to: Math.round(p.end * 1000)
+          });
+        });
+      } else {
+        singleTokens.push({
+          text: trimmed,
+          from: fromMs,
+          to: toMs
+        });
+      }
+    }
 
     // Task 8: Map tokens through zone map and drop words recognized during synthetic silence
-    reconstructed.forEach((token) => {
+    singleTokens.forEach((token) => {
       const cleanWord = token.text.trim();
       const tokenStart = token.from / 1000;
       const tokenEnd = token.to / 1000;
@@ -2619,14 +3746,14 @@ btnTranscribe?.addEventListener("click", async () => {
       }
     });
 
-    if (!job.cancelled) {
+    if (job && !job.cancelled) {
       if (progressBar) progressBar.style.width = "100%";
       if (progressText) progressText.textContent = "100% Done";
       renderWordEditor();
       setStatus(`Transcribed ${state.words.length} words via Whisper ${modelShortName}.`, "success");
     }
   } catch (err) {
-    if (!job.cancelled) {
+    if (!job || !job.cancelled) {
       setStatus(err.message || String(err), "error");
     } else {
       setStatus("Transcription cancelled by user.", "warning");
@@ -2642,7 +3769,9 @@ btnTranscribe?.addEventListener("click", async () => {
     }, 800);
 
     // Task 11: Safe cleanup of isolated job directory
-    cleanupDirectorySafe(job.dir);
+    if (job && job.dir) {
+      cleanupDirectorySafe(job.dir);
+    }
     currentJob = null;
   }
 });
@@ -2655,29 +3784,24 @@ btnRender?.addEventListener("click", async () => {
   btnRender.disabled = true;
 
   try {
-    const chunks = buildWordChunks();
+    const styleFile = (getEl("styleSelect") && getEl("styleSelect").value) ? getEl("styleSelect").value : "bisik_clean-cut.mogrt";
+    const userDualLine = Boolean(getEl("chkDualLine") && getEl("chkDualLine").checked);
+    const chunks = buildWordChunks(state.words, {
+      style: styleFile,
+      isDualLine: userDualLine
+    });
     if (chunks.length === 0) return setStatus("No words to render.", "warning");
 
     const videoTrackIdx = parseInt(videoSelect.value, 10);
-    const styleFile = getEl("styleSelect").value;
-    const fontName = getEl("fontSelect") ? getEl("fontSelect").value : "Montserrat-Black";
+    const rawFont = getEl("fontSelect") ? getEl("fontSelect").value : "Arial-Black";
+    const fontName = (fontPostScriptMap && fontPostScriptMap[rawFont]) || rawFont;
     const highlightMode = getEl("highlightMode").value;
     const normalizedColor = hexToNormalizedFloatRgb(state.selectedHex);
-    const posY = parseInt(getEl("posPreset").value, 10) || 880;
+    const posMode = getEl("posPreset") ? getEl("posPreset").value : "bottom";
     const textScale = parseInt(getEl("textScale").value, 10) || 100;
-
-    const sfxMode = sfxModeSelect.value;
-    const sfxTrackIdx = parseInt(sfxTrackSelect.value, 10);
-    const audioTrackIdx = parseInt(audioSelect.value, 10);
-
-    if (sfxMode !== "none" && sfxTrackIdx === audioTrackIdx) {
-      btnRender.disabled = false;
-      return setStatus("SFX track must be different from the dialogue track.", "warning");
-    }
 
     const extRoot = csInterface.getSystemPath(SystemPath.EXTENSION);
     const mogrtPath = path.join(extRoot, "assets", styleFile);
-    const sfxDir = path.join(extRoot, "assets", "sfx");
 
     if (!fs.existsSync(mogrtPath)) {
       btnRender.disabled = false;
@@ -2685,19 +3809,31 @@ btnRender?.addEventListener("click", async () => {
     }
 
     const allSegments = [];
+    const ACOUSTIC_LEAD_SEC = 0.06; // 60ms acoustic onset alignment
 
-    chunks.forEach((chunkObj) => {
+    chunks.forEach((chunkObj, idx) => {
       const chunk = chunkObj.words;
-      const clipStartSec = chunk[0].start;
-      const clipEndSec = chunk[chunk.length - 1].end;
-      const wordTimings = [];
-      const keywordTimes = [];
+      const prevEnd = (idx > 0) ? allSegments[idx - 1].end : 0;
+      const rawStart = Math.max(0, chunk[0].start - ACOUSTIC_LEAD_SEC);
+      const clipStartSec = Math.max(prevEnd, rawStart);
 
+      const nextStart = (idx < chunks.length - 1 && chunks[idx + 1].words[0])
+        ? Math.max(0, chunks[idx + 1].words[0].start - ACOUSTIC_LEAD_SEC)
+        : Infinity;
+
+      const naturalEnd = chunk[chunk.length - 1].end;
+      const minEnd = clipStartSec + 0.35;
+      let clipEndSec = Math.max(naturalEnd, minEnd);
+      if (clipEndSec >= nextStart) {
+        clipEndSec = Math.max(clipStartSec + 0.2, nextStart - 0.03);
+      }
+
+      const wordTimings = [];
       const formattedText = chunkObj.lines.map((line) => line.map((w) => w.text.trim()).join(" ")).join("\n");
 
       chunk.forEach((w) => {
-        const relStart = Number((w.start - clipStartSec).toFixed(3));
-        const relEnd = Number((w.end - clipStartSec).toFixed(3));
+        const relStart = Number(Math.max(0, w.start - clipStartSec).toFixed(3));
+        const relEnd = Number(Math.max(relStart + 0.10, w.end - clipStartSec).toFixed(3));
 
         // Highlight flag contract:
         // 0 = no highlight
@@ -2708,38 +3844,41 @@ btnRender?.addEventListener("click", async () => {
         if (highlightMode === "active") kFlag = 1;
         else if (highlightMode === "keywords") kFlag = w.isKeyword ? 2 : 0;
         else if (highlightMode === "both") kFlag = w.isKeyword ? 3 : 1;
-
-        if (w.isKeyword) keywordTimes.push(w.start);
+        else if (highlightMode === "off") kFlag = 0;
 
         wordTimings.push({
-          s: Math.max(0, relStart),
-          e: Math.max(relStart + 0.16, relEnd),
+          s: relStart,
+          e: relEnd,
           k: kFlag
         });
       });
 
+      const clipDurationSec = Number((clipEndSec - clipStartSec).toFixed(3));
       const jsonTimingString = JSON.stringify({
         t: formattedText,
         f: fontName,
         fc: hexToNormalizedFloatRgb(state.fontColorHex || "#FFFFFF"),
         c: normalizedColor,
-        y: posY,
+        bc: hexToNormalizedFloatRgb(state.boxColorHex || "#F43F5E"),
+        pos: posMode,
         sc: textScale,
+        d: clipDurationSec,
         w: wordTimings
       });
 
       allSegments.push({
         start: clipStartSec,
-        end: Math.max(clipEndSec, clipStartSec + MIN_CLIP_DURATION_SEC),
+        end: clipEndSec,
+        mogrtPath: mogrtPath,
         text: formattedText,
         font: fontName,
-        wordTimingJson: jsonTimingString,
-        wordTimingPipe: jsonTimingString,
-        keywordTimes: keywordTimes
+        posMode: posMode,
+        textScale: textScale,
+        wordTimingJson: jsonTimingString
       });
     });
 
-    // Task 15: Guard against active sequence changes between Transcribe and Render
+    // Guard against active sequence changes between Transcribe and Render
     if (state.transcribedSequenceId) {
       try {
         const curSeqRaw = await evalJSX("bisikGetActiveSequenceId()");
@@ -2751,8 +3890,10 @@ btnRender?.addEventListener("click", async () => {
       } catch (seqCheckErr) { }
     }
 
-    // Task 10: Pre-check target track validity upfront before batching
-    const precheckRaw = await evalJSX(`bisikPrecheckTarget(${videoTrackIdx}, ${sfxTrackIdx}, "${sfxMode}")`);
+    // Pre-check target track validity and collision safety upfront before batching
+    const minStart = allSegments.length > 0 ? allSegments[0].start : 0;
+    const maxEnd = allSegments.length > 0 ? allSegments[allSegments.length - 1].end : 0;
+    const precheckRaw = await evalJSX(`bisikPrecheckTarget(${videoTrackIdx}, ${minStart}, ${maxEnd})`);
     const precheck = JSON.parse(precheckRaw);
     if (precheck.error) {
       btnRender.disabled = false;
@@ -2762,9 +3903,9 @@ btnRender?.addEventListener("click", async () => {
     // Optimized batch size of 5 for instant, crash-free, highly responsive imports
     const BATCH_SIZE = 5;
     let totalInserted = 0;
-    let totalSfxInserted = 0;
-    let totalSfxSkipped = 0;
 
+    const hasAnyDualLine = chunks.some((c) => c.lines && c.lines.length > 1);
+    const isDualLine = userDualLine || hasAnyDualLine;
     const numBatches = Math.ceil(allSegments.length / BATCH_SIZE);
     for (let b = 0; b < numBatches; b++) {
       const batchSegments = allSegments.slice(b * BATCH_SIZE, (b + 1) * BATCH_SIZE);
@@ -2776,20 +3917,15 @@ btnRender?.addEventListener("click", async () => {
         mogrtPath: mogrtPath,
         videoTrackIndex: videoTrackIdx,
         fontName: fontName,
-        sfxMode: sfxMode,
-        sfxTrackIndex: sfxTrackIdx,
-        sfxPaths: {
-          whoosh: path.join(sfxDir, "bisik_sfx_whoosh.wav"),
-          pop: path.join(sfxDir, "bisik_sfx_pop.wav"),
-          tick: path.join(sfxDir, "bisik_sfx_tick.wav")
-        },
+        posMode: posMode,
+        isDualLine: isDualLine,
+        textScale: textScale,
         segments: batchSegments
       };
 
       const payloadPath = writePayloadFile(payloadObject);
       let rawRes = "";
       try {
-        // Generous 120s timeout ensures heavy sequences never hit premature timeout
         rawRes = await evalJSX(`bisikInjectFromFile(${jsxStringLiteral(payloadPath)})`, 120000);
       } finally {
         try {
@@ -2806,10 +3942,7 @@ btnRender?.addEventListener("click", async () => {
         throw new Error(res.error);
       }
       totalInserted += (res.inserted || 0);
-      totalSfxInserted += (res.sfxInserted || 0);
-      totalSfxSkipped += (res.sfxSkipped || 0);
 
-      // 60ms yield between batches lets Premiere repaint UI smoothly & process events
       if (b < numBatches - 1) {
         await new Promise((r) => setTimeout(r, 60));
       }
@@ -2817,11 +3950,7 @@ btnRender?.addEventListener("click", async () => {
 
     saveAppSettings();
     await loadTracks({ applyDefaults: false });
-    let msg = `Inserted ${totalInserted} captions & ${totalSfxInserted} SFX clips.`;
-    if (totalSfxSkipped > 0) {
-      msg += ` (${totalSfxSkipped} SFX skipped to protect existing audio).`;
-    }
-    setStatus(msg, "success");
+    setStatus(`Successfully inserted ${totalInserted} captions to timeline.`, "success");
   } catch (err) {
     setStatus(err.message || String(err), "error");
   } finally {
@@ -2833,7 +3962,6 @@ let clearConfirmTimer = null;
 const btnClearTrack = getEl("btnClearTrack");
 btnClearTrack?.addEventListener("click", async () => {
   const videoTrackIdx = parseInt(videoSelect.value, 10);
-  const sfxTrackIdx = parseInt(sfxTrackSelect.value, 10);
 
   // If already in confirming state, execute the clear:
   if (btnClearTrack.dataset.confirming === "true") {
@@ -2842,11 +3970,11 @@ btnClearTrack?.addEventListener("click", async () => {
     btnClearTrack.textContent = "Clear Track";
 
     try {
-      const raw = await evalJSX(`clearTargetTracks(${videoTrackIdx}, ${sfxTrackIdx})`);
+      const raw = await evalJSX(`clearTargetTracks(${videoTrackIdx})`);
       const res = JSON.parse(raw);
       if (res.error) return setStatus(res.error, "error");
       await loadTracks({ applyDefaults: false });
-      setStatus(`Cleared ${res.removedVideo} bisik captions & ${res.removedAudio} SFX clips.`, "success");
+      setStatus(`Cleared ${res.removedVideo} bisik captions.`, "success");
     } catch (err) {
       setStatus(err, "error");
     }
@@ -2855,24 +3983,24 @@ btnClearTrack?.addEventListener("click", async () => {
 
   // First click: query clearable count
   try {
-    const rawCount = await evalJSX(`bisikCountClearable(${videoTrackIdx}, ${sfxTrackIdx})`);
+    const rawCount = await evalJSX(`bisikCountClearable(${videoTrackIdx})`);
     const countData = JSON.parse(rawCount);
     if (countData.error) return setStatus(countData.error, "error");
 
-    const total = (countData.videoCount || 0) + (countData.sfxCount || 0);
+    const total = countData.videoCount || 0;
     if (total === 0) {
-      return setStatus("No bisik caption or SFX clips found on the selected tracks.", "warning");
+      return setStatus("No bisik caption clips found on the selected video track.", "warning");
     }
 
     btnClearTrack.dataset.confirming = "true";
-    btnClearTrack.textContent = `Click again to confirm (${total} bisik clips)`;
+    btnClearTrack.textContent = `Click again to confirm (${total} captions)`;
 
     clearConfirmTimer = setTimeout(() => {
       delete btnClearTrack.dataset.confirming;
       btnClearTrack.textContent = "Clear Track";
     }, 4000);
   } catch (e) {
-    setStatus("Failed to inspect tracks for clearable clips.", "error");
+    setStatus("Failed to inspect track for clearable captions.", "error");
   }
 });
 
@@ -2883,8 +4011,22 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
   initPhotoshopColorPicker();
   initGalleryAndFilterListeners();
   renderStylePreviewGallery();
+  initFontDropdown();
+  initCustomFontDropdown();
   loadPresets();
-  loadTracks();
+  loadTracks({ applyDefaults: true });
+  if (typeof sessionStorage !== "undefined") {
+    try {
+      const cached = sessionStorage.getItem("bisik_cached_words");
+      if (cached && (!state.words || state.words.length === 0)) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          state.words = parsed;
+          renderWordEditor();
+        }
+      }
+    } catch (_) {}
+  }
 }
 
 if (typeof module !== "undefined" && module.exports) {
@@ -2916,6 +4058,24 @@ if (typeof module !== "undefined" && module.exports) {
     readJsonSafe,
     hexToNormalizedFloatRgb,
     autoDetectKeyword,
+    filterFillerWords,
+    getInstalledFontsSync,
+    initFontDropdown,
+    initCustomFontDropdown,
+    populateCustomFontList,
+    syncCustomFontDisplay,
+    cleanFontFamily,
+    applyFontSelection,
+    fontPostScriptMap,
+    loadRecentFonts,
+    saveRecentFonts,
+    recordRecentFont,
+    MAX_RECENT_FONTS,
+    DEFAULT_RECENT_FONTS,
+    recentFonts,
+    probeWhisperCapabilities,
+    saveAppSettings,
+    loadAppSettings,
     state
   };
 }

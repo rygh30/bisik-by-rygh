@@ -5,25 +5,43 @@
   <title>bisik by rygh</title>
   <style>
     :root {
-      /* Adobe Spectrum Standard 4px/8px Grid Spacing & Sizing Scale */
-      --s-1: 4px;  /* Micro spacing / compact gap / border radius */
-      --s-2: 8px;  /* Base spacing / component gap / padding */
-      --s-3: 12px; /* Medium spacing / card padding / margin */
-      --s-4: 24px; /* Compact control & readout height */
-      --s-5: 32px; /* Standard control, input, dropdown & button height */
+      /* Golden Ratio (phi = 1.618) Spatial & Sizing Tokens (Fibonacci Sequence: 3, 5, 8, 13, 21, 34, 55, 89) */
+      --phi: 1.618;
+      --s-1: 3px;   /* Micro spacing / hairline gap */
+      --s-2: 5px;   /* Compact tag padding / micro gap */
+      --s-3: 8px;   /* Element gap / component padding */
+      --s-4: 13px;  /* Standard padding / card rhythm */
+      --s-5: 21px;  /* Major section separation */
+      --s-6: 34px;  /* Golden Ratio Control Height (Inputs, Selects, Buttons) */
+      --s-7: 55px;  /* Hero container spacing */
+      --s-8: 89px;  /* Golden Ratio Preview Stage Height */
 
-      /* Adobe Spectrum Typography Scale */
-      --f-xs: 11px; /* Minimum Spectrum readable scale (replaces 8px) */
-      --f-sm: 11px; /* Spectrum Label & Secondary Text (replaces 10px) */
-      --f-md: 12px; /* Standard Premiere Pro Control & Body scale */
-      --f-lg: 14px; /* Spectrum Section Heading */
-      --f-xl: 16px; /* Spectrum Panel Brand Title */
+      /* Golden Ratio Typography Scale */
+      --f-micro: 10px; /* Badges & tiny indicators */
+      --f-xs: 11px;    /* Caption & meta labels */
+      --f-sm: 12px;    /* Secondary labels & readouts */
+      --f-base: 13px;  /* Standard control text & body */
+      --f-md: 14px;    /* Prominent labels & status */
+      --f-lg: 17px;    /* Section Headings (10.5 * 1.618) */
+      --f-xl: 21px;    /* Brand Titles (13 * 1.618) */
+
+      /* Golden Ratio Radii */
+      --radius-xs: 3px;
+      --radius-sm: 5px;
+      --radius-md: 8px;
+      --radius-lg: 13px;
+
+      /* Semantic Fibonacci Controls & Heights */
+      --control-h: var(--s-6);      /* 34px - Standard Golden Ratio Control Height (21 * 1.618 ≈ 34) */
+      --control-h-sm: 26px;         /* 26px - Secondary buttons, toolbar items, segmented pills */
+      --control-h-xs: var(--s-5);   /* 21px - Micro controls */
 
       /* Color System */
       --bg: #121214;
       --card: #1A1A1E;
       --surface: #101012;
       --border: #2C2C32;
+      --border-focus: #0070D2;
       --text: #F5F5F7;
       --muted: #8E8E93;
       --accent: #0070D2;
@@ -89,7 +107,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      height: var(--s-5);
+      height: var(--control-h);
       padding: 0 var(--s-1);
     }
     .brand {
@@ -114,27 +132,27 @@
       gap: var(--s-2);
     }
     .cti-readout {
-      height: var(--s-4);
+      height: var(--control-h-sm);
       display: inline-flex;
       align-items: center;
-      padding: 0 var(--s-2);
+      padding: 0 var(--s-3);
       font-family: "Source Code Pro", Menlo, Monaco, Consolas, monospace;
       font-size: var(--f-sm);
       color: var(--gold);
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: var(--s-1);
+      border-radius: var(--radius-xs);
     }
 
     /* Section Cards */
     .card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: var(--s-2);
-      padding: var(--s-2);
+      border-radius: var(--radius-md);
+      padding: var(--s-4);
       display: flex;
       flex-direction: column;
-      gap: var(--s-2);
+      gap: var(--s-3);
     }
 
     .field {
@@ -151,46 +169,59 @@
       margin: 0;
     }
 
-    /* Uniform Golden Ratio Inputs, Dropdowns & Buttons (34px / 28px) */
-    select, input[type="text"], input[type="number"], button {
+    /* Uniform Golden Ratio Inputs, Dropdowns & Buttons (Fibonacci: 34px height, 13px padding, 5px radius) */
+    select, input[type="text"]:not(.word-input):not(.custom-dropdown-search):not(#findInput):not(#replaceInput), input[type="number"]:not(#textScale):not(#wordsPerClip):not(.ps-input-row input), button:not(.btn-sm):not(.filter-tab):not(.target-pill):not(.color-swatch):not(.btn-icon):not(.chip-btn):not(.custom-dropdown-search-clear) {
       width: 100%;
-      height: var(--s-5);
-      padding: 0 var(--s-2);
-      border-radius: var(--s-1);
+      height: var(--s-6);
+      padding: 0 var(--s-4);
+      border-radius: var(--radius-sm);
       border: 1px solid var(--border);
       background: var(--surface);
       color: var(--text);
-      font-size: var(--f-md);
+      font-size: var(--f-base);
       font-weight: 500;
       outline: none;
-      transition: border-color 0.12s ease, background 0.12s ease;
+      transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+    }
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238E8E93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 14px;
+      padding-right: 28px !important;
+      cursor: pointer;
+    }
+    select:hover {
+      border-color: #555;
+      background-color: #161619;
     }
     select:focus, input:focus {
       border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
     }
-    /* Premiere Pro Native UI Scale Range Slider */
+    /* Premiere Pro Native UI Scale Range Slider (1 Single Row Container matching Native Lumetri UI) */
     .scale-container {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--s-1);
-      padding: var(--s-2) var(--s-3);
+      padding: 6px var(--s-3);
       margin: var(--s-2) 0;
       display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .scale-header {
-      display: flex;
-      justify-content: space-between;
+      flex-direction: row;
       align-items: center;
+      gap: 12px;
     }
-    .scale-header label {
+    .scale-label {
       font-size: var(--f-xs);
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: var(--muted);
       margin: 0;
+      min-width: 44px;
+      flex-shrink: 0;
     }
     .scale-badge {
       font-size: 11px;
@@ -201,27 +232,19 @@
       border-radius: 4px;
       padding: 1px 6px;
     }
-    .scale-slider-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      width: 100%;
-    }
     .scale-track-wrap {
       flex: 1;
       display: flex;
       align-items: center;
-      height: 24px;
+      height: 28px;
     }
     .premiere-slider {
       -webkit-appearance: none;
       appearance: none;
       width: 100%;
-      height: 4px;
-      border-radius: 2px;
-      background: #141414;
-      border: 1px solid #2b2b2b;
-      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7);
+      height: 28px;
+      background: transparent;
+      border: none;
       outline: none;
       margin: 0;
       padding: 0;
@@ -231,26 +254,26 @@
       width: 100%;
       height: 4px;
       border-radius: 2px;
-      background: #141414;
-      border: 1px solid #2b2b2b;
-      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7);
+      background: #121212;
+      border: 1px solid #282828;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.05);
     }
     .premiere-slider::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 14px;
-      height: 18px;
-      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="18" viewBox="0 0 14 18"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="%23a4a4a4"/><stop offset="45%" stop-color="%23767676"/><stop offset="100%" stop-color="%23484848"/></linearGradient></defs><path d="M 7 1 C 7 1, 13 6.5, 13 11 C 13 14.5, 10.3 17, 7 17 C 3.7 17, 1 14.5, 1 11 C 1 6.5, 7 1, 7 1 Z" fill="url(%23g)" stroke="%23161616" stroke-width="1.2"/></svg>') no-repeat center center;
+      width: 16px;
+      height: 22px;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="22" viewBox="0 0 16 22"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="%23b0b0b0"/><stop offset="20%" stop-color="%239a9a9a"/><stop offset="55%" stop-color="%23727272"/><stop offset="100%" stop-color="%23464646"/></linearGradient></defs><path d="M 8 1 C 8.6 1.8, 15.5 8.5, 15.5 14.5 C 15.5 18.6, 12.1 21.5, 8 21.5 C 3.9 21.5, 0.5 18.6, 0.5 14.5 C 0.5 8.5, 7.4 1.8, 8 1 Z" fill="url(%23g)" stroke="%23141414" stroke-width="1.2"/></svg>') no-repeat center center;
       cursor: pointer;
-      margin-top: -7px;
-      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+      margin-top: -9px;
+      filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.7));
       transition: filter 0.12s ease;
     }
     .premiere-slider::-webkit-slider-thumb:hover {
-      filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8)) brightness(1.15);
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9)) brightness(1.15);
     }
     .premiere-slider::-webkit-slider-thumb:active {
-      filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.95)) brightness(1.25);
+      filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 1)) brightness(1.25);
     }
     .premiere-slider:focus-visible {
       outline: 2px solid var(--accent, #0070D2) !important;
@@ -260,29 +283,39 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 0 6px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid transparent;
+      border-radius: 3px;
+      padding: 0 4px;
       height: 24px;
-      min-width: 62px;
-      transition: border-color 0.15s ease;
+      min-width: 54px;
+      flex-shrink: 0;
+      transition: border-color 0.15s ease, background 0.15s ease;
+      cursor: text;
+    }
+    .scale-number-wrap:hover {
+      border-color: #383838;
+      background: rgba(0, 0, 0, 0.45);
     }
     .scale-number-wrap:focus-within {
       border-color: var(--accent);
+      background: rgba(0, 0, 0, 0.6);
     }
     .scale-number-wrap input[type="number"] {
-      width: 42px;
+      width: 32px;
       height: 22px;
       border: none !important;
       background: transparent !important;
       text-align: right;
-      color: var(--text);
-      font-size: 11px;
-      font-weight: 600;
+      color: #cecece;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: -0.2px;
       padding: 0;
       outline: none;
       -moz-appearance: textfield;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     .scale-number-wrap input[type="number"]::-webkit-outer-spin-button,
     .scale-number-wrap input[type="number"]::-webkit-inner-spin-button {
@@ -290,10 +323,11 @@
       margin: 0;
     }
     .scale-percent-unit {
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 600;
+      color: #8c8c8c;
+      font-size: 13px;
+      font-weight: 500;
       margin-left: 2px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
     }
     /* Adobe Spectrum Accessible Focus-Visible Ring */
     select:focus-visible,
@@ -316,10 +350,29 @@
       justify-content: center;
     }
     .btn-sm {
-      height: var(--s-4);
-      font-size: var(--f-sm);
-      padding: 0 var(--s-2);
+      height: var(--control-h-sm);
+      font-size: var(--f-xs);
+      padding: 0 var(--s-3);
+      border-radius: var(--radius-xs);
       width: auto;
+    }
+    .input-sm {
+      height: var(--control-h-sm) !important;
+      font-size: var(--f-xs) !important;
+      padding: 0 var(--s-3) !important;
+      border-radius: var(--radius-xs) !important;
+      box-sizing: border-box !important;
+    }
+    #findInput, #replaceInput, #btnReplaceAll {
+      height: 28px !important;
+      font-size: var(--f-xs) !important;
+      border-radius: var(--radius-xs) !important;
+      box-sizing: border-box !important;
+    }
+    #findInput, #replaceInput {
+      padding: 0 var(--s-3) !important;
+      background: var(--surface) !important;
+      border: 1px solid var(--border) !important;
     }
     .btn-primary {
       background: var(--accent);
@@ -380,57 +433,272 @@
       min-width: 0;
     }
 
+    /* Custom In-DOM Dropdown (Replaces buggy CEF native popup scrollbar) */
+    #fontSelect {
+      display: none !important;
+    }
+    .custom-dropdown-wrap {
+      position: relative;
+      width: 100%;
+    }
+    .custom-dropdown-trigger {
+      width: 100%;
+      height: var(--control-h);
+      padding: 0 var(--s-4);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: var(--f-base);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--s-2);
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+      box-sizing: border-box;
+    }
+    .custom-dropdown-trigger:hover {
+      border-color: #555;
+      background-color: #161619;
+    }
+    .custom-dropdown-trigger.is-open {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+    .custom-dropdown-trigger.is-open .dropdown-chevron {
+      transform: rotate(180deg);
+    }
+    .custom-dropdown-display {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+    .dropdown-chevron {
+      color: var(--muted);
+      flex-shrink: 0;
+      transition: transform 0.18s ease;
+    }
+    .custom-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      background: #18181C;
+      border: 1px solid #36363E;
+      border-radius: var(--radius-md);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75), 0 2px 6px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      max-height: 280px;
+    }
+    .custom-dropdown-search-wrap {
+      padding: 6px;
+      background: #141417;
+      border-bottom: 1px solid #28282E;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .custom-dropdown-search {
+      width: 100% !important;
+      height: 28px !important;
+      padding: 0 26px 0 8px !important;
+      background: #0E0E10 !important;
+      border: 1px solid #2A2A30 !important;
+      border-radius: var(--radius-xs) !important;
+      font-size: var(--f-xs) !important;
+      color: #FFF !important;
+      outline: none !important;
+      box-sizing: border-box;
+    }
+    .custom-dropdown-search:focus {
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 1px var(--accent) !important;
+    }
+    .custom-dropdown-search-clear {
+      position: absolute;
+      right: 12px;
+      background: none !important;
+      border: none !important;
+      color: var(--muted) !important;
+      font-size: 16px !important;
+      cursor: pointer !important;
+      padding: 0 !important;
+      width: 18px !important;
+      height: 18px !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .custom-dropdown-search-clear:hover {
+      color: #FFF !important;
+    }
+    .custom-dropdown-list {
+      flex: 1;
+      max-height: 230px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 4px 0;
+      scrollbar-width: thin;
+      scrollbar-color: #4C4C54 #141417;
+    }
+    .custom-dropdown-list::-webkit-scrollbar {
+      width: 8px;
+    }
+    .custom-dropdown-list::-webkit-scrollbar-track {
+      background: #141417;
+    }
+    .custom-dropdown-list::-webkit-scrollbar-thumb {
+      background: #4C4C54;
+      border-radius: 4px;
+    }
+    .custom-dropdown-list::-webkit-scrollbar-thumb:hover {
+      background: #6A6A74;
+    }
+    .custom-dropdown-group-header {
+      padding: 6px 10px 3px 10px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      position: sticky;
+      top: 0;
+      background: #18181C;
+      z-index: 2;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .custom-dropdown-item {
+      padding: 7px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      cursor: pointer;
+      font-size: var(--f-sm);
+      color: #D6D6DC;
+      transition: background 0.1s ease, color 0.1s ease;
+      user-select: none;
+    }
+    .custom-dropdown-item:hover,
+    .custom-dropdown-item.is-focused {
+      background: #26262E;
+      color: #FFFFFF;
+    }
+    .custom-dropdown-item.is-selected {
+      background: rgba(0, 112, 210, 0.28);
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+    .custom-dropdown-item-check {
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 700;
+      display: none;
+    }
+    .custom-dropdown-item.is-selected .custom-dropdown-item-check {
+      display: inline-block;
+    }
+    .custom-dropdown-empty {
+      padding: 16px;
+      text-align: center;
+      font-size: var(--f-xs);
+      color: var(--muted);
+    }
+
     /* Color Picker Triggers */
     .color-picker-trigger-box {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 6px 8px;
+      padding: var(--s-3) var(--s-4);
       cursor: pointer;
-      transition: border-color 0.15s ease, background 0.15s ease;
+      transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: var(--s-2);
     }
     .color-picker-trigger-box:hover {
       border-color: var(--accent);
-      background: #1e1e24;
+      background: #18181D;
+    }
+    .color-picker-trigger-box.active-target {
+      border-color: var(--gold);
+      background: rgba(255, 196, 0, 0.08);
+      box-shadow: 0 0 0 1px var(--gold);
+    }
+    .target-pill-group {
+      display: inline-flex;
+      gap: 2px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 2px;
+    }
+    .target-pill {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 7px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+    .target-pill:hover {
+      color: var(--text);
+    }
+    .target-pill.active {
+      background: var(--card);
+      color: var(--gold);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
     }
     .color-picker-trigger-box label {
-      font-size: 10px;
+      font-size: var(--f-xs);
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.05em;
+      font-weight: 600;
       margin: 0;
       cursor: pointer;
     }
     .color-pill-preview {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: var(--s-3);
     }
     .color-dot {
-      width: 14px;
-      height: 14px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      box-shadow: inset 0 0 2px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow: inset 0 0 3px rgba(0,0,0,0.6);
       flex-shrink: 0;
     }
     .color-hex-text {
       font-family: 'Source Code Pro', Menlo, monospace;
-      font-size: 11px;
+      font-size: var(--f-sm);
       font-weight: 600;
       color: var(--text);
       flex: 1;
     }
     .color-picker-badge {
-      font-size: 9px;
+      font-size: var(--f-micro);
       background: var(--card);
       border: 1px solid var(--border);
-      padding: 1px 5px;
-      border-radius: 3px;
+      padding: 2px 7px;
+      border-radius: var(--radius-xs);
       color: var(--muted);
+      font-weight: 600;
     }
 
     /* Photoshop-style Color Picker Modal */
@@ -643,10 +911,10 @@
     .segmented {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      height: var(--s-5);
+      height: var(--control-h-sm);
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--s-1);
+      border-radius: var(--radius-sm);
       padding: 2px;
       position: relative;
     }
@@ -665,9 +933,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: var(--f-sm);
+      font-size: var(--f-xs);
+      font-weight: 600;
       color: var(--muted);
-      border-radius: 3px;
+      border-radius: var(--radius-xs);
       cursor: pointer;
       text-transform: none;
       letter-spacing: 0;
@@ -682,19 +951,19 @@
       min-height: 180px;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: var(--s-2);
-      padding: var(--s-2);
+      border-radius: var(--radius-md);
+      padding: var(--s-4);
       display: flex;
       flex-direction: column;
-      gap: var(--s-2);
+      gap: var(--s-3);
     }
     .editor-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 4px;
-      padding-bottom: var(--s-1);
+      gap: var(--s-2);
+      padding-bottom: var(--s-3);
       border-bottom: 1px solid var(--border);
     }
     .editor-bar-group {
@@ -735,17 +1004,17 @@
       display: flex;
       flex-wrap: wrap;
       align-content: flex-start;
-      gap: var(--s-1);
+      gap: var(--s-2);
     }
     .word-chip {
-      height: 26px;
+      height: 28px;
       display: inline-flex;
       align-items: center;
-      gap: 2px;
+      gap: 3px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--s-1);
-      padding: 0 4px;
+      border-radius: var(--radius-xs);
+      padding: 0 var(--s-2);
       flex-shrink: 0;
       max-width: 100%;
     }
@@ -774,19 +1043,31 @@
       background: var(--accent);
       color: #fff;
     }
+    input[type="text"].word-input,
     .word-input {
-      height: 20px;
-      border: none;
-      background: transparent;
-      color: var(--text);
-      font-size: var(--f-md);
-      padding: 0 4px;
-      margin: 0;
-      min-width: 32px;
-      box-sizing: border-box;
-      outline: none;
+      height: 20px !important;
+      border: none !important;
+      background: transparent !important;
+      color: var(--text) !important;
+      font-size: var(--f-base) !important;
+      font-weight: 600 !important;
+      padding: 0 4px !important;
+      margin: 0 !important;
+      min-width: 28px !important;
+      box-sizing: border-box !important;
+      outline: none !important;
+      box-shadow: none !important;
+      border-radius: 2px !important;
       text-overflow: clip;
       white-space: nowrap;
+    }
+    input[type="text"].word-input:focus,
+    .word-input:focus {
+      border: none !important;
+      box-shadow: none !important;
+      outline: none !important;
+      background: rgba(255, 255, 255, 0.12) !important;
+      color: #FFFFFF !important;
     }
     .chip-btn {
       width: 20px;
@@ -821,13 +1102,13 @@
     .palette-grid {
       display: grid;
       grid-template-columns: repeat(12, 1fr);
-      gap: var(--s-1);
-      height: var(--s-4);
+      gap: var(--s-2);
+      height: var(--control-h-sm);
     }
     .swatch {
       width: 100%;
       height: 100%;
-      border-radius: 4px;
+      border-radius: var(--radius-xs);
       border: 2px solid transparent;
       cursor: pointer;
       transition: transform 0.1s ease, border-color 0.1s ease;
@@ -842,16 +1123,16 @@
 
     /* Status Bar */
     .status-bar {
-      height: var(--s-4);
+      height: var(--control-h);
       display: flex;
       align-items: center;
-      padding: 0 var(--s-2);
+      padding: 0 var(--s-4);
       font-family: "Source Code Pro", Menlo, Monaco, Consolas, monospace;
       font-size: var(--f-sm);
       color: var(--text);
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--s-1);
+      border-radius: var(--radius-sm);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -910,23 +1191,31 @@
     /* Animation Composer-Style Visual Preset Gallery & Swatches */
     .preset-filter-bar {
       display: flex;
-      gap: 4px;
+      width: 100%;
+      box-sizing: border-box;
+      gap: 2px;
       background: var(--surface);
-      padding: 3px;
+      padding: 2px;
       border-radius: var(--s-1);
       border: 1px solid var(--border);
     }
     .filter-tab {
       flex: 1;
+      min-width: 0;
       background: transparent;
       border: none;
       color: var(--muted);
-      padding: 4px 6px;
-      font-size: 11px;
+      padding: 2px 1px;
+      font-size: 10px;
       font-weight: 600;
       border-radius: 3px;
       cursor: pointer;
       height: 24px;
+      white-space: nowrap !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      letter-spacing: -0.2px;
     }
     .filter-tab.active {
       background: var(--card);
@@ -936,7 +1225,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: var(--s-2);
-      max-height: 230px;
+      max-height: 252px;
       overflow-y: auto;
       padding-right: 2px;
     }
@@ -958,31 +1247,33 @@
       box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
     }
     .preview-stage {
-      height: 74px;
-      background: #0D0D0E;
+      height: var(--s-8, 89px);
+      background: #09090B;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 8px 10px;
+      padding: var(--s-3) var(--s-4);
       text-align: center;
       position: relative;
       overflow: hidden;
     }
     .preview-caption {
-      font-size: 12px;
+      font-size: 13.5px;
       font-weight: 700;
-      color: #ffffff;
-      line-height: 1.25;
+      color: var(--preview-font-color, #ffffff);
+      font-family: var(--preview-font-family, inherit);
+      line-height: 1.35;
       letter-spacing: -0.2px;
+      transition: color 0.15s ease;
     }
     .preview-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 4px 8px;
+      padding: var(--s-2) var(--s-3);
       background: var(--card);
       border-top: 1px solid var(--border);
-      font-size: 11px;
+      font-size: var(--f-xs);
     }
     .preview-footer-left {
       display: flex;
@@ -1001,16 +1292,82 @@
     .style-card-title {
       color: var(--text);
       font-weight: 500;
-      font-size: 11px;
+      font-size: var(--f-xs);
     }
     .style-fav-star {
       color: #555;
-      font-size: 12px;
+      font-size: 13px;
       cursor: pointer;
-      transition: color 0.15s ease;
+      transition: color 0.15s ease, transform 0.1s ease;
+    }
+    .style-fav-star:hover {
+      transform: scale(1.15);
     }
     .style-fav-star.favorited {
       color: var(--gold);
+    }
+
+    /* Live Typography & Color Golden Ratio Strip */
+    .typo-live-strip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: var(--s-3) var(--s-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--s-2);
+      transition: border-color 0.15s ease;
+    }
+    .typo-live-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: var(--f-xs);
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .typo-live-badge-group {
+      display: flex;
+      align-items: center;
+      gap: var(--s-3);
+    }
+    .typo-font-badge {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px var(--s-3);
+      border-radius: var(--radius-xs);
+      color: var(--text);
+      font-weight: 600;
+      font-size: var(--f-xs);
+      letter-spacing: 0.02em;
+    }
+    .typo-color-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'Source Code Pro', Menlo, Monaco, Consolas, monospace;
+      font-size: var(--f-xs);
+      font-weight: 600;
+      color: var(--text);
+    }
+    .typo-color-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      flex-shrink: 0;
+    }
+    .typo-live-sample {
+      font-family: var(--preview-font-family, inherit);
+      color: var(--preview-font-color, #ffffff);
+      font-size: 14px;
+      line-height: 1.35;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color 0.15s ease, font-family 0.15s ease;
     }
 
     /* 10 Live CSS Keyframe Animations */
@@ -1046,143 +1403,197 @@
       30% { opacity: 0.25; letter-spacing: 2px; }
     }
 
-    .anim-spring .aw {
+    /* 20 Presets CSS Visual Preview Animations */
+    .anim-clean-cut {
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+      color: var(--preview-font-color, #ffffff);
+      animation: none !important;
+    }
+    .anim-clean-cut .aw { color: var(--preview-font-color, #ffffff); }
+
+    @keyframes animSoftFade {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.25; }
+    }
+    .anim-soft-fade {
+      animation: animSoftFade 2.4s infinite ease-in-out;
+    }
+    .anim-soft-fade .aw { color: var(--preview-accent, var(--gold)); }
+
+    @keyframes animRiseFade {
+      0% { opacity: 0; transform: translateY(6px); }
+      35%, 85% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(0); }
+    }
+    .anim-rise-fade {
+      animation: animRiseFade 2.6s infinite ease-out;
+    }
+    .anim-rise-fade .aw { color: var(--preview-accent, var(--gold)); }
+
+    @keyframes animBlurFocus {
+      0% { filter: blur(5px); opacity: 0.2; }
+      30%, 85% { filter: blur(0px); opacity: 1; }
+      100% { opacity: 0; }
+    }
+    .anim-blur-focus {
+      animation: animBlurFocus 2.8s infinite ease-out;
+    }
+    .anim-blur-focus .aw { color: var(--preview-accent, var(--gold)); }
+
+    @keyframes animSlowDrift {
+      0% { transform: scale(0.97); }
+      100% { transform: scale(1.03); }
+    }
+    .anim-slow-drift {
+      animation: animSlowDrift 4.0s infinite alternate ease-in-out;
+    }
+    .anim-slow-drift .aw { color: var(--preview-accent, var(--gold)); }
+
+    @keyframes animTrackingSettle {
+      0% { letter-spacing: 3px; opacity: 0.3; }
+      40%, 100% { letter-spacing: 0.3px; opacity: 1; }
+    }
+    .anim-tracking-settle {
+      animation: animTrackingSettle 2.8s infinite ease-out;
+    }
+    .anim-tracking-settle .aw { color: var(--preview-accent, var(--gold)); }
+
+    @keyframes animWordReveal {
+      0%, 30% { opacity: 0.1; }
+      60%, 100% { opacity: 1; }
+    }
+    .anim-word-reveal .aw {
+      color: var(--preview-accent, var(--gold));
+      animation: animWordReveal 2.2s infinite ease-out;
+    }
+
+    @keyframes animKaraokeFill {
+      0% { color: #888888; }
+      50%, 100% { color: var(--preview-accent, var(--gold)); }
+    }
+    .anim-karaoke-fill .aw {
+      animation: animKaraokeFill 2.0s infinite ease-in-out;
+      font-weight: 700;
+    }
+
+    .anim-active-highlight .aw {
+      color: var(--preview-accent, var(--gold));
+      font-weight: 800;
+      text-shadow: 0 0 6px rgba(255, 214, 10, 0.5);
+    }
+
+    .anim-highlight-box .aw {
+      background: var(--preview-accent, var(--gold));
+      color: #000000;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 800;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .anim-underline-sweep .aw {
+      color: #ffffff;
+      border-bottom: 2px solid var(--preview-accent, var(--gold));
+      padding-bottom: 1px;
+    }
+
+    @keyframes animScaleFocus {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+    .anim-scale-focus .aw {
+      display: inline-block;
+      color: var(--preview-accent, var(--gold));
+      font-weight: 800;
+      animation: animScaleFocus 2.0s infinite ease-in-out;
+    }
+
+    @keyframes animPopBounce {
+      0% { transform: scale(0.8); opacity: 0; }
+      50% { transform: scale(1.12); opacity: 1; }
+      75%, 100% { transform: scale(1); opacity: 1; }
+    }
+    .anim-pop-bounce .aw {
+      display: inline-block;
+      color: var(--preview-accent, var(--gold));
+      animation: animPopBounce 2.2s infinite cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .anim-spring-rise .aw {
       display: inline-block;
       color: var(--preview-accent, var(--gold));
       animation: animSpringRise 2.4s infinite ease-out;
     }
-    .anim-cut .aw {
-      color: var(--preview-accent, var(--gold));
-      animation: animCutAccent 1.8s infinite steps(1);
-    }
-    .anim-boxtape {
-      background: #080808;
-      padding: 4px 8px;
-      border-radius: 3px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55);
-    }
-    .anim-boxtape .aw {
-      color: var(--preview-accent, var(--gold));
-    }
-    .anim-blurpop .aw {
-      display: inline-block;
-      color: var(--preview-accent, var(--gold));
-      animation: animBlurPop 2.4s infinite ease-out;
-    }
-    .anim-pill .aw {
-      display: inline-block;
-      background: var(--preview-accent, var(--gold));
-      color: #111111;
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-weight: 800;
-      animation: animPillPulse 1.8s infinite ease-in-out;
-    }
-    .anim-marker .aw {
-      color: #111111;
-      padding: 0 4px;
-      background-image: linear-gradient(var(--preview-accent, var(--gold)), var(--preview-accent, var(--gold)));
-      background-repeat: no-repeat;
-      background-position: left center;
-      background-size: 100% 100%;
-      animation: animMarkerSweep 2.6s infinite ease-in-out;
-    }
-    .anim-cinema {
-      font-weight: 600;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
-      letter-spacing: 0.2px;
-    }
-    .anim-cinema .aw {
-      color: var(--preview-accent, var(--gold));
-    }
-    .anim-cinema-sub {
-      font-weight: 600;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 0 2px rgba(0, 0, 0, 0.9);
-      letter-spacing: 0.3px;
-      color: #ffffff;
-      animation: none !important;
-    }
-    .anim-cinema-sub .aw {
-      color: var(--preview-accent, var(--gold));
-    }
+
     .anim-typewriter {
-      font-family: "Source Code Pro", monospace;
+      font-family: monospace;
       font-size: 11px;
-      font-weight: 600;
-      background: rgba(0, 0, 0, 0.65);
-      padding: 3px 6px;
-      border-left: 2px solid var(--preview-accent, var(--gold));
     }
     .anim-typewriter .aw {
       color: var(--preview-accent, var(--gold));
-      padding-right: 3px;
       border-right: 2px solid var(--preview-accent, var(--gold));
-      animation: animTypewriterBlink 0.9s infinite;
+      animation: animTypewriterBlink 0.8s infinite;
     }
-    .anim-editorial {
-      font-family: Georgia, serif;
-      font-weight: 500;
-      font-size: 13px;
+
+    @keyframes animMaskSlide {
+      0% { transform: translateY(10px); opacity: 0; }
+      35%, 85% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-10px); opacity: 0; }
     }
-    .anim-editorial .aw {
-      font-style: italic;
+    .anim-mask-slide {
+      animation: animMaskSlide 2.6s infinite ease-out;
+    }
+    .anim-mask-slide .aw { color: var(--preview-accent, var(--gold)); }
+
+    @keyframes animWaveIn {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    .anim-wave-in .aw {
+      display: inline-block;
       color: var(--preview-accent, var(--gold));
-      border-bottom: 1px solid var(--preview-accent, var(--gold));
+      animation: animWaveIn 1.8s infinite ease-in-out;
     }
-    .anim-minimal {
-      font-weight: 500;
-      font-size: 11px;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      animation: animMinimalDrift 3.2s infinite ease-in-out;
+
+    @keyframes animSoftGlitch {
+      0%, 100% { text-shadow: none; transform: none; }
+      20% { text-shadow: 2px 0 #ff0055, -2px 0 #00ffff; transform: skewX(-2deg); }
+      40% { text-shadow: -1px 0 #ff0055, 1px 0 #00ffff; transform: skewX(1deg); }
     }
-    .anim-minimal .aw {
+    .anim-soft-glitch .aw {
+      display: inline-block;
       color: var(--preview-accent, var(--gold));
-      font-weight: 700;
+      animation: animSoftGlitch 2.4s infinite;
     }
-    .anim-bento {
-      background: rgba(22, 22, 24, 0.88);
-      border: 1px solid rgba(255, 255, 255, 0.18);
+
+    .anim-box-wipe {
+      background: rgba(0, 0, 0, 0.6);
       padding: 3px 8px;
-      border-radius: 6px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+      border-radius: 4px;
     }
-    .anim-bento .aw {
-      color: var(--preview-accent, var(--gold));
-      font-weight: 700;
+    .anim-box-wipe .aw { color: var(--preview-accent, var(--gold)); }
+
+    @keyframes animLineRoll {
+      0% { transform: translateY(8px); opacity: 0; }
+      30%, 80% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-8px); opacity: 0; }
     }
-    @keyframes animStompDown {
+    .anim-line-roll {
+      animation: animLineRoll 2.6s infinite ease-in-out;
+    }
+    .anim-line-roll .aw { color: var(--preview-accent, var(--gold)); }
+
+    @keyframes animKeywordPulse {
       0%, 100% { transform: scale(1); }
-      15% { transform: scale(1.18); }
-      30% { transform: scale(0.96); }
-      45% { transform: scale(1); }
+      50% { transform: scale(1.18); }
     }
-    .anim-stomp .aw {
+    .anim-keyword-accent .aw {
       display: inline-block;
       color: var(--preview-accent, var(--gold));
       font-weight: 800;
-      animation: animStompDown 2.2s infinite ease-out;
-    }
-    @keyframes animCyberFlicker {
-      0%, 100% { transform: skewX(0deg); opacity: 1; }
-      20% { transform: skewX(-4deg); opacity: 0.7; }
-      40% { transform: skewX(3deg); opacity: 0.95; }
-      60% { transform: skewX(0deg); opacity: 1; }
-    }
-    .anim-cyber .aw {
-      display: inline-block;
-      color: var(--preview-accent, var(--gold));
-      text-shadow: 1px 0 #ff0055, -1px 0 #00ffff;
-      animation: animCyberFlicker 2.2s infinite ease-in-out;
-    }
-    @keyframes animNeonPulse {
-      0%, 100% { text-shadow: 0 0 4px var(--preview-accent, var(--gold)), 0 0 14px var(--preview-accent, var(--gold)); }
-      50% { text-shadow: 0 0 8px var(--preview-accent, var(--gold)), 0 0 24px var(--preview-accent, var(--gold)); }
-    }
-    .anim-neon .aw {
-      color: #ffffff;
-      animation: animNeonPulse 2.0s infinite ease-in-out;
+      animation: animKeywordPulse 2.0s infinite ease-out;
     }
 
     /* Symmetrical 4x2 Color Swatch Grid */
@@ -1302,7 +1713,8 @@
       <div class="editor-bar-group">
         <button class="btn-sm" id="btnUndo" title="Undo (Cmd+Z)">↺</button>
         <button class="btn-sm" id="btnRedo" title="Redo (Cmd+Shift+Z)">↻</button>
-        <button class="btn-sm" id="btnCleanFillers" title="Clean spoken filler words (uh, um, etc.)">Clean</button>
+        <button class="btn-sm" id="btnCleanFillers" title="Clean spoken filler words (uh, um, em, eh, stutters)">Clean</button>
+        <button class="btn-sm" id="btnClearTranscript" title="Clear all words from transcript">Clear</button>
         <button class="btn-sm" id="btnCapitalize" title="Toggle letter case (Upper, Lower, Title)">Aa</button>
         <label class="toggle-pill" title="Toggle two-line caption layout">
           <input type="checkbox" id="chkDualLine" /> Two-Line
@@ -1313,10 +1725,10 @@
       </div>
     </div>
 
-    <div class="grid-3">
-      <input type="text" id="findInput" placeholder="Find in transcript..." style="height:var(--s-4); font-size:var(--f-sm);" />
-      <input type="text" id="replaceInput" placeholder="Replace with..." style="height:var(--s-4); font-size:var(--f-sm);" />
-      <button class="btn-sm" id="btnReplaceAll" style="width:100%;">Replace All</button>
+    <div class="grid-3" style="align-items: center; margin-bottom: var(--s-2);">
+      <input type="text" id="findInput" class="input-sm" placeholder="Find in transcript..." style="height:var(--control-h-sm); font-size:var(--f-xs);" />
+      <input type="text" id="replaceInput" class="input-sm" placeholder="Replace with..." style="height:var(--control-h-sm); font-size:var(--f-xs);" />
+      <button class="btn-sm" id="btnReplaceAll" style="width:100%; height:var(--control-h-sm);">Replace All</button>
     </div>
 
     <div class="word-grid" id="wordGrid">
@@ -1330,15 +1742,19 @@
   <div class="card">
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <label style="color:var(--text); font-size:var(--f-md);">Animation Style & Color</label>
-      <span id="activeStyleBadge" style="font-size:var(--f-sm); color:var(--gold); font-weight:600;">Spring Rise (Position)</span>
+      <span id="activeStyleBadge" style="font-size:var(--f-sm); color:var(--gold); font-weight:600;">Clean Cut (Film Style)</span>
     </div>
 
     <!-- Category Filter Bar -->
-    <div class="preset-filter-bar" id="styleFilterBar">
-      <button type="button" class="filter-tab active" data-filter="all">All (15)</button>
-      <button type="button" class="filter-tab" data-filter="modern">Modern (8)</button>
-      <button type="button" class="filter-tab" data-filter="documentary">Documentary (7)</button>
-      <button type="button" class="filter-tab" data-filter="fav">★ Saved</button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--s-2); gap:8px;">
+      <div class="preset-filter-bar" id="styleFilterBar" style="margin-bottom:0;">
+        <button type="button" class="filter-tab active" data-filter="all">All (21)</button>
+        <button type="button" class="filter-tab" data-filter="calm">Calm (6)</button>
+        <button type="button" class="filter-tab" data-filter="word">Word (6)</button>
+        <button type="button" class="filter-tab" data-filter="dynamic">Dynamic (6)</button>
+        <button type="button" class="filter-tab" data-filter="style">Style (3)</button>
+        <button type="button" class="filter-tab" data-filter="fav">★ Saved</button>
+      </div>
     </div>
 
     <!-- Visual Live Animation Cards Grid (Animation Composer Style) -->
@@ -1346,48 +1762,82 @@
 
     <!-- Hidden MOGRT Style selector (Maintained for programmatic access & test integrity) -->
     <select id="styleSelect" style="display:none;">
-      <option value="bisik_Spring_Rise.mogrt" selected>Spring Rise (Position)</option>
-      <option value="bisik_Blur_Pop.mogrt">Blur Pop (Scale Blur)</option>
-      <option value="bisik_Bento_Card.mogrt">Bento Card (Frosted)</option>
-      <option value="bisik_Karaoke_Pill.mogrt">Karaoke Pill (Active Pill)</option>
-      <option value="bisik_Cut_Accent.mogrt">Cut Accent (Instant Cut)</option>
-      <option value="bisik_Stomp_Impact.mogrt">Stomp Impact (Overshoot)</option>
-      <option value="bisik_Cyber_Glitch.mogrt">Cyber Glitch (Digital RGB)</option>
-      <option value="bisik_Neon_Glow.mogrt">Neon Glow (Moody Pulse)</option>
-      <option value="bisik_Box_Tape.mogrt">Box Tape Cut (Accent Box)</option>
-      <option value="bisik_Marker_Highlight.mogrt">Marker Highlight (Doc Sweep)</option>
-      <option value="bisik_Cinema_Broadcast.mogrt">Cinema Broadcast (Doc)</option>
-      <option value="bisik_Cinema_Subtitle.mogrt">Cinema Subtitle (Static Film)</option>
-      <option value="bisik_Archival_Type.mogrt">Archival Typewriter (Doc)</option>
-      <option value="bisik_Editorial_Serif.mogrt">Editorial Serif (Film Doc)</option>
-      <option value="bisik_Minimal_Fade.mogrt">Minimal Whisper (Doc Fade)</option>
+      <option value="bisik_clean-cut.mogrt" selected>Clean Cut (Film Style)</option>
+      <option value="bisik_soft-fade.mogrt">Soft Fade</option>
+      <option value="bisik_rise-fade.mogrt">Rise & Fade</option>
+      <option value="bisik_blur-focus.mogrt">Blur Focus (Heavy)</option>
+      <option value="bisik_slow-drift.mogrt">Slow Drift</option>
+      <option value="bisik_tracking-settle.mogrt">Tracking Settle</option>
+      <option value="bisik_word-reveal.mogrt">Word Reveal</option>
+      <option value="bisik_karaoke-fill.mogrt">Karaoke Fill</option>
+      <option value="bisik_active-highlight.mogrt">Active Highlight</option>
+      <option value="bisik_highlight-box.mogrt">Highlight Box</option>
+      <option value="bisik_underline-sweep.mogrt">Underline Sweep</option>
+      <option value="bisik_scale-focus.mogrt">Scale Focus</option>
+      <option value="bisik_pop-bounce.mogrt">Pop Bounce</option>
+      <option value="bisik_spring-rise.mogrt">Spring Rise</option>
+      <option value="bisik_typewriter.mogrt">Typewriter</option>
+      <option value="bisik_mask-slide.mogrt">Mask Slide</option>
+      <option value="bisik_wave-in.mogrt">Wave In</option>
+      <option value="bisik_soft-glitch.mogrt">Soft Glitch (Heavy)</option>
+      <option value="bisik_box-wipe.mogrt">Box Wipe (Heavy)</option>
+      <option value="bisik_line-roll.mogrt">Line Roll</option>
+      <option value="bisik_keyword-accent.mogrt">Keyword Accent</option>
     </select>
 
     <!-- Row 1: Font Family, Target Video Track (Symmetrical 2-Column Grid) -->
     <div class="grid-2">
-      <div class="field">
+      <div class="field" style="position:relative;">
         <label>Font Family</label>
         <select id="fontSelect">
-          <option value="Montserrat-Black" selected>Montserrat Black (Modern Kinetic)</option>
-          <option value="Arial-Black">Arial Black (Universal Heavy Punch)</option>
-          <option value="Arial-BoldMT">Arial Bold (Universal Clean Sans)</option>
-          <option value="Impact">Impact (High Energy Punch)</option>
-          <option value="TrebuchetMS-Bold">Trebuchet MS Bold (Modern Geometric)</option>
-          <option value="Verdana-Bold">Verdana Bold (High Legibility Sans)</option>
-          <option value="Tahoma-Bold">Tahoma Bold (Compact Clean)</option>
-          <option value="Georgia-Bold">Georgia Bold (Cinematic Editorial Serif)</option>
-          <option value="TimesNewRomanPS-BoldMT">Times New Roman Bold (Classic Serif)</option>
-          <option value="CourierNewPS-BoldMT">Courier New Bold (Archival Monospace)</option>
-          <option value="HelveticaNeue-Bold">Helvetica Neue Bold (Swiss Clean)</option>
-          <option value="Inter-Bold">Inter Bold (Clean Tech)</option>
-          <option value="Poppins-Bold">Poppins Bold (Modern Geometric)</option>
-          <option value="BebasNeue-Regular">Bebas Neue (Tall Condensed)</option>
-          <option value="Roboto-Black">Roboto Black (High Contrast)</option>
+          <optgroup id="recentFontsGroup" label="Recent Fonts (5)">
+            <option value="Arial-Black" data-family="Arial Black" selected>Arial Black</option>
+            <option value="Impact" data-family="Impact">Impact</option>
+            <option value="Montserrat-Black" data-family="Montserrat Black">Montserrat Black</option>
+            <option value="TrebuchetMS-Bold" data-family="Trebuchet MS Bold">Trebuchet MS Bold</option>
+            <option value="Georgia-Bold" data-family="Georgia Bold">Georgia Bold</option>
+          </optgroup>
+          <optgroup id="systemFontsGroup" label="Installed System Fonts (Scanning...)">
+          </optgroup>
         </select>
+
+        <!-- Custom In-DOM Dropdown (Smooth draggable scrollbar, no CEF native popup bugs) -->
+        <div class="custom-dropdown-wrap" id="customFontWrapper">
+          <button type="button" id="customFontTrigger" class="custom-dropdown-trigger" aria-haspopup="listbox" aria-expanded="false" title="Click to choose caption font">
+            <span id="customFontDisplay" class="custom-dropdown-display">Arial Black</span>
+            <svg class="dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div id="customFontMenu" class="custom-dropdown-menu" style="display:none;" role="listbox">
+            <div class="custom-dropdown-search-wrap">
+              <input type="text" id="fontSearchInput" class="custom-dropdown-search" placeholder="Search installed fonts..." autocomplete="off" />
+              <button type="button" id="fontSearchClear" class="custom-dropdown-search-clear" style="display:none;" aria-label="Clear search">&times;</button>
+            </div>
+            <div id="customFontList" class="custom-dropdown-list"></div>
+          </div>
+        </div>
       </div>
       <div class="field">
         <label>Video Track</label>
         <select id="videoTrackSelect"></select>
+      </div>
+    </div>
+
+    <!-- Live Typography & Color Golden Ratio Strip -->
+    <div class="typo-live-strip" id="typographyLiveStrip">
+      <div class="typo-live-meta">
+        <span>Live Typography & Color</span>
+        <div class="typo-live-badge-group">
+          <span class="typo-font-badge" id="typoLiveFontName">Arial Black</span>
+          <span class="typo-color-badge" id="typoLiveColorBadge">
+            <span class="typo-color-dot" id="typoLiveColorDot" style="background:var(--preview-font-color, #ffffff);"></span>
+            <span id="typoLiveColorText">#FFFFFF</span>
+          </span>
+        </div>
+      </div>
+      <div class="typo-live-sample" id="typoLiveSampleText">
+        The quick brown fox jumps • Aa Bb Gg 123
       </div>
     </div>
 
@@ -1405,9 +1855,9 @@
       <div class="field">
         <label>Position Y</label>
         <select id="posPreset">
-          <option value="880" selected>Bottom (880)</option>
-          <option value="540">Center (540)</option>
-          <option value="200">Top (200)</option>
+          <option value="bottom" selected>Bottom</option>
+          <option value="center">Center</option>
+          <option value="top">Top</option>
         </select>
       </div>
       <div class="field">
@@ -1416,100 +1866,92 @@
       </div>
     </div>
 
-    <!-- Row 2.5: Scale Slider in Dedicated Container (Premiere Pro Native Style, 40% - 200%) -->
+    <!-- Row 2.5: Scale Slider in Dedicated Container (Premiere Pro Native 1-Row Style, 40% - 200%) -->
     <div class="scale-container">
-      <div class="scale-header">
-        <label for="textScaleSlider">Scale</label>
-        <span id="textScaleBadge" class="scale-badge">100%</span>
+      <label for="textScaleSlider" class="scale-label">Scale</label>
+      <div class="scale-track-wrap">
+        <input type="range" id="textScaleSlider" class="premiere-slider" min="40" max="200" value="100" step="1" />
       </div>
-      <div class="scale-slider-row">
-        <div class="scale-track-wrap">
-          <input type="range" id="textScaleSlider" class="premiere-slider" min="40" max="200" value="100" step="1" />
-        </div>
-        <div class="scale-number-wrap">
-          <input type="number" id="textScale" min="40" max="200" value="100" step="1" />
-          <span class="scale-percent-unit">%</span>
-        </div>
+      <div class="scale-number-wrap">
+        <input type="number" id="textScale" min="40" max="200" value="100" step="1" />
+        <span class="scale-percent-unit">%</span>
       </div>
+      <span id="textScaleBadge" class="scale-badge" style="display:none;">100%</span>
     </div>
 
-    <!-- Row 3: Dual Color Controls (Font Color & Highlight Color) + Quick Palette -->
+    <!-- Row 3: Triple Color Controls (Font, Highlight & Particle/Box Color) + Quick Palette -->
     <div class="field">
-      <div class="grid-2">
+      <div class="grid-3" id="colorControlsGrid">
         <!-- Font Color Picker Trigger -->
         <div class="color-picker-trigger-box" id="btnOpenFontColorPicker" title="Change Base Font Color (Opens Color Picker)">
           <label>Font Color</label>
           <div class="color-pill-preview">
             <span class="color-dot" id="fontColorDot" style="background:#FFFFFF;"></span>
             <span class="color-hex-text" id="fontColorHexLabel">#FFFFFF</span>
-            <span class="color-picker-badge">Picker</span>
+            <span class="color-picker-badge" id="badgeFontPicker">Picker</span>
           </div>
         </div>
 
         <!-- Highlight Color Picker Trigger -->
-        <div class="color-picker-trigger-box" id="btnOpenHighlightColorPicker" title="Change Active Word Highlight Color (Opens Color Picker)">
-          <label>Highlight Color</label>
+        <div class="color-picker-trigger-box" id="btnOpenHighlightColorPicker" title="Change Active Word Text Color (Opens Color Picker)">
+          <label>Highlight</label>
           <div class="color-pill-preview">
             <span class="color-dot" id="highlightColorDot" style="background:#FFC400;"></span>
             <span class="color-hex-text" id="activeHexLabel">#FFC400</span>
-            <span class="color-picker-badge">Picker</span>
+            <span class="color-picker-badge" id="badgeHighlightPicker">Picker</span>
+          </div>
+        </div>
+
+        <!-- Particle / Box Color Picker Trigger -->
+        <div class="color-picker-trigger-box active-target" id="btnOpenBoxColorPicker" title="Change Animation Particle / Box Color (Opens Color Picker)">
+          <label>Particle / Box</label>
+          <div class="color-pill-preview">
+            <span class="color-dot" id="boxColorDot" style="background:#F43F5E;"></span>
+            <span class="color-hex-text" id="boxColorHexLabel">#F43F5E</span>
+            <span class="color-picker-badge" id="badgeBoxPicker">Picker</span>
           </div>
         </div>
       </div>
 
-      <!-- Quick Swatch Palette (Symmetrical 4x2) -->
+      <!-- Quick Swatch Palette (Symmetrical 4x2) with Target Selector -->
       <div style="margin-top:var(--s-2);">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
           <span style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px;">Quick Palette (Click swatch to apply)</span>
+          <div class="target-pill-group" id="paletteTargetGroup">
+            <button type="button" class="target-pill active" id="targetBtnFont" title="Palette applies to Base Font Color">Font</button>
+            <button type="button" class="target-pill" id="targetBtnHighlight" title="Palette applies to Highlight Text Color">Highlight</button>
+            <button type="button" class="target-pill" id="targetBtnParticle" title="Palette applies to Particle/Box Color">Particle / Box</button>
+          </div>
         </div>
         <div class="swatch-grid-symmetrical" id="colorSwatchContainer"></div>
       </div>
     </div>
 
-    <!-- Row 4: Sound FX & Preset Management (Symmetrical 2-Column Grid) -->
-    <div class="grid-2">
-      <div class="grid-2">
-        <div class="field">
-          <label>Sound FX</label>
-          <select id="sfxModeSelect">
-            <option value="none" selected>None</option>
-            <option value="whoosh">Whoosh (Clip Entry)</option>
-            <option value="pop">Pop (Keywords)</option>
-            <option value="both">Whoosh + Pop</option>
-            <option value="tick">Tick (Cadence)</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>SFX Track</label>
-          <select id="sfxTrackSelect" disabled></select>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Preset</label>
-        <div class="preset-control-group">
-          <select id="presetSelect"></select>
-          <button type="button" class="btn-icon" id="btnSavePreset" title="Save current style settings as new preset" aria-label="Save Preset">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-              <polyline points="17 21 17 13 7 13 7 21"></polyline>
-              <polyline points="7 3 7 8 15 8"></polyline>
-            </svg>
-          </button>
-          <button type="button" class="btn-icon btn-icon-danger" id="btnDeletePreset" title="Delete current preset" aria-label="Delete Preset">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-          </button>
-        </div>
+    <!-- Row 4: Preset Management -->
+    <div class="field" style="margin-bottom:var(--s-2);">
+      <label>Preset</label>
+      <div class="preset-control-group">
+        <select id="presetSelect"></select>
+        <button type="button" class="btn-icon" id="btnSavePreset" title="Save current style settings as new preset" aria-label="Save Preset">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+        </button>
+        <button type="button" class="btn-icon btn-icon-danger" id="btnDeletePreset" title="Delete current preset" aria-label="Delete Preset">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </button>
       </div>
     </div>
 
     <!-- Row 5: Golden Ratio Action Bar (1.618fr Insert vs 1fr Clear) -->
     <div class="grid-golden">
       <button class="btn-success" id="btnRender" disabled>Insert Captions to Timeline</button>
-      <button class="btn-danger" id="btnClearTrack" title="Clear captions and audio SFX from selected tracks">Clear Track</button>
+      <button class="btn-danger" id="btnClearTrack" title="Clear bisik captions from target video track">Clear Track</button>
     </div>
   </div>
 

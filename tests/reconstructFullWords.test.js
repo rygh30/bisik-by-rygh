@@ -60,4 +60,18 @@ describe("reconstructFullWords", () => {
     assert.equal(result[1].text, "apa");
     assert.equal(result[2].text, "kabar?");
   });
+
+  test("preserves currency or parenthetical words while ignoring full noise brackets", () => {
+    const tokens = [
+      { text: " [music]", offsets: { from: 100, to: 300 } },
+      { text: " harga", offsets: { from: 400, to: 600 } },
+      { text: " (Rp", offsets: { from: 650, to: 850 } },
+      { text: " 50.000)", offsets: { from: 860, to: 1100 } }
+    ];
+    const result = reconstructFullWords(tokens);
+    assert.equal(result.length, 3);
+    assert.equal(result[0].text, "harga");
+    assert.equal(result[1].text, "(Rp");
+    assert.equal(result[2].text, "50.000)");
+  });
 });

@@ -1,0 +1,572 @@
+{
+  "schemaVersion": "1.0.0",
+
+  "vocabulary": {
+    "units": {
+      "em": "Kelipatan ukuran font final. Semua jarak, blur, ketebalan garis, dan padding memakai em, sehingga otomatis ikut skala FHD, 4K, dan portrait.",
+      "pct": "Persen 0-100",
+      "pctH": "Persen tinggi comp",
+      "pctW": "Persen lebar comp",
+      "ms": "Milidetik. Dikonversi ke frame sesuai fps comp lalu di-snap ke frame.",
+      "tracking": "Satuan tracking After Effects (1/1000 em)",
+      "deg": "Derajat"
+    },
+    "easing": ["linear", "easeIn", "easeOut", "easeInOut", "backOut", "expoOut"],
+    "blockTypes": ["cut", "tween"],
+    "granularity": ["block", "line", "word", "char"],
+    "staggerModes": ["none", "fixedMs", "wordTiming", "fitCaption"],
+    "tracks": {
+      "opacity": "pct",
+      "scale": "pct",
+      "offsetX": "em (positif = kanan)",
+      "offsetY": "em (positif = turun)",
+      "blur": "em",
+      "tracking": "tracking",
+      "rgbSplit": "em",
+      "rotationX": "deg"
+    },
+    "wordModes": ["none", "state", "fill"],
+    "wordStates": ["upcoming", "active", "spoken"],
+    "stateProps": ["opacity", "scale", "fillColorHex", "outlineEnabled"],
+    "decorationTypes": ["wordBox", "underline", "captionBox", "cursor"],
+    "blockFields": {
+      "type": "cut = muncul/hilang instan. tween = animasi.",
+      "durationMs": "Durasi per unit. 0 pada granularity word/char berarti step (muncul instan).",
+      "delayMs": "Jeda sebelum blok mulai.",
+      "easing": "Salah satu dari vocabulary.easing.",
+      "granularity": "Unit yang dianimasikan: block (seluruh caption), line, word, char.",
+      "stagger": "Jeda antar unit. wordTiming = ikut timestamp Whisper (leadMs boleh negatif agar terasa sinkron). fixedMs = interval tetap. fitCaption = dibagi rata ke sebagian durasi caption (fitRatio).",
+      "clip": "line = tiap unit dipotong di kotak barisnya sendiri (efek mask).",
+      "reserveLayout": "true = kata/huruf yang belum muncul tetap menempati ruang, jadi baris tidak bergeser.",
+      "tracks": "Peta nama track ke {from, to}. Nilai sesuai vocabulary.tracks.",
+      "keyframes": "Alternatif tracks: daftar {at (0-1), ...nilai track}. Nilai yang tidak ditulis mengikuti keyframe sebelumnya."
+    }
+  },
+
+  "defaults": {
+    "typography": {
+      "fontCandidates": [
+        { "family": "Inter", "postScriptName": "Inter-Medium" },
+        { "family": "Roboto", "postScriptName": "Roboto-Medium" },
+        { "family": "Open Sans", "postScriptName": "OpenSans-SemiBold" },
+        { "family": "Arial", "postScriptName": "ArialMT" }
+      ],
+      "fontSize": { "basis": "compHeight", "pct": 4.6 },
+      "lineHeightEm": 1.2,
+      "tracking": 0,
+      "caseMode": "asIs",
+      "alignment": "center"
+    },
+    "layout": {
+      "anchor": "bottomCenter",
+      "maxCharsPerLine": 42,
+      "maxLines": 2,
+      "maxWidthPctW": 80,
+      "bottomMarginPctH": 8,
+      "lineBreak": "balancedPhrase"
+    },
+    "style": {
+      "fillColorHex": "#FFFFFF",
+      "accentColorHex": "#FFD60A",
+      "outline": { "enabled": true, "colorHex": "#000000", "opacityPct": 85, "widthEm": 0.04 },
+      "shadow": { "enabled": true, "colorHex": "#000000", "opacityPct": 60, "distanceEm": 0.03, "softnessEm": 0.06, "angleDeg": 135 },
+      "background": { "enabled": false, "colorHex": "#000000", "opacityPct": 55, "paddingXEm": 0.4, "paddingYEm": 0.2, "radiusEm": 0.12 }
+    },
+    "timing": {
+      "frameSnap": true,
+      "maxInOutRatio": 0.3,
+      "animationMinCaptionMs": 1000,
+      "shortCaptionFallbackPresetId": "soft-fade",
+      "noWordTimingFallback": "evenSplitByChars"
+    },
+    "performance": {
+      "lightMode": false,
+      "lightModeFallbackPresetId": "soft-fade"
+    }
+  },
+
+  "responsive": {
+    "portrait": {
+      "when": "compHeight > compWidth",
+      "typography": { "fontSize": { "basis": "compWidth", "pct": 5.5 } },
+      "layout": { "maxCharsPerLine": 24, "maxWidthPctW": 86, "bottomMarginPctH": 18 }
+    }
+  },
+
+  "presets": [
+    {
+      "id": "clean-cut",
+      "order": 1,
+      "name": "Clean Cut",
+      "group": "calm",
+      "isDefault": true,
+      "description": "Tanpa animasi. Muncul dan hilang langsung, gaya caption film.",
+      "requiresWordTiming": false,
+      "heavy": false,
+      "in": { "type": "cut" },
+      "out": { "type": "cut" }
+    },
+    {
+      "id": "soft-fade",
+      "order": 2,
+      "name": "Soft Fade",
+      "group": "calm",
+      "description": "Fade in dan fade out halus.",
+      "requiresWordTiming": false,
+      "heavy": false,
+      "in": {
+        "type": "tween", "durationMs": 160, "easing": "easeOut", "granularity": "block",
+        "tracks": { "opacity": { "from": 0, "to": 100 } }
+      },
+      "out": {
+        "type": "tween", "durationMs": 120, "easing": "easeIn", "granularity": "block",
+        "tracks": { "opacity": { "from": 100, "to": 0 } }
+      }
+    },
+    {
+      "id": "rise-fade",
+      "order": 3,
+      "name": "Rise & Fade",
+      "group": "calm",
+      "description": "Naik sedikit sambil fade in.",
+      "requiresWordTiming": false,
+      "heavy": false,
+      "in": {
+        "type": "tween", "durationMs": 200, "easing": "easeOut", "granularity": "block",
+        "tracks": { "opacity": { "from": 0, "to": 100 }, "offsetY": { "from": 0.15, "to": 0 } }
+      },
+      "out": {
+        "type": "tween", "durationMs": 120, "easing": "easeIn", "granularity": "block",
+        "tracks": { "opacity": { "from": 100, "to": 0 } }
+      }
+    },
+    {
+      "id": "blur-focus",
+      "order": 4,
+      "name": "Blur Focus",
+      "group": "calm",
+      "description": "Dari blur ke tajam sambil fade in.",
+      "requiresWordTiming": false,
+      "heavy": true,
+      "in": {
+        "type": "tween", "durationMs": 260, "easing": "easeOut", "granularity": "block",
+        "tracks": { "opacity": { "from": 0, "to": 100 }, "blur": { "from": 0.4, "to": 0 } }
+      },
+      "out": {
+        "type": "tween", "durationMs": 140, "easing": "easeIn", "granularity": "block",
+        "tracks": { "opacity": { "from": 100, "to": 0 } }
+      },
+      "notes": "Blur berat di 4K. Otomatis diganti soft-fade saat lightMode aktif."
+    },
+    {
+      "id": "slow-drift",
+      "order": 5,
+      "name": "Slow Drift",
+      "group": "calm",
+      "description": "Zoom sangat pelan sepanjang durasi caption.",
+      "requiresWordTiming": false,
+      "heavy": false,
+      "in": {
+        "type": "tween", "durationMs": 160, "easing": "easeOut", "granularity": "block",
+        "tracks": { "opacity": { "from": 0, "to": 100 } }
+      },
+      "hold": {
+        "durationMode": "caption", "easing": "linear", "origin": "center",
+        "tracks": { "scale": { "from": 100, "to": 102 } }
+      },
+      "out": {
+        "type": "tween", "durationMs": 120, "easing": "easeIn", "granularity": "block",
+        "tracks": { "opacity": { "from": 100, "to": 0 } }
+      }
+    },
+    {
+      "id": "tracking-settle",
+      "order": 6,
+      "name": "Tracking Settle",
+      "group": "calm",
+      "description": "Jarak antar huruf melebar lalu merapat ke normal.",
+      "requiresWordTiming": false,
+      "heavy": false,
+      "in": {
+        "type": "tween", "durationMs": 300, "easing": "easeOut", "granularity": "block",
+        "tracks": { "opacity": { "from": 0, "to": 100 }, "tracking": { "from": 80, "to": 0 } }
+      },
+      "out": {
+        "type": "tween", "durationMs": 120, "easing": "easeIn", "granularity": "block",
+        "tracks": { "opacity": { "from": 100, "to": 0 } }
+      }
+    },
+    {
+      "id": "word-reveal",
+      "order": 7,
+      "name": "Word Reveal",
+      "group": "word",
+      "description": "Kata muncul satu per satu sesuai ucapan.",
+      "requiresWordTiming": true,
+      "heavy": false,
+      "in": {
+        "type": "tween", "durationMs": 90, "easing": "easeOut", "granularity": "word",
+        "stagger": { "mode": "wordTiming", "leadMs": -30 },
+        "reserveLayout": true,
+        "tracks": { "opacity": { "from": 0, "to": 100 } }
+      },
+      "out": {
+        "type": "tween", "durationMs": 120, "easing": "easeIn", "granularity": "block",
+        "tracks": { "opacity": { "from": 100, "to": 0 } }
+      }
+    },
+    {
+      "id": "karaoke-fill",
+      "order": 8,
+      "name": "Karaoke Fill",
+      "group": "word",
+      "description": "Warna mengisi dari kiri ke kanan mengikuti kata aktif.",
+      "requiresWordTiming": true,
+      "heavy": false,
+      "in": {
+        "type": "tween", "durationMs": 120, "easing": "easeOut", "granularity": "block",
+        "tracks": { "opacity": { "from": 0, "to": 100 } }
+      },
+      "word": {
+        "mode": "fill", "direction": "leftToRight", "easing": "linear",
+        "colors": { "upcomingHex": "#A8A8A8", "filledHex": "#FFFFFF" }
+      },
+      "out": {
+        "type": "tween", "durationMs": 120, "easing": "easeIn", "granularity": "block",
+        "tracks": { "opacity": { "from": 100, "to": 0 } }
+      }
+    },
+    {
+      "id": "active-highlight",
+      "order": 9,
+      "name": "Active Highlight",
+      "group": "word",
+      "description": "Kata aktif putih penuh, kata lain redup.",
+      "requiresWordTiming": true,
+      "heavy": false,
+      "in": {
+        "type": "tween", "durationMs": 120, "easing": "easeOut", "granularity": "block",
+        "tracks": { "opacity": { "from": 0, "to": 100 } }
+      },
+      "word": {
+        "mode": "state", "transitionMs": 80, "easing": "easeOut",
+        "states": {
+          "upcoming": { "opacity": 60 },
+          "active": { "opacity": 100 },
+          "spoken": { "opacity": 60 }
+        }
+      },
+      "out": {
+        "type": "tween", "durationMs": 120, "easing": "easeIn", "granularity": "block",
+        "tracks": { "opacity": { "from": 100, "to": 0 } }
+      }
+    },
+    {
+      "id": "highlight-box",
+      "order": 10,
+      "name": "Highlight Box",
+      "group": "word",
+      "description": "Kotak berwarna bergeser di belakang kata aktif.",
+      "requiresWordTiming": true,
+      "heavy": false,
+      "in": {
+        "type": "tween", "durationMs": 120, "easing": "easeOut", "granularity": "block",
+        "tracks": { "opacity": { "from": 0, "to": 100 } }
+      },
+      "word": {
+        "mode": "state", "transitionMs": 60, "easing": "easeOut",
+        "states": {
+          "upcoming": { "fillColorHex": "#FFFFFF" },
+          "active": { "fillColorHex": "#000000", "outlineEnabled": false },
+          "spoken": { "fillColorHex": "#FFFFFF" }
+        }
+      },
+      "decorations": [
+        {
+          "type": "wordBox", "follow": "activeWord",
+          "colorHex": "#FFD60A", "opacityPct": 95,
+          "paddingXEm": 0.2, "paddingYEm": 0.06, "radiusEm": 0.15,
+          "moveMs": 90, "easing": "expoOut"
+        }
+      ],
+      "out": {
+        "type": "tween", "durationMs": 120, "easing": "easeIn", "granularity": "block",
+        "tracks": { "opacity": { "from": 100, "to": 0 } }
+      }
+    },
+    {
+      "id": "underline-sweep",
+      "order": 11,
+      "name": "Underline Sweep",
+      "group": "word",
+      "description": "Garis bawah menyapu mengikuti kata aktif.",
+      "requiresWordTiming": true,
+      "heavy": false,
+      "in": {
+        "type": "tween", "durationMs": 120, "easing": "easeOut", "granularity": "block",
+        "tracks": { "opacity": { "from": 0, "to": 100 } }
+      },
+      "word": { "mode": "none" },
+      "decorations": [
+        {
+          "type": "underline", "follow": "activeWord",
+          "colorHex": "#FFD60A", "thicknessEm": 0.07, "offsetYEm": 0.12,
+          "sweep": "leftToRight", "easing": "linear",
+          "persist": "activeOnly", "fadeOutMs": 80
+        }
+      ],
+      "out": {
+        "type": "tween", "durationMs": 120, "easing": "easeIn", "granularity": "block",
+        "tracks": { "opacity": { "from": 100, "to": 0 } }
+      }
+    },
+    {
+      "id": "scale-focus",
+      "order": 12,
+      "name": "Scale Focus",
+      "group": "word",
+      "description": "Kata aktif membesar 110%, kata lain redup.",
+      "requiresWordTiming": true,
+      "heavy": false,
+      "in": {
+        "type": "tween", "durationMs": 120, "easing": "easeOut", "granularity": "block",
+        "tracks": { "opacity": { "from": 0, "to": 100 } }
+      },
+      "word": {
+        "mode": "state", "transitionMs": 100, "easing": "easeOut", "origin": "wordCenter",
+        "states": {
+          "upcoming": { "opacity": 60, "scale": 100 },
+          "active": { "opacity": 100, "scale": 110 },
+          "spoken": { "opacity": 60, "scale": 100 }
+        }
+      },
+      "out": {
+        "type": "tween", "durationMs": 120, "easing": "easeIn", "granularity": "block",
+        "tracks": { "opacity": { "from": 100, "to": 0 } }
+      },
+      "notes": "Scale tidak memengaruhi layout baris."
+    },
+    {
+      "id": "pop-bounce",
+      "order": 13,
+      "name": "Pop Bounce",
+      "group": "dynamic",
+      "description": "Tiap kata muncul dengan overshoot kecil.",
+      "requiresWordTiming": true,
+      "heavy": false,
+      "in": {
+        "type": "tween", "durationMs": 180, "easing": "easeOut", "granularity": "word",
+        "stagger": { "mode": "wordTiming", "leadMs": -20 },
+        "reserveLayout": true,
+        "keyframes": [
+          { "at": 0, "opacity": 0, "scale": 80 },
+          { "at": 0.6, "opacity": 100, "scale": 105 },
+          { "at": 1, "scale": 100 }
+        ]
+      },
+      "out": {
+        "type": "tween", "durationMs": 120, "easing": "easeIn", "granularity": "block",
+        "tracks": { "opacity": { "from": 100, "to": 0 } }
+      }
+    },
+    {
+      "id": "spring-rise",
+      "order": 14,
+      "name": "Spring Rise",
+      "group": "dynamic",
+      "description": "Animasi pegas elastis memantul naik secara dinamis.",
+      "requiresWordTiming": false,
+      "heavy": false,
+      "in": {
+        "type": "tween", "durationMs": 480, "easing": "backOut", "granularity": "block",
+        "keyframes": [
+          { "at": 0, "opacity": 0, "offsetY": 0.45 },
+          { "at": 0.35, "opacity": 100, "offsetY": -0.06 },
+          { "at": 0.7, "offsetY": 0.02 },
+          { "at": 1, "offsetY": 0 }
+        ]
+      },
+      "out": {
+        "type": "tween", "durationMs": 120, "easing": "easeIn", "granularity": "block",
+        "tracks": { "opacity": { "from": 100, "to": 0 } }
+      }
+    },
+    {
+      "id": "typewriter",
+      "order": 15,
+      "name": "Typewriter",
+      "group": "dynamic",
+      "description": "Huruf muncul berurutan, kursor opsional.",
+      "requiresWordTiming": false,
+      "heavy": false,
+      "in": {
+        "type": "tween", "durationMs": 0, "easing": "linear", "granularity": "char",
+        "stagger": { "mode": "fitCaption", "fitRatio": 0.6, "minIntervalMs": 15, "maxIntervalMs": 60 },
+        "reserveLayout": true,
+        "tracks": { "opacity": { "from": 0, "to": 100 } }
+      },
+      "decorations": [
+        { "type": "cursor", "char": "|", "blinkMs": 500, "hideAfterMs": 300 }
+      ],
+      "out": {
+        "type": "tween", "durationMs": 120, "easing": "easeIn", "granularity": "block",
+        "tracks": { "opacity": { "from": 100, "to": 0 } }
+      }
+    },
+    {
+      "id": "mask-slide",
+      "order": 16,
+      "name": "Mask Slide",
+      "group": "dynamic",
+      "description": "Teks terungkap dari bawah lewat mask per baris.",
+      "requiresWordTiming": false,
+      "heavy": false,
+      "in": {
+        "type": "tween", "durationMs": 240, "easing": "expoOut", "granularity": "line",
+        "clip": "line",
+        "stagger": { "mode": "fixedMs", "ms": 70 },
+        "tracks": { "offsetY": { "from": 1.0, "to": 0 } }
+      },
+      "out": {
+        "type": "tween", "durationMs": 160, "easing": "easeIn", "granularity": "line",
+        "clip": "line",
+        "stagger": { "mode": "fixedMs", "ms": 40 },
+        "tracks": { "offsetY": { "from": 0, "to": -1.0 } }
+      }
+    },
+    {
+      "id": "wave-in",
+      "order": 17,
+      "name": "Wave In",
+      "group": "dynamic",
+      "description": "Huruf naik-turun ringan seperti gelombang saat masuk.",
+      "requiresWordTiming": false,
+      "heavy": false,
+      "in": {
+        "type": "tween", "durationMs": 320, "easing": "easeOut", "granularity": "char",
+        "stagger": { "mode": "fixedMs", "ms": 22 },
+        "reserveLayout": true,
+        "keyframes": [
+          { "at": 0, "opacity": 0, "offsetY": 0.35 },
+          { "at": 0.5, "opacity": 100, "offsetY": -0.12 },
+          { "at": 1, "offsetY": 0 }
+        ]
+      },
+      "out": {
+        "type": "tween", "durationMs": 120, "easing": "easeIn", "granularity": "block",
+        "tracks": { "opacity": { "from": 100, "to": 0 } }
+      }
+    },
+    {
+      "id": "soft-glitch",
+      "order": 18,
+      "name": "Soft Glitch",
+      "group": "dynamic",
+      "description": "RGB split singkat di awal, lalu stabil.",
+      "requiresWordTiming": false,
+      "heavy": true,
+      "in": {
+        "type": "tween", "durationMs": 140, "easing": "linear", "granularity": "block",
+        "keyframes": [
+          { "at": 0, "opacity": 0, "rgbSplit": 0.08, "offsetX": -0.04 },
+          { "at": 0.25, "opacity": 100, "rgbSplit": 0.06, "offsetX": 0.03 },
+          { "at": 0.5, "rgbSplit": 0.03, "offsetX": -0.02 },
+          { "at": 0.75, "rgbSplit": 0.015, "offsetX": 0.01 },
+          { "at": 1, "rgbSplit": 0, "offsetX": 0 }
+        ]
+      },
+      "out": {
+        "type": "tween", "durationMs": 80, "easing": "linear", "granularity": "block",
+        "keyframes": [
+          { "at": 0, "opacity": 100, "rgbSplit": 0 },
+          { "at": 1, "opacity": 0, "rgbSplit": 0.04 }
+        ]
+      },
+      "notes": "Dibuat dengan tiga salinan teks (kanal R, G, B) atau efek channel shift. Berat di 4K."
+    },
+    {
+      "id": "box-wipe",
+      "order": 19,
+      "name": "Box Wipe",
+      "group": "style",
+      "description": "Kotak semi-transparan melebar dulu, lalu teks muncul.",
+      "requiresWordTiming": false,
+      "heavy": true,
+      "styleOverrides": {
+        "outline": { "enabled": false },
+        "shadow": { "enabled": false }
+      },
+      "decorations": [
+        {
+          "type": "captionBox",
+          "colorHex": "#000000", "opacityPct": 60,
+          "paddingXEm": 0.5, "paddingYEm": 0.25, "radiusEm": 0.15,
+          "in": { "wipe": "leftToRight", "durationMs": 200, "easing": "expoOut" },
+          "out": { "wipe": "rightToLeft", "durationMs": 140, "easing": "easeIn", "delayMs": 0 }
+        }
+      ],
+      "in": {
+        "type": "tween", "durationMs": 100, "delayMs": 120, "easing": "easeOut", "granularity": "block",
+        "tracks": { "opacity": { "from": 0, "to": 100 } }
+      },
+      "out": {
+        "type": "tween", "durationMs": 100, "easing": "easeIn", "granularity": "block",
+        "tracks": { "opacity": { "from": 100, "to": 0 } }
+      },
+      "notes": "Kotak menggantikan outline dan shadow sebagai sumber kontras."
+    },
+    {
+      "id": "line-roll",
+      "order": 20,
+      "name": "Line Roll",
+      "group": "style",
+      "description": "Baris lama naik keluar, baris baru masuk dari bawah.",
+      "requiresWordTiming": false,
+      "heavy": false,
+      "crossCaption": { "enabled": true, "maxGapMs": 400, "overlapMs": 120 },
+      "in": {
+        "type": "tween", "durationMs": 220, "easing": "easeOut", "granularity": "line",
+        "tracks": { "opacity": { "from": 0, "to": 100 }, "offsetY": { "from": 0.9, "to": 0 } }
+      },
+      "out": {
+        "type": "tween", "durationMs": 180, "easing": "easeIn", "granularity": "line",
+        "tracks": { "opacity": { "from": 100, "to": 0 }, "offsetY": { "from": 0, "to": -0.9 } }
+      },
+      "notes": "Jika caption berikutnya mulai dalam maxGapMs, out caption lama dan in caption baru dibuat tumpang tindih sebesar overlapMs."
+    },
+    {
+      "id": "keyword-accent",
+      "order": 21,
+      "name": "Keyword Accent",
+      "group": "style",
+      "description": "Angka, nama, atau kata kunci otomatis berwarna aksen dengan pulse kecil.",
+      "requiresWordTiming": true,
+      "heavy": false,
+      "in": {
+        "type": "tween", "durationMs": 140, "easing": "easeOut", "granularity": "block",
+        "tracks": { "opacity": { "from": 0, "to": 100 } }
+      },
+      "keywords": {
+        "detect": ["number", "properNoun", "customList"],
+        "customList": [],
+        "minWordLength": 3,
+        "maxPerCaption": 2,
+        "accentColorHex": "#FFD60A",
+        "pulse": {
+          "trigger": "wordStart", "durationMs": 160, "easing": "easeOut",
+          "keyframes": [
+            { "at": 0, "scale": 100 },
+            { "at": 0.4, "scale": 115 },
+            { "at": 1, "scale": 100 }
+          ]
+        }
+      },
+      "out": {
+        "type": "tween", "durationMs": 120, "easing": "easeIn", "granularity": "block",
+        "tracks": { "opacity": { "from": 100, "to": 0 } }
+      },
+      "notes": "properNoun = kata berhuruf kapital yang bukan awal kalimat. Bergantung pada kapitalisasi output Whisper."
+    }
+  ]
+}
+

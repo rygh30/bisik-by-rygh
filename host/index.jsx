@@ -79,7 +79,8 @@ function setMgtValue(prop, val, fontVal) {
         var cur = prop.getValue();
         if (typeof cur === "string" && cur.indexOf("textEditValue") !== -1) {
             var obj = JSON.parse(cur);
-            obj.textEditValue = String(val);
+            var safeVal = String(val).replace(/\r\n/g, "\n").replace(/\r/g, "\n").replace(/\n/g, "\r\n");
+            obj.textEditValue = safeVal;
             if (fontVal) {
                 try {
                     obj.fontEditValue = [String(fontVal)];
@@ -100,18 +101,14 @@ function setMgtValue(prop, val, fontVal) {
         }
     } catch (e) {}
     try {
-        prop.setValue(val, true);
+        var fallbackVal = String(val).replace(/\r\n/g, "\n").replace(/\r/g, "\n").replace(/\n/g, "\r\n");
+        prop.setValue(fallbackVal, true);
     } catch (err) {}
 }
 
 function bisikGetActiveSequence() {
     var seq = app.project.activeSequence;
     if (seq) return seq;
-    try {
-        if (app.project && app.project.sequences && app.project.sequences.numSequences > 0) {
-            return app.project.sequences[0];
-        }
-    } catch (e) {}
     return null;
 }
 
@@ -119,9 +116,9 @@ function bisikCalculateSequenceMetrics(seq) {
     var metrics = {
         width: 1920,
         height: 1080,
+        isPortrait: false,
         profile: "FHD (1920×1080)",
-        scaleFactor: 1.0,
-        scalePercent: 100,
+        baseScale: 100,
         fps: 25.0
     };
 
@@ -134,21 +131,32 @@ function bisikCalculateSequenceMetrics(seq) {
     if (w > 0 && h > 0) {
         metrics.width = w;
         metrics.height = h;
+        metrics.isPortrait = (h > w);
 
-        var factor = h / 1080;
-        metrics.scaleFactor = factor;
-        metrics.scalePercent = Math.round(factor * 10000) / 100;
-
-        if (h >= 2160) {
-            metrics.profile = (w >= 4096) ? ("4K DCI (" + w + "×" + h + ")") : ("4K UHD (" + w + "×" + h + ")");
-        } else if (h === 1080 && w === 1920) {
-            metrics.profile = "FHD (1920×1080)";
-        } else if (w === 1080 && h === 1920) {
-            metrics.profile = "Vertical (1080×1920 9:16)";
+        if (metrics.isPortrait) {
+            if (w >= 2160) {
+                metrics.profile = "4K Vertical (" + w + "×" + h + " 9:16)";
+                metrics.baseScale = 200;
+            } else {
+                metrics.profile = "Vertical (" + w + "×" + h + " 9:16)";
+                metrics.baseScale = 100;
+            }
         } else {
-            metrics.profile = w + "×" + h;
+            if (h >= 2160) {
+                metrics.profile = (w >= 4096) ? ("4K DCI (" + w + "×" + h + ")") : ("4K UHD (" + w + "×" + h + ")");
+                metrics.baseScale = Math.round((h / 1080) * 100);
+            } else if (h === 1080 && w === 1920) {
+                metrics.profile = "FHD (1920×1080)";
+                metrics.baseScale = 100;
+            } else {
+                metrics.profile = w + "×" + h;
+                metrics.baseScale = Math.round((h / 1080) * 100);
+            }
         }
     }
+
+    metrics.scalePercent = metrics.baseScale;
+    metrics.scaleFactor = metrics.baseScale / 100;
 
     try {
         var ticksPerSecond = 254016000000;
@@ -159,6 +167,27 @@ function bisikCalculateSequenceMetrics(seq) {
     } catch (fpsErr) {}
 
     return metrics;
+}
+
+function bisikCalculateCaptionPosition(metrics, posMode, isDualLine) {
+    var targetX = 0.5;
+    var targetY = 0.85;
+
+    var mode = String(posMode || "bottom").toLowerCase();
+    if (mode === "top") {
+        targetY = (metrics && metrics.isPortrait) ? 0.16 : 0.14;
+    } else if (mode === "center") {
+        targetY = 0.50;
+    } else {
+        // Bottom placement: compensate if 2-line mode to preserve title-safe margin
+        if (metrics && metrics.isPortrait) {
+            targetY = isDualLine ? 0.74 : 0.77;
+        } else {
+            targetY = isDualLine ? 0.82 : 0.85;
+        }
+    }
+
+    return [targetX, targetY];
 }
 
 function getSequenceTracksInfo() {
@@ -191,10 +220,13 @@ function getSequenceTracksInfo() {
     var videoTracks = [];
     for (var j = 0; j < seq.videoTracks.numTracks; j++) {
         var vTrack = seq.videoTracks[j];
+        var isVMuted = false;
+        try { isVMuted = vTrack.isMuted(); } catch (e) {}
         videoTracks.push({
             index: j,
             name: vTrack.name || ("Video " + (j + 1)),
-            clipCount: vTrack.clips.numItems
+            clipCount: vTrack.clips.numItems,
+            isMuted: isVMuted
         });
     }
 
@@ -323,32 +355,6 @@ function bisikGetAudioClipsForTrack(trackIndex) {
     return getTrackAudioClipsByRange(trackIndex, "entire");
 }
 
-function getOrImportSfxItem(sfxPath) {
-    if (!sfxPath) return null;
-    var root = app.project.rootItem;
-    var sfxBin = null;
-    var binName = "_bisik_by_rygh_SFX";
-
-    for (var i = 0; i < root.children.numItems; i++) {
-        if (root.children[i].name === binName && root.children[i].type === ProjectItemType.BIN) {
-            sfxBin = root.children[i];
-            break;
-        }
-    }
-    if (!sfxBin) sfxBin = root.createBin(binName);
-
-    var fileName = sfxPath.split("/").pop().split("\\").pop();
-    for (var j = 0; j < sfxBin.children.numItems; j++) {
-        if (sfxBin.children[j].name === fileName) return sfxBin.children[j];
-    }
-
-    app.project.importFiles([sfxPath], true, sfxBin, false);
-    for (var k = 0; k < sfxBin.children.numItems; k++) {
-        if (sfxBin.children[k].name === fileName) return sfxBin.children[k];
-    }
-    return null;
-}
-
 function bisikIsBisikCaptionClip(clip) {
     if (!clip) return false;
     try {
@@ -366,24 +372,11 @@ function bisikIsBisikCaptionClip(clip) {
     return false;
 }
 
-function bisikRangeHasForeignClip(track, startSec, endSec, ownPrefix) {
-    if (!track || !track.clips) return false;
-    for (var i = 0; i < track.clips.numItems; i++) {
-        var c = track.clips[i];
-        if (c.end.seconds <= startSec || c.start.seconds >= endSec) continue;
-        var n = c.name || "";
-        if (n.indexOf(ownPrefix) !== 0) return true;
-    }
-    return false;
-}
-
-function bisikCountClearable(videoTrackIndex, sfxAudioTrackIndex) {
+function bisikCountClearable(videoTrackIndex) {
     var seq = bisikGetActiveSequence();
     if (!seq) return JSON.stringify({ error: "No active sequence found." });
 
     var videoCount = 0;
-    var sfxCount = 0;
-
     var vTrack = seq.videoTracks[parseInt(videoTrackIndex, 10)];
     if (vTrack) {
         for (var i = 0; i < vTrack.clips.numItems; i++) {
@@ -391,27 +384,14 @@ function bisikCountClearable(videoTrackIndex, sfxAudioTrackIndex) {
         }
     }
 
-    var aIdx = parseInt(sfxAudioTrackIndex, 10);
-    if (!isNaN(aIdx) && aIdx >= 0 && seq.audioTracks[aIdx]) {
-        var aTrack = seq.audioTracks[aIdx];
-        for (var j = 0; j < aTrack.clips.numItems; j++) {
-            var cName = aTrack.clips[j].name || "";
-            if (cName.indexOf("bisik_sfx_") === 0 || cName.indexOf("sfx_") === 0) {
-                sfxCount++;
-            }
-        }
-    }
-
-    return JSON.stringify({ videoCount: videoCount, sfxCount: sfxCount, total: videoCount + sfxCount });
+    return JSON.stringify({ videoCount: videoCount, total: videoCount });
 }
 
-function clearTargetTracks(videoTrackIndex, sfxAudioTrackIndex) {
+function clearTargetTracks(videoTrackIndex) {
     var seq = bisikGetActiveSequence();
     if (!seq) return JSON.stringify({ error: "No active sequence found." });
 
     var removedVideo = 0;
-    var removedAudio = 0;
-
     var vTrack = seq.videoTracks[parseInt(videoTrackIndex, 10)];
     if (vTrack) {
         for (var i = vTrack.clips.numItems - 1; i >= 0; i--) {
@@ -423,19 +403,7 @@ function clearTargetTracks(videoTrackIndex, sfxAudioTrackIndex) {
         }
     }
 
-    var aIdx = parseInt(sfxAudioTrackIndex, 10);
-    if (!isNaN(aIdx) && aIdx >= 0 && seq.audioTracks[aIdx]) {
-        var aTrack = seq.audioTracks[aIdx];
-        for (var j = aTrack.clips.numItems - 1; j >= 0; j--) {
-            var cName = aTrack.clips[j].name || "";
-            if (cName.indexOf("bisik_sfx_") === 0 || cName.indexOf("sfx_") === 0) {
-                aTrack.clips[j].remove(false, false);
-                removedAudio++;
-            }
-        }
-    }
-
-    return JSON.stringify({ success: true, removedVideo: removedVideo, removedAudio: removedAudio });
+    return JSON.stringify({ success: true, removedVideo: removedVideo });
 }
 
 function bisikReadTextFile(p) {
@@ -457,12 +425,18 @@ function bisikInsertPayload(payload) {
     var targetVideoTrackIndex = (payload.videoTrackIndex !== undefined && payload.videoTrackIndex !== null) ? parseInt(payload.videoTrackIndex, 10) : 1;
     if (isNaN(targetVideoTrackIndex) || targetVideoTrackIndex < 0) targetVideoTrackIndex = 1;
 
-    var sfxMode = payload.sfxMode || "none";
-    var sfxTrackIndex = payload.sfxTrackIndex;
-    var sfxPaths = payload.sfxPaths || {};
-
     var seq = bisikGetActiveSequence();
     if (!seq) return JSON.stringify({ error: "Active sequence not found." });
+
+    // Safety: ensure target video track is unmuted so captions are immediately visible
+    var targetTrack = (seq.videoTracks && seq.videoTracks[targetVideoTrackIndex]) ? seq.videoTracks[targetVideoTrackIndex] : null;
+    if (targetTrack) {
+        try {
+            if (targetTrack.isMuted && targetTrack.isMuted()) {
+                targetTrack.setMute(0);
+            }
+        } catch (mErr) {}
+    }
 
     var ticksPerSecond = 254016000000;
     var ticksPerFrame = 0;
@@ -473,18 +447,8 @@ function bisikInsertPayload(payload) {
         ticksPerFrame = ticksPerSecond / 25;
     }
 
+    var metrics = bisikCalculateSequenceMetrics(seq);
     var insertedCount = 0;
-    var sfxInsertedCount = 0;
-    var sfxSkipped = 0;
-
-    var sfxAudioTrack = null;
-    if (sfxMode !== "none" && sfxTrackIndex !== undefined && seq.audioTracks[sfxTrackIndex]) {
-        sfxAudioTrack = seq.audioTracks[sfxTrackIndex];
-    }
-
-    var whooshItem = (sfxMode === "whoosh" || sfxMode === "both") ? getOrImportSfxItem(sfxPaths.whoosh) : null;
-    var popItem = (sfxMode === "pop" || sfxMode === "both") ? getOrImportSfxItem(sfxPaths.pop) : null;
-    var tickItem = (sfxMode === "tick") ? getOrImportSfxItem(sfxPaths.tick) : null;
 
     for (var i = 0; i < segments.length; i++) {
         var seg = segments[i];
@@ -494,7 +458,8 @@ function bisikInsertPayload(payload) {
             endTicks = String(Math.round(parseFloat(startTicks) + ticksPerFrame));
         }
 
-        var newTrackItem = seq.importMGT(mogrtPath, startTicks, targetVideoTrackIndex, 0);
+        var clipMogrt = (seg && seg.mogrtPath) ? seg.mogrtPath : mogrtPath;
+        var newTrackItem = seq.importMGT(clipMogrt, startTicks, targetVideoTrackIndex, 0);
 
         if (newTrackItem) {
             try { newTrackItem.name = "bisik_" + (newTrackItem.name || "caption"); } catch (e) {}
@@ -502,17 +467,27 @@ function bisikInsertPayload(payload) {
             endTime.ticks = endTicks;
             newTrackItem.end = endTime;
 
-            // Auto-scale MOGRT to match sequence resolution based on timeline calculation (e.g. 200% for 4K, 100% for FHD)
-            var metrics = bisikCalculateSequenceMetrics(seq);
-            if (metrics.scaleFactor !== 1.0 && newTrackItem.components) {
+            // Compute exact target position and scale for current sequence
+            var posMode = seg.posMode || payload.posMode || "bottom";
+            var isDualLine = (typeof seg.isDualLine === "boolean") ? seg.isDualLine : (payload && payload.isDualLine);
+            var coords = bisikCalculateCaptionPosition(metrics, posMode, isDualLine);
+            var userScale = Number(seg.textScale || payload.textScale || 100);
+            var targetScale = Math.round(metrics.baseScale * (userScale / 100));
+
+            if (newTrackItem.components) {
                 for (var cIdx = 0; cIdx < newTrackItem.components.numItems; cIdx++) {
                     var motionComp = newTrackItem.components[cIdx];
-                    if (motionComp && motionComp.displayName === "Motion") {
+                    var mMatch = motionComp ? (motionComp.matchName || "") : "";
+                    var mDisp = motionComp ? (motionComp.displayName || "") : "";
+                    if (mMatch === "ADBE Motion" || mMatch === "AE.ADBE Motion" || mDisp === "Motion") {
                         for (var prIdx = 0; prIdx < motionComp.properties.numItems; prIdx++) {
-                            if (motionComp.properties[prIdx].displayName === "Scale") {
-                                try {
-                                    motionComp.properties[prIdx].setValue(metrics.scalePercent, true);
-                                } catch (scErr) {}
+                            var pr = motionComp.properties[prIdx];
+                            var prMatch = pr ? (pr.matchName || "") : "";
+                            var prDisp = pr ? (pr.displayName || "") : "";
+                            if (prMatch === "ADBE Scale" || prMatch === "AE.ADBE Scale" || prDisp === "Scale") {
+                                try { pr.setValue(targetScale, true); } catch (scErr) {}
+                            } else if (prMatch === "ADBE Position" || prMatch === "AE.ADBE Position" || prDisp === "Position") {
+                                try { pr.setValue(coords, true); } catch (posErr) {}
                             }
                         }
                     }
@@ -543,45 +518,11 @@ function bisikInsertPayload(payload) {
             }
             insertedCount++;
         }
-
-        if (sfxAudioTrack) {
-            try {
-                if (whooshItem) {
-                    if (!bisikRangeHasForeignClip(sfxAudioTrack, seg.start, seg.start + 0.26, "bisik_sfx_")) {
-                        sfxAudioTrack.overwriteClip(whooshItem, seg.start);
-                        sfxInsertedCount++;
-                    } else {
-                        sfxSkipped++;
-                    }
-                } else if (tickItem) {
-                    if (!bisikRangeHasForeignClip(sfxAudioTrack, seg.start, seg.start + 0.06, "bisik_sfx_")) {
-                        sfxAudioTrack.overwriteClip(tickItem, seg.start);
-                        sfxInsertedCount++;
-                    } else {
-                        sfxSkipped++;
-                    }
-                }
-
-                if (popItem && seg.keywordTimes && seg.keywordTimes.length > 0) {
-                    for (var kw = 0; kw < seg.keywordTimes.length; kw++) {
-                        var kwTime = seg.keywordTimes[kw];
-                        if (!bisikRangeHasForeignClip(sfxAudioTrack, kwTime, kwTime + 0.12, "bisik_sfx_")) {
-                            sfxAudioTrack.overwriteClip(popItem, kwTime);
-                            sfxInsertedCount++;
-                        } else {
-                            sfxSkipped++;
-                        }
-                    }
-                }
-            } catch (sfxErr) {}
-        }
     }
 
     return JSON.stringify({
         success: true,
-        inserted: insertedCount,
-        sfxInserted: sfxInsertedCount,
-        sfxSkipped: sfxSkipped
+        inserted: insertedCount
     });
 }
 
@@ -618,19 +559,45 @@ function bisikGetActiveSequenceId() {
     return JSON.stringify({ sequenceId: seqId, sequenceName: seq.name || "" });
 }
 
-function bisikPrecheckTarget(videoTrackIndex, sfxTrackIndex, sfxMode) {
+function bisikRangeHasForeignClip(track, startSec, endSec, ownPrefix) {
+    if (!track || !track.clips) return false;
+    for (var i = 0; i < track.clips.numItems; i++) {
+        var c = track.clips[i];
+        if (!c || !c.start || !c.end) continue;
+        if (c.end.seconds <= startSec || c.start.seconds >= endSec) continue;
+        if (!bisikIsBisikCaptionClip(c)) return true;
+    }
+    return false;
+}
+
+function bisikPrecheckTarget(videoTrackIndex, startSecOrAudioTrackIndex, endSecOrAudioMode) {
     var seq = bisikGetActiveSequence();
-    if (!seq) return JSON.stringify({ error: "No active sequence found." });
+    if (!seq) return JSON.stringify({ error: "No active sequence found. Please open a sequence timeline in Premiere Pro." });
 
     var vIdx = parseInt(videoTrackIndex, 10);
     if (isNaN(vIdx) || vIdx < 0 || vIdx >= seq.videoTracks.numTracks) {
         return JSON.stringify({ error: "Target video track index is invalid." });
     }
 
-    if (sfxMode && sfxMode !== "none") {
-        var aIdx = parseInt(sfxTrackIndex, 10);
-        if (isNaN(aIdx) || aIdx < 0 || aIdx >= seq.audioTracks.numTracks) {
-            return JSON.stringify({ error: "Target SFX audio track index is invalid." });
+    // Legacy audio track bounds check support
+    if (typeof endSecOrAudioMode === "string" && endSecOrAudioMode !== "none") {
+        var aIdx = parseInt(startSecOrAudioTrackIndex, 10);
+        if (isNaN(aIdx) || aIdx < 0 || (seq.audioTracks && aIdx >= seq.audioTracks.numTracks)) {
+            return JSON.stringify({ error: "Target audio track index is invalid." });
+        }
+    }
+
+    // Real collision check: verify if video track already contains footage in [startSec, endSec]
+    var sSec = parseFloat(startSecOrAudioTrackIndex);
+    var eSec = parseFloat(endSecOrAudioMode);
+    if (!isNaN(sSec) && !isNaN(eSec) && eSec > sSec) {
+        var vTrack = seq.videoTracks[vIdx];
+        if (vTrack && bisikRangeHasForeignClip(vTrack, sSec, eSec, "bisik_")) {
+            return JSON.stringify({
+                valid: false,
+                conflict: true,
+                error: "Target track already contains non-caption clips in this time range. Please select an empty video track to avoid overwriting footage."
+            });
         }
     }
 
