@@ -411,7 +411,7 @@
       color: var(--text);
       cursor: pointer;
       flex-shrink: 0;
-      transition: all 0.12s ease;
+      transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
     }
     .btn-icon:hover {
       background: var(--accent);
@@ -652,7 +652,7 @@
       padding: 1px 7px;
       border-radius: 3px;
       cursor: pointer;
-      transition: all 0.12s ease;
+      transition: color 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
     }
     .target-pill:hover {
       color: var(--text);
@@ -1617,7 +1617,7 @@
       font-size: 10.5px;
       font-weight: 600;
       color: var(--muted);
-      transition: all 0.14s ease;
+      transition: border-color 0.14s ease, color 0.14s ease, background 0.14s ease;
     }
     .color-swatch:hover {
       border-color: #666;
@@ -1726,8 +1726,8 @@
     </div>
 
     <div class="grid-3" style="align-items: center; margin-bottom: var(--s-2);">
-      <input type="text" id="findInput" class="input-sm" placeholder="Find in transcript..." style="height:var(--control-h-sm); font-size:var(--f-xs);" />
-      <input type="text" id="replaceInput" class="input-sm" placeholder="Replace with..." style="height:var(--control-h-sm); font-size:var(--f-xs);" />
+      <input type="text" id="findInput" class="input-sm" placeholder="Find in transcript..." aria-label="Find in transcript" style="height:var(--control-h-sm); font-size:var(--f-xs);" />
+      <input type="text" id="replaceInput" class="input-sm" placeholder="Replace with..." aria-label="Replace with" style="height:var(--control-h-sm); font-size:var(--f-xs);" />
       <button class="btn-sm" id="btnReplaceAll" style="width:100%; height:var(--control-h-sm);">Replace All</button>
     </div>
 
@@ -1811,7 +1811,7 @@
           </button>
           <div id="customFontMenu" class="custom-dropdown-menu" style="display:none;" role="listbox">
             <div class="custom-dropdown-search-wrap">
-              <input type="text" id="fontSearchInput" class="custom-dropdown-search" placeholder="Search installed fonts..." autocomplete="off" />
+              <input type="text" id="fontSearchInput" class="custom-dropdown-search" placeholder="Search installed fonts..." aria-label="Search installed fonts" autocomplete="off" />
               <button type="button" id="fontSearchClear" class="custom-dropdown-search-clear" style="display:none;" aria-label="Clear search">&times;</button>
             </div>
             <div id="customFontList" class="custom-dropdown-list"></div>
@@ -1870,10 +1870,10 @@
     <div class="scale-container">
       <label for="textScaleSlider" class="scale-label">Scale</label>
       <div class="scale-track-wrap">
-        <input type="range" id="textScaleSlider" class="premiere-slider" min="40" max="200" value="100" step="1" />
+        <input type="range" id="textScaleSlider" class="premiere-slider" min="40" max="200" value="100" step="1" aria-label="Scale Slider" />
       </div>
       <div class="scale-number-wrap">
-        <input type="number" id="textScale" min="40" max="200" value="100" step="1" />
+        <input type="number" id="textScale" min="40" max="200" value="100" step="1" aria-label="Scale Percentage" />
         <span class="scale-percent-unit">%</span>
       </div>
       <span id="textScaleBadge" class="scale-badge" style="display:none;">100%</span>
