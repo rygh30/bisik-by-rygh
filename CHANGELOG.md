@@ -12,6 +12,9 @@ All notable changes to the Bisik by Rygh Adobe Premiere Pro extension are docume
 - **Natural Clean-Cut Sentence Chunking:** Clean Cut defaults to 8–12 words / 5s sentences, strictly bounded by 34 CPL. Short clean-cut sentences (<= 34 chars) stay on a single line unless Two-Line is checked.
 
 ### Fixed
+- **MOGRT Font Selection Unlocked:** Unlocked `capPropFontEdit`, `capPropFontFauxStyleEdit`, and `capPropFontSizeEdit` across all 21 MOGRT templates, enabling native Premiere Pro Essential Graphics font customization.
+- **Smart PostScript Font Normalization:** Added `resolvePostScriptName` and optical size parsing (`\d+pt`) for Windows Registry and macOS system fonts (e.g. Inter 24pt, Inter 18pt SemiBold), preventing fallback to Arial Black.
+- **MOGRT Expression Fallback Protection:** Removed aggressive initial fallback latching in After Effects source text expression, broadening `fVariants` to support optical size and font weights.
 - **MOGRT Shape Fill 4D Vector:** Fixed `ADBE Vector Fill Color` expression in `scripts/generate_caption_presets.jsx` from 3D `[r, g, b]` to 4D `[r, g, b, 1.0]`. Resolved red fallback glitch on rendered boxes. Rebuilt all 21 MOGRTs.
 - **Transcribe Null Safety:** Fixed potential `TypeError` in `catch` and `finally` blocks when validation throws before `createJob()`.
 - **Character Per Line (CPL) Standard:** Unified default line chunking to 34 characters per line matching After Effects MOGRT text wrap limits.

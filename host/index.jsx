@@ -82,9 +82,17 @@ function setMgtValue(prop, val, fontVal) {
             var safeVal = String(val).replace(/\r\n/g, "\n").replace(/\r/g, "\n").replace(/\n/g, "\r\n");
             obj.textEditValue = safeVal;
             if (fontVal) {
+                var cleanFont = String(fontVal).trim();
                 try {
-                    obj.fontEditValue = [String(fontVal)];
+                    obj.fontEditValue = [cleanFont];
                     obj.capPropFontEdit = true;
+                    if (obj.fonteditinfo) {
+                        obj.fonteditinfo.fontEditValue = cleanFont;
+                        obj.fonteditinfo.capPropFontEdit = true;
+                    }
+                    if (obj.fontTextRunLength) {
+                        obj.fontTextRunLength = [safeVal.length];
+                    }
                 } catch (fErr) {}
             }
             try {
@@ -94,6 +102,9 @@ function setMgtValue(prop, val, fontVal) {
                 try {
                     delete obj.fontEditValue;
                     delete obj.capPropFontEdit;
+                    if (obj.fonteditinfo) {
+                        delete obj.fonteditinfo.fontEditValue;
+                    }
                     prop.setValue(JSON.stringify(obj), true);
                     return;
                 } catch (cleanErr) {}

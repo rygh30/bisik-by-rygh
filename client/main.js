@@ -848,6 +848,28 @@ function reconstructFullWords(tokens) {
 // ============================================================================
 const fontPostScriptMap = {};
 
+function resolvePostScriptName(name) {
+  if (!name) return "Arial-Black";
+  const trimmed = String(name).trim();
+  if (fontPostScriptMap && fontPostScriptMap[trimmed]) {
+    return fontPostScriptMap[trimmed];
+  }
+  // If already a valid PostScript identifier (no whitespace)
+  if (!/\s/.test(trimmed)) {
+    return trimmed;
+  }
+  // Strip optical point size indications like "18pt", "24pt"
+  const noPt = trimmed.replace(/\b\d+(\.\d+)?\s*pt\b/gi, "").replace(/\s+/g, " ").trim();
+  if (fontPostScriptMap && fontPostScriptMap[noPt]) {
+    return fontPostScriptMap[noPt];
+  }
+  const candidateWithDash = noPt.replace(/\s+/g, "-");
+  if (fontPostScriptMap && fontPostScriptMap[candidateWithDash]) {
+    return fontPostScriptMap[candidateWithDash];
+  }
+  return candidateWithDash || trimmed.replace(/\s+/g, "-");
+}
+
 const MAX_RECENT_FONTS = 5;
 const DEFAULT_RECENT_FONTS = [
   { value: "Arial-Black", family: "Arial Black", label: "Arial Black" },
@@ -968,13 +990,19 @@ function recordRecentFont(fontValue, familyName, label) {
 
 function cleanFontFamily(name) {
   if (!name) return "sans-serif";
+  let target = name;
   for (const [fam, ps] of Object.entries(fontPostScriptMap)) {
-    if (ps === name || fam === name) return fam;
+    if (ps === name) {
+      target = fam;
+      break;
+    }
   }
-  return name.replace(/\s*\([^)]*\)/g, "")
-             .replace(/-(Bold|Black|Medium|Regular|Light|Thin|Italic|Oblique|Heavy|Semibold|Demi|SemiBold)$/i, "")
-             .replace(/\s+(Bold|Black|Medium|Regular|Light|Thin|Italic|Oblique|Heavy|Semibold|Demi)$/i, "")
-             .trim();
+  return target.replace(/\s*\([^)]*\)/g, "")
+               .replace(/\b\d+(\.\d+)?\s*pt\b/gi, "")
+               .replace(/-(Bold|Black|Medium|Regular|Light|Thin|Italic|Oblique|Heavy|Semibold|Demi|SemiBold)$/i, "")
+               .replace(/\s+(Bold|Black|Medium|Regular|Light|Thin|Italic|Oblique|Heavy|Semibold|Demi|SemiBold)$/i, "")
+               .replace(/\s+/g, " ")
+               .trim() || target;
 }
 
 function applyFontSelection() {
@@ -1761,10 +1789,23 @@ function getInstalledFontsSync() {
           timeout: 3000
         });
         out.split("\n").forEach((line) => {
-          const match = line.trim().match(/^([^]+?)\s+REG_SZ\s+/);
+          const match = line.trim().match(/^([^]+?)\s+REG_SZ\s+(.*)$/i);
           if (match && match[1]) {
-            const clean = match[1].replace(/\s*\((TrueType|OpenType)\)\s*$/i, "").trim();
-            if (clean && !clean.startsWith(".")) fonts.add(clean);
+            const rawName = match[1].trim();
+            const fontFile = match[2] ? match[2].trim() : "";
+            const clean = rawName.replace(/\s*\((TrueType|OpenType)\)\s*$/i, "").trim();
+            if (clean && !clean.startsWith(".")) {
+              fonts.add(clean);
+              if (fontFile) {
+                const fileBase = path.basename(fontFile, path.extname(fontFile)).trim();
+                if (fileBase && !fileBase.startsWith(".") && !fileBase.includes(" ")) {
+                  fontPostScriptMap[clean] = fileBase;
+                }
+              }
+              if (!fontPostScriptMap[clean]) {
+                fontPostScriptMap[clean] = resolvePostScriptName(clean);
+              }
+            }
           }
         });
       } catch (_) {}
@@ -1823,7 +1864,7 @@ function initFontDropdown() {
 
     systemFonts.forEach((fontName) => {
       const opt = document.createElement("option");
-      const psName = fontPostScriptMap[fontName] || fontName;
+      const psName = resolvePostScriptName(fontName);
       opt.value = psName;
       opt.dataset.family = fontName;
       opt.textContent = fontName;
@@ -3794,7 +3835,7 @@ btnRender?.addEventListener("click", async () => {
 
     const videoTrackIdx = parseInt(videoSelect.value, 10);
     const rawFont = getEl("fontSelect") ? getEl("fontSelect").value : "Arial-Black";
-    const fontName = (fontPostScriptMap && fontPostScriptMap[rawFont]) || rawFont;
+    const fontName = resolvePostScriptName(rawFont);
     const highlightMode = getEl("highlightMode").value;
     const normalizedColor = hexToNormalizedFloatRgb(state.selectedHex);
     const posMode = getEl("posPreset") ? getEl("posPreset").value : "bottom";
@@ -4065,6 +4106,7 @@ if (typeof module !== "undefined" && module.exports) {
     populateCustomFontList,
     syncCustomFontDisplay,
     cleanFontFamily,
+    resolvePostScriptName,
     applyFontSelection,
     fontPostScriptMap,
     loadRecentFonts,

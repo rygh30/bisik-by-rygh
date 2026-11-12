@@ -10,7 +10,9 @@ const {
   loadRecentFonts,
   MAX_RECENT_FONTS,
   DEFAULT_RECENT_FONTS,
-  recentFonts
+  recentFonts,
+  resolvePostScriptName,
+  cleanFontFamily
 } = require("../client/main.js");
 
 describe("System Font Dynamic Discovery & Custom Dropdown", () => {
@@ -81,6 +83,34 @@ describe("System Font Dynamic Discovery & Custom Dropdown", () => {
     // Font-A and Font-B must have been evicted
     assert.equal(rec4.some(f => f.value === "Font-A"), false, "Font A must be evicted (FIFO/LRU)");
     assert.equal(rec4.some(f => f.value === "Font-B"), false, "Font B must be evicted (FIFO/LRU)");
+  });
+
+  test("resolvePostScriptName & cleanFontFamily correctly normalize optical sizes and weights", () => {
+    assert.equal(typeof resolvePostScriptName, "function");
+    assert.equal(typeof cleanFontFamily, "function");
+
+    // Standard names without spaces
+    assert.equal(resolvePostScriptName("Arial-Black"), "Arial-Black");
+    assert.equal(resolvePostScriptName("Impact"), "Impact");
+
+    // Optical size fonts
+    // If installed in OS, resolvePostScriptName returns exact system PostScript (e.g. Inter24pt-SemiBold)
+    const inter24Res = resolvePostScriptName("Inter 24pt");
+    assert.ok(inter24Res === "Inter" || inter24Res === "Inter24pt-SemiBold", `Expected Inter or Inter24pt-SemiBold, got ${inter24Res}`);
+
+    // Arbitrary unmapped optical size font
+    assert.equal(resolvePostScriptName("CustomFont 24pt"), "CustomFont");
+    assert.equal(resolvePostScriptName("CustomFont 18pt SemiBold"), "CustomFont-SemiBold");
+    assert.equal(resolvePostScriptName("CustomFont 24pt Bold"), "CustomFont-Bold");
+    assert.equal(resolvePostScriptName("CustomFont 28pt ExtraBold"), "CustomFont-ExtraBold");
+    assert.equal(resolvePostScriptName("Roboto 14pt"), "Roboto");
+    assert.equal(resolvePostScriptName("Montserrat SemiBold"), "Montserrat-SemiBold");
+
+    // cleanFontFamily tests
+    assert.equal(cleanFontFamily("Inter 24pt"), "Inter");
+    assert.equal(cleanFontFamily("Inter 18pt SemiBold"), "Inter");
+    assert.equal(cleanFontFamily("Inter-SemiBold"), "Inter");
+    assert.equal(cleanFontFamily("Arial-Black"), "Arial");
   });
 });
 
