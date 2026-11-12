@@ -49,8 +49,9 @@
 ## Quick Start Guide
 
 <p align="center">
-  <img src="docs/gumroad/gumroad_slide1_audio_whisper_1080x1080.png" width="400" alt="Audio Ingestion">
-  <img src="docs/gumroad/gumroad_slide2_interactive_editor_1080x1080.png" width="400" alt="Interactive Editor">
+  <img src="docs/gumroad/gumroad_slide1_audio_whisper_1080x1080.png" width="280" alt="Audio Ingestion">
+  <img src="docs/gumroad/gumroad_slide2_interactive_editor_1080x1080.png" width="280" alt="Interactive Editor">
+  <img src="docs/gumroad/gumroad_slide3_styling_color_1080x1080.png" width="280" alt="Typography & Styling">
 </p>
 
 1. **Select Source Track & Transcribe:** Choose your dialog audio track in Premiere Pro, pick your language, and click `Transcribe Audio`.
@@ -98,6 +99,14 @@ During setup, you can select which Whisper AI speech model to download:
 | **Small** | `~460 MB` | `~2 GB RAM` | Balanced speed with elevated accuracy |
 | **Medium** | `~1.5 GB` | `~5 GB RAM` | High precision for mixed accents & multilingual audio |
 | **Large-v3** | `~3.1 GB` | `~6 GB RAM` | Maximum precision, ideal punctuation & complex audio |
+
+---
+
+## Why bisik by rygh?
+
+<p align="center">
+  <img src="docs/gumroad/gumroad_slide5_why_bisik_comparison_1080x1080.png" width="800" alt="Why bisik by rygh Comparison Table">
+</p>
 
 ---
 

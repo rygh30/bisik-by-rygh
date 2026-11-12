@@ -19,6 +19,8 @@ assets/legacy_mogrts/
 .env
 .env.*
 !.env.example
+__pycache__/
+*.pyc
 
 # Internal Audit & Export Reports (Kept local, never pushed to GitHub)
 *AUDIT*

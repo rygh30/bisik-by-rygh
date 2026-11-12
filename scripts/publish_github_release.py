@@ -58,8 +58,27 @@ def main():
             print(f"HTTP Error checking release: {e}")
             sys.exit(1)
 
-    # 2. If not exists, create release
-    if not release_id:
+    # 2. If exists, update release body & title; if not, create release
+    if release_id:
+        update_url = f"https://api.github.com/repos/{repo}/releases/{release_id}"
+        payload = {
+            "tag_name": tag_name,
+            "target_commitish": "main",
+            "name": release_title,
+            "body": release_body,
+            "draft": False,
+            "prerelease": False
+        }
+        update_data = json.dumps(payload).encode("utf-8")
+        update_req = urllib.request.Request(update_url, data=update_data, headers=headers, method="PATCH")
+        update_req.add_header("Content-Type", "application/json")
+        try:
+            with urllib.request.urlopen(update_req) as resp:
+                data = json.loads(resp.read().decode())
+                print(f"SUCCESS: Updated release {tag_name} (ID: {release_id}) post at {data.get('html_url')}")
+        except urllib.error.HTTPError as e:
+            print(f"WARNING: Could not update release body: {e.read().decode()}")
+    else:
         create_url = f"https://api.github.com/repos/{repo}/releases"
         payload = {
             "tag_name": tag_name,

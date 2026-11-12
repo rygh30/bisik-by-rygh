@@ -1,5 +1,9 @@
 # bisik by rygh v1.1.1
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/rygh30/bisik-by-rygh/main/docs/gumroad/gumroad_cover_2560x1440.png" width="800" alt="bisik by rygh v1.1.1">
+</p>
+
 ## Overview
 
 **bisik by rygh v1.1.1** is a major release introducing 21 studio-grade kinetic MOGRT animation styles, an interactive word-chip transcript editor, a 3-channel color engine, automatic system font scanning with recent font persistence, and offline Whisper AI capability probing.
@@ -17,6 +21,10 @@ Handcrafted Motion Graphics templates organized into 4 curated categories, compl
 - **Dynamic Reels (6):** `Pop Bounce`, `Spring Rise`, `Mask Slide`, `Box Wipe`, `Highlight Box`, `Tracking Settle`
 - **Style & FX (3):** `Soft Glitch`, `Wave In`, `Line Roll`
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/rygh30/bisik-by-rygh/main/docs/gumroad/gumroad_slide4_21_mogrt_library_1080x1080.png" width="700" alt="21 Kinetic MOGRT Styles">
+</p>
+
 ### 2. Interactive Word-Chip Editor
 - **Direct Typo Editing:** Edit words directly inside interactive chips with automatic dynamic width adjustment.
 - **Keyword Highlighting (`[Star]`):** Pinpoint specific words for permanent emphasis.
@@ -28,6 +36,11 @@ Handcrafted Motion Graphics templates organized into 4 curated categories, compl
 - Discrete RGB/Hex controls for **Font Color**, **Highlight Color**, and **Particle / Box Color**.
 - 8 Quick Palette swatches (Lime, Coral, Gold, Cyan, Vox Yellow, Amber, Azure, White).
 - Custom preset saving and loading for instant multi-project workflow re-use.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/rygh30/bisik-by-rygh/main/docs/gumroad/gumroad_slide2_interactive_editor_1080x1080.png" width="370" alt="Interactive Word-Chip Editor">
+  <img src="https://raw.githubusercontent.com/rygh30/bisik-by-rygh/main/docs/gumroad/gumroad_slide3_styling_color_1080x1080.png" width="370" alt="Typography & Styling">
+</p>
 
 ### 4. 350+ System Fonts & 5 Recent Fonts
 - Native scan of all locally installed fonts on macOS and Windows with instant search filtering.
@@ -69,6 +82,11 @@ Handcrafted Motion Graphics templates organized into 4 curated categories, compl
 2. Double-click `1_Install_Extension.bat` to install the extension and enable CEP developer mode.
 3. If this is a first-time installation, run `2_Setup_AI_Engine.bat` to configure FFmpeg, Whisper CLI, and models.
 4. Launch Adobe Premiere Pro and navigate to: `Window > Extensions > bisik by rygh`.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/rygh30/bisik-by-rygh/main/docs/gumroad/gumroad_slide1_audio_whisper_1080x1080.png" width="370" alt="Audio Ingestion Workflow">
+  <img src="https://raw.githubusercontent.com/rygh30/bisik-by-rygh/main/docs/gumroad/gumroad_slide5_why_bisik_comparison_1080x1080.png" width="370" alt="Why Bisik Comparison Table">
+</p>
 
 ---
 
