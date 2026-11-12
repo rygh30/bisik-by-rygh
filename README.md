@@ -1,6 +1,6 @@
 # bisik by rygh
 
-![bisik by rygh](docs/gumroad/gumroad_cover_2560x1440.png)
+![bisik by rygh](docs/design/cover_2560x1440.png)
 
 > **100% Offline, Privacy-First AI Captions & Kinetic Typography for Adobe Premiere Pro.**  
 > Powered by local Whisper AI (`whisper.cpp`) and native Motion Graphics Templates (`.mogrt`). Zero API keys, zero cloud uploads, zero subscriptions.
@@ -34,7 +34,7 @@
 ## 21 Kinetic MOGRT Caption Styles
 
 <p align="center">
-  <img src="docs/gumroad/gumroad_slide4_21_mogrt_library_1080x1080.png" width="800" alt="21 Kinetic MOGRT Library">
+  <img src="docs/design/slide4_21_mogrt_library_1080x1080.png" width="800" alt="21 Kinetic MOGRT Library">
 </p>
 
 | Category | Styles Included | Best For |
@@ -49,9 +49,9 @@
 ## Quick Start Guide
 
 <p align="center">
-  <img src="docs/gumroad/gumroad_slide1_audio_whisper_1080x1080.png" width="280" alt="Audio Ingestion">
-  <img src="docs/gumroad/gumroad_slide2_interactive_editor_1080x1080.png" width="280" alt="Interactive Editor">
-  <img src="docs/gumroad/gumroad_slide3_styling_color_1080x1080.png" width="280" alt="Typography & Styling">
+  <img src="docs/design/slide1_audio_whisper_1080x1080.png" width="280" alt="Audio Ingestion">
+  <img src="docs/design/slide2_interactive_editor_1080x1080.png" width="280" alt="Interactive Editor">
+  <img src="docs/design/slide3_styling_color_1080x1080.png" width="280" alt="Typography & Styling">
 </p>
 
 1. **Select Source Track & Transcribe:** Choose your dialog audio track in Premiere Pro, pick your language, and click `Transcribe Audio`.
@@ -105,7 +105,7 @@ During setup, you can select which Whisper AI speech model to download:
 ## Why bisik by rygh?
 
 <p align="center">
-  <img src="docs/gumroad/gumroad_slide5_why_bisik_comparison_1080x1080.png" width="800" alt="Why bisik by rygh Comparison Table">
+  <img src="docs/design/slide5_why_bisik_comparison_1080x1080.png" width="800" alt="Why bisik by rygh Comparison Table">
 </p>
 
 ---

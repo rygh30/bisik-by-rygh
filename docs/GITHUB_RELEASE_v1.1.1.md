@@ -1,12 +1,12 @@
 # bisik by rygh v1.1.1
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/rygh30/bisik-by-rygh/main/docs/gumroad/gumroad_cover_2560x1440.png" width="800" alt="bisik by rygh v1.1.1">
+  <img src="https://raw.githubusercontent.com/rygh30/bisik-by-rygh/main/docs/design/cover_2560x1440.png" width="800" alt="bisik by rygh v1.1.1">
 </p>
 
 ## Overview
 
-**bisik by rygh v1.1.1** is a major release introducing 21 studio-grade kinetic MOGRT animation styles, an interactive word-chip transcript editor, a 3-channel color engine, automatic system font scanning with recent font persistence, and offline Whisper AI capability probing.
+**bisik by rygh v1.1.1** introduces 21 studio-grade kinetic MOGRT animation styles, an interactive word-chip transcript editor, a 3-channel color engine, automatic system font scanning with recent font persistence, and offline Whisper AI capability probing.
 
 This release provides pre-packaged installer bundles for **macOS Apple Silicon (ARM64)**, **macOS Intel (x86_64 Standalone)**, and **Windows 10/11 (64-bit)**.
 
@@ -22,7 +22,7 @@ Handcrafted Motion Graphics templates organized into 4 curated categories, compl
 - **Style & FX (3):** `Soft Glitch`, `Wave In`, `Line Roll`
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/rygh30/bisik-by-rygh/main/docs/gumroad/gumroad_slide4_21_mogrt_library_1080x1080.png" width="700" alt="21 Kinetic MOGRT Styles">
+  <img src="https://raw.githubusercontent.com/rygh30/bisik-by-rygh/main/docs/design/slide4_21_mogrt_library_1080x1080.png" width="700" alt="21 Kinetic MOGRT Styles">
 </p>
 
 ### 2. Interactive Word-Chip Editor
@@ -38,13 +38,15 @@ Handcrafted Motion Graphics templates organized into 4 curated categories, compl
 - Custom preset saving and loading for instant multi-project workflow re-use.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/rygh30/bisik-by-rygh/main/docs/gumroad/gumroad_slide2_interactive_editor_1080x1080.png" width="370" alt="Interactive Word-Chip Editor">
-  <img src="https://raw.githubusercontent.com/rygh30/bisik-by-rygh/main/docs/gumroad/gumroad_slide3_styling_color_1080x1080.png" width="370" alt="Typography & Styling">
+  <img src="https://raw.githubusercontent.com/rygh30/bisik-by-rygh/main/docs/design/slide2_interactive_editor_1080x1080.png" width="370" alt="Interactive Word-Chip Editor">
+  <img src="https://raw.githubusercontent.com/rygh30/bisik-by-rygh/main/docs/design/slide3_styling_color_1080x1080.png" width="370" alt="Typography & Styling">
 </p>
 
 ### 4. 350+ System Fonts & 5 Recent Fonts
 - Native scan of all locally installed fonts on macOS and Windows with instant search filtering.
 - Automatic 5-slot Most Recently Used (MRU) font cache for quick access.
+- Dynamic PostScript font matching supporting optical font sizes (e.g. Inter 18pt/24pt).
+- Unlocked font, faux style, and size editing across all 21 MOGRT styles.
 
 ### 5. Transcript Quality Control & Audio Cleaning
 - **QC Indicator:** Automatic warnings for fast reading speed (>20 Characters Per Second) or excessive line length (>38 Characters Per Line).
@@ -52,10 +54,9 @@ Handcrafted Motion Graphics templates organized into 4 curated categories, compl
 - **Formatting Tools:** Cycle letter case (`Aa`: Title Case, UPPERCASE, lowercase) and symmetric character balancing (`Two-Line`).
 - **Batch Find & Replace:** Instant multi-occurrence search and replace across the entire transcript.
 
-### 6. Engine Probing & Security Hardening
-- **Whisper Capability Probe:** Unified stderr capture for `whisper-cli --help` ensuring correct flag detection across varying operating system builds.
-- **Transcribe Null Safety:** Guarded process handling preventing unhandled errors on empty or unselected audio tracks.
-- **Security Hardening:** Hardcoded passwords removed from packaging scripts; signing credentials decoupled into local environment variables.
+### 6. Robustness & Engine Probing
+- **Universal Whisper CLI Detection:** Resilient capability probing across varied macOS and Windows builds.
+- **Null-Safe Timeline Guard:** Safe error handling preventing unhandled exceptions on empty or unselected audio tracks.
 
 ---
 
@@ -84,8 +85,8 @@ Handcrafted Motion Graphics templates organized into 4 curated categories, compl
 4. Launch Adobe Premiere Pro and navigate to: `Window > Extensions > bisik by rygh`.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/rygh30/bisik-by-rygh/main/docs/gumroad/gumroad_slide1_audio_whisper_1080x1080.png" width="370" alt="Audio Ingestion Workflow">
-  <img src="https://raw.githubusercontent.com/rygh30/bisik-by-rygh/main/docs/gumroad/gumroad_slide5_why_bisik_comparison_1080x1080.png" width="370" alt="Why Bisik Comparison Table">
+  <img src="https://raw.githubusercontent.com/rygh30/bisik-by-rygh/main/docs/design/slide1_audio_whisper_1080x1080.png" width="370" alt="Audio Ingestion Workflow">
+  <img src="https://raw.githubusercontent.com/rygh30/bisik-by-rygh/main/docs/design/slide5_why_bisik_comparison_1080x1080.png" width="370" alt="Why Bisik Comparison Table">
 </p>
 
 ---
@@ -96,11 +97,3 @@ Handcrafted Motion Graphics templates organized into 4 curated categories, compl
 - **macOS:** macOS 12 (Monterey) through macOS 15+ (Sequoia)
 - **Windows:** Windows 10 & Windows 11 (64-bit)
 - **Network:** 100% Offline (Internet only required during one-time initial AI model download)
-
----
-
-## Verification & Test Results
-
-- **Automated Test Suite:** 97 tests across 27 suites passing (100% pass rate).
-- **Integrity Validation:** Zero `.debug` files, sanitized macOS metadata attributes, and certified ZXP digital signature.
-

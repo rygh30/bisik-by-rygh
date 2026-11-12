@@ -3,13 +3,13 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const PROJECT_DIR = '/Users/reygha/Projects/bisik-by-rygh';
-const GUMROAD_DIR = path.join(PROJECT_DIR, 'docs', 'gumroad');
+const DESIGN_DIR = path.join(PROJECT_DIR, 'docs', 'design');
 const PANEL_IMG = 'file://' + path.join(PROJECT_DIR, 'docs', 'bisik_panel_clean_hd.png');
 const CHROME_BIN = '/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev';
 const ARTIFACT_DIR = '/Users/reygha/.gemini/antigravity/brain/568b93a8-1df6-437b-94d7-132087ae04ee';
 
-if (!fs.existsSync(GUMROAD_DIR)) {
-  fs.mkdirSync(GUMROAD_DIR, { recursive: true });
+if (!fs.existsSync(DESIGN_DIR)) {
+  fs.mkdirSync(DESIGN_DIR, { recursive: true });
 }
 
 // Authentic minimalist paper texture SVG
@@ -1111,30 +1111,35 @@ const htmlWhyBisik1080 = `<!DOCTYPE html>
 </body>
 </html>`;
 
-fs.writeFileSync(path.join(GUMROAD_DIR, 'cover_2560.html'), htmlCover2560);
-fs.writeFileSync(path.join(GUMROAD_DIR, 'guide_audio_1080.html'), htmlGuideAudio1080);
-fs.writeFileSync(path.join(GUMROAD_DIR, 'guide_editor_1080.html'), htmlGuideEditor1080);
-fs.writeFileSync(path.join(GUMROAD_DIR, 'guide_styling_1080.html'), htmlGuideStyling1080);
-fs.writeFileSync(path.join(GUMROAD_DIR, 'styles_showcase_1080.html'), htmlStylesShowcase1080);
-fs.writeFileSync(path.join(GUMROAD_DIR, 'why_bisik_1080.html'), htmlWhyBisik1080);
+fs.writeFileSync(path.join(DESIGN_DIR, 'cover_2560.html'), htmlCover2560);
+fs.writeFileSync(path.join(DESIGN_DIR, 'guide_audio_1080.html'), htmlGuideAudio1080);
+fs.writeFileSync(path.join(DESIGN_DIR, 'guide_editor_1080.html'), htmlGuideEditor1080);
+fs.writeFileSync(path.join(DESIGN_DIR, 'guide_styling_1080.html'), htmlGuideStyling1080);
+fs.writeFileSync(path.join(DESIGN_DIR, 'styles_showcase_1080.html'), htmlStylesShowcase1080);
+fs.writeFileSync(path.join(DESIGN_DIR, 'why_bisik_1080.html'), htmlWhyBisik1080);
 
 console.log('Rendering minimalist paper-texture graphics with Chrome Dev...');
 
 const renderTasks = [
-  { html: 'cover_2560.html', out: 'gumroad_cover_2560x1440.png', w: 2560, h: 1440 },
-  { html: 'guide_audio_1080.html', out: 'gumroad_slide1_audio_whisper_1080x1080.png', w: 1080, h: 1080 },
-  { html: 'guide_editor_1080.html', out: 'gumroad_slide2_interactive_editor_1080x1080.png', w: 1080, h: 1080 },
-  { html: 'guide_styling_1080.html', out: 'gumroad_slide3_styling_color_1080x1080.png', w: 1080, h: 1080 },
-  { html: 'styles_showcase_1080.html', out: 'gumroad_slide4_21_mogrt_library_1080x1080.png', w: 1080, h: 1080 },
-  { html: 'why_bisik_1080.html', out: 'gumroad_slide5_why_bisik_comparison_1080x1080.png', w: 1080, h: 1080 },
+  { html: 'cover_2560.html', out: 'cover_2560x1440.png', w: 2560, h: 1440 },
+  { html: 'guide_audio_1080.html', out: 'slide1_audio_whisper_1080x1080.png', w: 1080, h: 1080 },
+  { html: 'guide_editor_1080.html', out: 'slide2_interactive_editor_1080x1080.png', w: 1080, h: 1080 },
+  { html: 'guide_styling_1080.html', out: 'slide3_styling_color_1080x1080.png', w: 1080, h: 1080 },
+  { html: 'styles_showcase_1080.html', out: 'slide4_21_mogrt_library_1080x1080.png', w: 1080, h: 1080 },
+  { html: 'why_bisik_1080.html', out: 'slide5_why_bisik_comparison_1080x1080.png', w: 1080, h: 1080 },
 ];
 
 for (const t of renderTasks) {
-  const htmlPath = path.join(GUMROAD_DIR, t.html);
-  const outPath = path.join(GUMROAD_DIR, t.out);
+  const htmlPath = path.join(DESIGN_DIR, t.html);
+  const outPath = path.join(DESIGN_DIR, t.out);
   const cmd = `"${CHROME_BIN}" --headless --disable-gpu --screenshot="${outPath}" --window-size=${t.w},${t.h} "file://${htmlPath}"`;
   console.log(`Rendering ${t.out} (${t.w}x${t.h})...`);
   execSync(cmd, { stdio: 'inherit' });
+
+  // Clean up temporary HTML
+  if (fs.existsSync(htmlPath)) {
+    fs.unlinkSync(htmlPath);
+  }
 
   // Also copy to artifacts directory for immediate user presentation
   if (fs.existsSync(ARTIFACT_DIR)) {
@@ -1143,4 +1148,4 @@ for (const t of renderTasks) {
   }
 }
 
-console.log('All minimalist paper-texture Gumroad graphics successfully rendered!');
+console.log('All minimalist paper-texture design graphics successfully rendered!');

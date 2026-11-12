@@ -1,28 +1,28 @@
-# bisik by rygh — Gumroad Product Listing & Documentation
+# bisik by rygh — Design Showcase, Product Listing & Documentation
 
-Dokumen ini berisi materi lengkap siap pakai untuk listing produk di Gumroad:
-1. **Copywriting Penjualan (Gumroad Sales Page Copy)**
+Dokumen ini berisi materi lengkap siap pakai untuk showcase produk dan landing page:
+1. **Copywriting Penjualan (Product Sales Page Copy)**
 2. **Panduan Visual & Fungsi Setiap Tombol / Kolom (Feature Breakdown)**
 3. **Analisis Pasar & Rekomendasi Strategi Penetapan Harga**
 
 ---
 
-### Aset Gambar Siap Upload Gumroad
+### Aset Gambar Siap Pakai (docs/design/)
 
 1. **Cover Produk Horizontal (16:9 • 2560 x 1440 px):**
-   - File: [`gumroad_cover_2560x1440.png`](file:///Users/reygha/Projects/bisik-by-rygh/docs/gumroad/gumroad_cover_2560x1440.png)
+   - File: [`cover_2560x1440.png`](file:///Users/reygha/Projects/bisik-by-rygh/docs/design/cover_2560x1440.png)
    - *Rasio 16:9 persis sama dengan 1280x720, namun dibuat 2x lebih tajam (2560x1440 QHD) agar tidak pecah di layar Retina/4K.*
 
 2. **Galeri & Slide Panduan Detail (Square 1:1 • 1080 x 1080 px):**
-   - **Slide 1 (Audio Ingestion & Whisper AI):** [`gumroad_slide1_audio_whisper_1080x1080.png`](file:///Users/reygha/Projects/bisik-by-rygh/docs/gumroad/gumroad_slide1_audio_whisper_1080x1080.png)
-   - **Slide 2 (Interactive Word-Chip Editor & QC):** [`gumroad_slide2_interactive_editor_1080x1080.png`](file:///Users/reygha/Projects/bisik-by-rygh/docs/gumroad/gumroad_slide2_interactive_editor_1080x1080.png)
-   - **Slide 3 (Styles, Typography & 3-Channel Color):** [`gumroad_slide3_styling_color_1080x1080.png`](file:///Users/reygha/Projects/bisik-by-rygh/docs/gumroad/gumroad_slide3_styling_color_1080x1080.png)
-   - **Slide 4 (Showcase 21 Animasi MOGRT Library):** [`gumroad_slide4_21_mogrt_library_1080x1080.png`](file:///Users/reygha/Projects/bisik-by-rygh/docs/gumroad/gumroad_slide4_21_mogrt_library_1080x1080.png)
-   - **Slide 5 (Tabel Komparasi / Why Bisik):** [`gumroad_slide5_why_bisik_comparison_1080x1080.png`](file:///Users/reygha/Projects/bisik-by-rygh/docs/gumroad/gumroad_slide5_why_bisik_comparison_1080x1080.png)
+   - **Slide 1 (Audio Ingestion & Whisper AI):** [`slide1_audio_whisper_1080x1080.png`](file:///Users/reygha/Projects/bisik-by-rygh/docs/design/slide1_audio_whisper_1080x1080.png)
+   - **Slide 2 (Interactive Word-Chip Editor & QC):** [`slide2_interactive_editor_1080x1080.png`](file:///Users/reygha/Projects/bisik-by-rygh/docs/design/slide2_interactive_editor_1080x1080.png)
+   - **Slide 3 (Styles, Typography & 3-Channel Color):** [`slide3_styling_color_1080x1080.png`](file:///Users/reygha/Projects/bisik-by-rygh/docs/design/slide3_styling_color_1080x1080.png)
+   - **Slide 4 (Showcase 21 Animasi MOGRT Library):** [`slide4_21_mogrt_library_1080x1080.png`](file:///Users/reygha/Projects/bisik-by-rygh/docs/design/slide4_21_mogrt_library_1080x1080.png)
+   - **Slide 5 (Tabel Komparasi / Why Bisik):** [`slide5_why_bisik_comparison_1080x1080.png`](file:///Users/reygha/Projects/bisik-by-rygh/docs/design/slide5_why_bisik_comparison_1080x1080.png)
 
 ---
 
-## 1. Copywriting Gumroad (Siap Copy-Paste)
+## 1. Copywriting Produk (Siap Copy-Paste)
 
 ### Title (Judul Produk)
 > **bisik by rygh — Local AI Kinetic Captions for Adobe Premiere Pro**
@@ -196,13 +196,13 @@ Berikut adalah referensi fungsi teknis setiap tombol dan kolom pada panel Bisik:
 
 ---
 
-### B. Rekomendasi Struktur Penetapan Harga di Gumroad
+### B. Rekomendasi Struktur Penetapan Harga di Digital Store
 
 Bisik memiliki keunggulan telak: **Native Premiere Pro GUI + 100% Offline AI Whisper + 21 Kinetic MOGRTs + One-Time Payment**.
 
 Berikut 3 opsi strategi harga terbaik:
 
-#### 1. Strategi Tiered Pricing (Sangat Direkomendasikan di Gumroad)
+#### 1. Strategi Tiered Pricing (Sangat Direkomendasikan)
 * **Creator License (Single Seat / Personal & Freelance):** **$39** (sekitar Rp 599.000)
   - Untuk video editor solo, YouTuber, content creator.
   - Akses lengkap seluruh 21 preset MOGRT, AI Whisper lokal, update v1.x seumur hidup.
@@ -210,8 +210,8 @@ Berikut 3 opsi strategi harga terbaik:
   - Untuk production house, agensi konten, atau tim editor (hingga 3-5 seat).
 
 #### 2. Strategi Launching / Early Bird
-* Pasang harga coret di Gumroad: ~~$59~~ -> **$29 (Diskon 50% untuk 100 pembeli pertama)** dengan kupon `EARLYBIRD`.
-* **Tujuan:** Mendapatkan penjualan awal dengan cepat, mengumpulkan review bintang 5 di Gumroad, dan menciptakan efek FOMO (*Fear of Missing Out*) di komunitas editor (Twitter/X, Facebook Premiere Pro groups, Reddit r/premiere).
+* Pasang harga coret di storefront: ~~$59~~ -> **$29 (Diskon 50% untuk 100 pembeli pertama)** dengan kupon `EARLYBIRD`.
+* **Tujuan:** Mendapatkan penjualan awal dengan cepat, mengumpulkan review bintang 5, dan menciptakan efek FOMO (*Fear of Missing Out*) di komunitas editor (Twitter/X, Facebook Premiere Pro groups, Reddit r/premiere).
 
 #### 3. Jika Dijual untuk Pasar Lokal Indonesia (Lynk.id / Mayar / Karyakarsa)
 * Jika Anda juga menjualnya langsung ke editor lokal di Indonesia:
